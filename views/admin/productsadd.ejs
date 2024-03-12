@@ -1,0 +1,177 @@
+<%- include('../adminlayouts/header.ejs') %>
+<!-- <head>
+  <link rel="stylesheet" href="/cropper.js/cropper.css">
+  <script src="/cropper.js/cropper.js"></script>
+
+  
+</head> -->
+
+
+  <!-- partial -->
+  <!-- partial -->
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h3 class="page-title"> Add Products </h3>
+        <nav aria-label="breadcrumb">
+        </nav>
+      </div>
+      <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              
+              <form action="/admin/productsadd" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label for="productName">Product Name</label>
+                  <input type="text" class="form-control" id="productName" name="productName" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="productDescription">Product Description</label>
+                  <textarea class="form-control" id="productDescription" name="productDescription" rows="3"
+                    required></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="category">Category</label>
+                  <select class="form-control" id="category" name="category" required>
+                 
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="kids">Kids</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="color">Color</label>
+                  <input type="text" class="form-control" id="color" name="color" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="price">Price</label>
+                  <input type="number" class="form-control" id="price" name="price" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="stock">Stock</label>
+                  <input type="number" class="form-control" id="stock" name="stock" required>
+                </div>
+                <div class="form-group">
+                  <label for="productImage">Upload Product Image</label>
+                  <div class="custom-file">
+                    <input type="file" class="form-control" id="productImage" name="productImage" multiple accept="image/*" required>
+                    <label class="custom-file-label" for="productImage">Choose file</label>
+                  </div>
+                </div>
+                <img id="previewImage" src="#" alt="Preview Image" style="max-width: 100%; display: none;">
+                <input type="hidden" id="croppedImage" name="croppedImage">
+
+                <!-- <button id="btn-crop">Crop</button>
+                <div class="cropped-container">
+                  <img src="" id="output">
+                </div> -->
+                <button type="submit" class="btn btn-lg btn-gradient-primary mt-2">Add Product</button>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+
+
+<script>
+  document.getElementById('productImage').addEventListener('change', function() {
+  const file = this.files[0];
+  const previewImage = document.getElementById('previewImage');
+  
+  if (file) {
+    const reader = new FileReader();
+    
+    reader.addEventListener('load', function() {
+      previewImage.src = reader.result;
+      previewImage.style.display = 'block';
+    });
+    
+    reader.readAsDataURL(file);
+  } else {
+    previewImage.src = '#';
+    previewImage.style.display = 'none';
+  }
+});
+
+</script>
+
+
+<!-- <script>
+  document.getElementById('btn-crop').addEventListener('click', function() {
+  const croppedCanvas = cropper.getCroppedCanvas();
+  croppedCanvas.toBlob(async function(blob) {
+    const formData = new FormData();
+    formData.append('croppedImage', blob);
+    
+    // Use fetch to send the cropped image data to the server
+    const response = await fetch('/crop-image', {
+      method: 'POST',
+      body: formData
+    });
+    
+    // Handle the response as needed
+  }, 'image/jpeg');
+});
+
+</script> -->
+
+<!-- <script>
+  const image = document.getElementById('productImage');
+  const cropper = new Cropper(image, {
+    aspectRatio: 1.7777777777777777,
+  });
+  document.querySelector('#btn-crop').addEventListener('click', function() {
+    var croppedImage = cropper.getCroppedCanvas().toDataURL("productImage/png");
+    document.getElementById('output').src = croppedImage;
+    document.querySelector(".cropped-container").style.display = 'flex';
+  });
+</script> -->
+
+
+
+
+
+
+  <!-- partial -->
+  </div>
+  <!-- main-panel ends -->
+  </div>
+  <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="/assetsadmin/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="/assetsadmin/vendors/chart.js/Chart.min.js"></script>
+  <script src="/assetsadmin/js/jquery.cookie.js" type="text/javascript"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="/assetsadmin/js/off-canvas.js"></script>
+  <script src="/assetsadmin/js/hoverable-collapse.js"></script>
+  <script src="/assetsadmin/js/misc.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page -->
+  <script src="/assetsadmin/js/dashboard.js"></script>
+  <script src="/assetsadmin/js/todolist.js"></script>
+  <!-- End custom js for this page -->
+  </body>
+
+  <!-- Mirrored from demo.bootstrapdash.com/purple-admin-free/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Dec 2023 06:57:42 GMT -->
+
+  </html>
+
+
+  <%- include('../adminlayouts/footer.ejs') %>

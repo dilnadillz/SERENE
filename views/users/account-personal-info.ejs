@@ -1,0 +1,160 @@
+<%- include('../layouts/header.ejs') %>
+<!------------------------------------------>
+    <!-- BREADCRUMB -->
+    <nav class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/">Home</a>
+              </li>
+              <li class="breadcrumb-item active">
+                My Account
+              </li>
+            </ol>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <section class="pt-7 pb-12">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+
+            <!-- Heading -->
+            <h3 class="mb-10">My Account</h3>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-3">
+
+            <!-- Nav -->
+            <nav class="mb-10 mb-md-0">
+              <div class="list-group list-group-sm list-group-strong list-group-flush-x">
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/orders">
+                  Orders
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-wishlist.html">
+                  Widhlist
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle active" href="account-personal-info.html">
+                  Personal Info
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/account-address">
+                  Addresses
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-payment.html">
+                  Payment Methods
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle" href="#!">
+                  Logout
+                </a>
+              </div>
+            </nav>
+
+          </div>
+          <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+
+            <!-- Form -->
+            <form id="personal-info-form" action="/account-personal-info" method="POST">
+              <div class="row">
+                <div class="col-12">
+
+                  <!-- Name -->
+                  <div class="form-group">
+                    <label class="form-label" for="accountFirstName">
+                      First Name *
+                    </label>
+                    <input class="form-control form-control-sm" id="accountFirstName" name="name" type="text" placeholder="First Name *" value="<%= user ? user.name : '' %>" required>
+                  </div>
+
+                </div>
+              
+                <div class="col-12">
+
+                  <!-- Email -->
+                  <div class="form-group">
+                    <label class="form-label" for="accountEmail">
+                      Email Address *
+                    </label>
+                    <input class="form-control form-control-sm" id="accountEmail" name="email" type="email" placeholder="Email Address *" value="<%= user ? user.email : '' %>" required>
+                  </div>
+
+                </div>
+
+                <div class="col-12">
+
+                  <!-- Mobile -->
+                  <div class="form-group">
+                    <label class="form-label" for="accountEmail">
+                      Mobile Number *
+                    </label>
+                    <input class="form-control form-control-sm" id="accountmobile" name="mobile" type="mobile" placeholder="Mobile Number *" value="<%= user ? user.mobile : '' %>" required>
+                  </div>
+
+                </div>
+             
+                <div class="col-12">
+
+                  <!-- Button -->
+                  <button class="btn btn-dark" type="submit">Save Changes</button>
+
+                </div>
+              </div>
+            </form>
+
+
+
+            <script>
+              function submitForm(event) {
+                  event.preventDefault(); // Prevent default form submission
+                  
+                  // Get form data
+                  const formData = new FormData(document.getElementById('personal-info-form'));
+                  
+                  // Make AJAX request
+                  fetch('/account-personal-info', {
+                      method: 'POST',
+                      body: formData
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      // Handle response data
+                      console.log(data);
+                      // Update UI if necessary
+                  })
+                  .catch(error => console.error('Error:', error));
+              }
+          </script>
+          
+
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+    <!-- JAVASCRIPT -->
+    <!-- Map (replace the API key to enable) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnKt8_N4-FKOnhI_pSaDL7g_g-XI1-R9E"></script>
+    
+    <!-- Vendor JS -->
+    <script src="assets/js/vendor.bundle.js"></script>
+    
+    <!-- Theme JS -->
+    <script src="assets/js/theme.bundle.js"></script>
+
+  </body>
+
+<!-- Mirrored from yevgenysim-turkey.github.io/shopper/account-personal-info.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 16 Jan 2024 03:52:29 GMT -->
+</html>
+<%- include('../layouts/footer.ejs') %>

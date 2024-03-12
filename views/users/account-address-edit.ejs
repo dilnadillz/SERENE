@@ -1,0 +1,154 @@
+<%- include('../layouts/header.ejs') %>
+
+    <!-- BREADCRUMB -->
+    <nav class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/">Home</a>
+              </li>
+              <li class="breadcrumb-item active">
+                My Account
+              </li>
+            </ol>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <section class="pt-7 pb-12">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+
+            <!-- Heading -->
+            <h3 class="mb-10">My Account</h3>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-3">
+
+            <!-- Nav -->
+            <nav class="mb-10 mb-md-0">
+              <div class="list-group list-group-sm list-group-strong list-group-flush-x">
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/orders">
+                  Orders
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-wishlist.html">
+                  Widhlist
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-personal-info.html">
+                  Personal Info
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle active" href="account-address.html">
+                  Addresses
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-payment.html">
+                  Payment Methods
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle" href="#!">
+                  Logout
+                </a>
+              </div>
+            </nav>
+
+          </div>
+          <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+
+            <!-- Heading -->
+            <h6 class="mb-7">
+              Edit Address
+            </h6>
+         
+            <!-- Form -->
+            <form action="/account-address/<%= address.address[0]._id %>" method="post">
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="firstName">Name *</label>
+                    <input value="<%= address.address[0].userName %>" class="form-control" name="userName" id="firstName"  type="text" placeholder="Name" required>
+                  </div>
+                </div>
+                
+                <!-- <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="emailAddress">Email Address *</label>
+                    <input class="form-control" id="emailAddress" type="email" placeholder="Email Address" required>
+                  </div>
+                </div> -->
+
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="mobileNumber">Mobile Number *</label>
+                    <input value="<%= address.address[0].mobileNumber %>" class="form-control" name="mobileNumber" id="mobileNumber" type="text" placeholder="10-digit mobile number" required>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label" for="country">Country *</label>
+                    <input value="<%= address.address[0].country %>" class="form-control" name="country" id="country" type="text" placeholder="Country" required>
+                  </div>
+                </div>
+
+              <div class="col-12 col-md-6">
+                <div class="form-group ">
+                  <label class="form-label" for="State">State *</label>
+                  <input value="<%= address.address[0].state %>" class="form-control" name="state" id="State" type="text" placeholder="State" required>
+                </div>
+              </div>
+
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label" for="addressLineOne">Address *</label>
+                    <input value="<%= address.address[0].address %>" class="form-control" name="address" id="addressLineOne" type="text" placeholder="Address (Area & Street)" required>
+                  </div>
+                </div>
+                
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label" for="townCity">Town / City / District *</label>
+                    <input value="<%= address.address[0].city %>" class="form-control" name="city" id="townCity" type="text" placeholder="Town / City / District" required>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <label class="form-label" for="pincode">PIN Code *</label>
+                    <input value="<%= address.address[0].pincode %>" class="form-control" name="pincode" id="pincode" type="text" placeholder="Pincode" required>
+                  </div>
+                </div>
+              
+                <!-- <div class="col-12">
+                  <div class="form-group">
+                    <div class="form-check mb-3">
+                      <input type="checkbox" class="form-check-input" id="defaultDeliveryAddress">
+                      <label class="form-check-label" for="defaultDeliveryAddress">Default delivery address</label>
+                    </div>
+                    <div class="form-check mb-0">
+                      <input type="checkbox" class="form-check-input" id="defaultShippingAddress">
+                      <label class="form-check-label" for="defaultShippingAddress">Default shipping address</label>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+
+              <!-- Button -->
+              <button class="btn btn-dark" type="submit">
+                Add Address
+              </button>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <%- include('../layouts/footer.ejs') %>

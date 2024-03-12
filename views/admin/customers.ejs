@@ -1,0 +1,137 @@
+<%- include('../adminlayouts/header.ejs') %>
+
+
+  <!------------------------------------- partial ------------------------------------------------------------------------>
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="page-header">
+        <h3 class="page-title"> Customer Details </h3>
+        <nav aria-label="breadcrumb">
+
+        </nav>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Customers List</h4>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <% if (users && users.length> 0) { %>
+                      <% for (let i=0; i < users.length; i++) { %>
+                        <tr>
+                          <td class="column">
+                            <%= users[i].name %>
+                          </td>
+                          <td class="column">
+                            <%= users[i].email %>
+                          </td>
+                          <td class="column">
+                            <%= users[i].mobile %>
+                          </td>
+                          <td class="column">
+                            <% if (users[i].is_blocked) { %>
+                              <form id="unblockForm<%= users[i]._id %>" action="/admin/unblock/<%= users[i]._id %>" method="post">
+                                <button class="action-btn unblock-btn btn-lg btn-gradient-primary mt-2" type="button" onclick="confirmUnblock('<%= users[i]._id %>')">Unblock</button>
+                              </form>
+                            <% } else { %>
+                              <form id="blockForm<%= users[i]._id %>" action="/admin/block/<%= users[i]._id %>" method="post">
+                                <button class="action-btn block-btn btn-lg btn-gradient-primary mt-2" type="button" onclick="confirmBlock('<%= users[i]._id %>')">Block</button>
+                              </form>
+                            <% } %>
+                          </td>
+                        <% } %>
+                          <% } else { %>
+                            <tr>
+                              <td colspan="4">Users not Found</td>
+                            </tr>
+                            <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+      <script>
+        function confirmBlock(userId) {
+          swal({
+            title: "Are you sure?",
+            text: "You are about to block this user.",
+            icon: "warning",
+            buttons: ["Cancel", "Block"],
+            dangerMode: true,
+          })
+          .then((willBlock) => {
+            if (willBlock) {
+              document.getElementById('blockForm' + userId).submit();
+            }
+          });
+        }
+      
+        function confirmUnblock(userId) {
+          swal({
+            title: "Are you sure?",
+            text: "You are about to unblock this user.",
+            icon: "warning",
+            buttons: ["Cancel", "Unblock"],
+            dangerMode: true,
+          })
+          .then((willUnblock) => {
+            if (willUnblock) {
+              document.getElementById('unblockForm' + userId).submit();
+            }
+          });
+        }
+      </script>
+
+
+
+      <!-- partial -->
+    </div>
+    <!-- main-panel ends -->
+  </div>
+  <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="/assetsadmin/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="/assetsadmin/vendors/chart.js/Chart.min.js"></script>
+  <script src="/assetsadmin/js/jquery.cookie.js" type="text/javascript"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="/assetsadmin/js/off-canvas.js"></script>
+  <script src="/assetsadmin/js/hoverable-collapse.js"></script>
+  <script src="/assetsadmin/js/misc.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page -->
+  <script src="/assetsadmin/js/dashboard.js"></script>
+  <script src="/assetsadmin/js/todolist.js"></script>
+  <!-- End custom js for this page -->
+  </body>
+
+  <!-- Mirrored from demo.bootstrapdash.com/purple-admin-free/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Dec 2023 06:57:42 GMT -->
+
+  </html>
+
+  <%- include('../adminlayouts/footer.ejs') %>

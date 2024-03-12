@@ -1,0 +1,293 @@
+<%- include('../layouts/header.ejs') %>
+
+    <!-- BREADCRUMB -->
+    <nav class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/">Home</a>
+              </li>
+              <li class="breadcrumb-item active">
+                My Account
+              </li>
+            </ol>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <section class="pt-7 pb-12">
+      <div  class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+
+            <!-- Heading -->
+            <h3 class="mb-10">My Account</h3>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-3">
+
+            <!-- Nav -->
+            <nav class="mb-10 mb-md-0">
+              <div class="list-group list-group-sm list-group-strong list-group-flush-x">
+                <a class="list-group-item list-group-item-action dropend-toggle active" href="/orders">
+                  Orders
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-wishlist.html">
+                  Widhlist
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/account-personal-info">
+                  Personal Info
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/account-address">
+                  Addresses
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-payment.html">
+                  Payment Methods
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle" href="#!">
+                  Logout
+                </a>
+              </div>
+            </nav>
+
+          </div>
+          <divid="refreshDiv" class="col-12 col-md-9 col-lg-8 offset-lg-1">
+            <% orderData.forEach(order => { %>
+            <!-- Order -->
+            <div class="card card-lg mb-5 border">
+              <div class="card-body pb-0">
+
+                <!-- Info -->
+                <div  class="card card-sm">
+                  <div class="card-body bg-light">
+                    
+                    <div  class="row">
+                      <div class="col-6 col-lg-2">
+                          <!-- Heading -->
+                          <h6 class="heading-xxxs text-muted">Order No:</h6>
+                          <!-- Text -->
+                          <p class="mb-lg-0 fs-sm fw-bold">
+                              <%= order._id %>
+                          </p>
+                      </div>
+                      <div class="col-6 col-lg-2">
+                          <!-- Heading -->
+                          <h6 class="heading-xxxs text-muted">Shipped date:</h6>
+                          <!-- Text -->
+                          <p class="mb-lg-0 fs-sm fw-bold">
+                              <time datetime="<%= order.date %>">
+                                  <%= order.date.toLocaleDateString() %>
+                              </time>
+                          </p>
+                      </div>
+                      <div class="col-6 col-lg-2">
+                          <!-- Heading -->
+                          <h6 class="heading-xxxs text-muted">Order Amount:</h6>
+                          <!-- Text -->
+                          <p class="mb-0 fs-sm fw-bold">
+                              <%= order.total_amount %>
+                          </p>
+                      </div>
+                      <div class="col-6 col-lg-2">
+                          <!-- Heading -->
+                          <h6 class="heading-xxxs text-muted">Quantity:</h6>
+                          <!-- Text -->
+                          <p class="mb-0 fs-sm fw-bold">
+                              <%= order.details[0].quantity %>
+                          </p>
+                      </div>
+                      <div class="col-6 col-lg-2">
+                          <!-- Heading -->
+                          <h6 class="heading-xxxs text-muted">Payment Method:</h6>
+                          <!-- Text -->
+                          <p class="mb-0 fs-sm fw-bold">
+                              <%= order.payment %>
+                          </p>
+                      </div>
+                      <div  class="col-6 col-lg-2">
+                          <!-- Heading -->
+                          <h6 class="heading-xxxs text-muted">Status:</h6>
+                          <!-- Text -->
+                          <p class="mb-0 fs-sm fw-bold" id="cancel">
+                              <%= order.details[0].status %>
+                          </p>
+                      </div>
+                  </div>
+                  
+                  </div>
+                </div>
+
+              </div>
+              <div class="card-footer">
+                <div class="row align-items-center">
+                  <div class="col-12 col-lg-6">
+                    <div class="row gx-5 mb-4 mb-lg-0">
+                      <div class="col-3">
+
+                        <!-- Image -->
+                        <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-5.jpg);"></div> -->
+
+                      </div>
+                      <div class="col-3">
+
+                        <!-- Image -->
+                        <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-112.jpg);"></div> -->
+
+                      </div>
+                      <div class="col-3">
+
+                        <!-- Image -->
+                        <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-7.jpg);"></div> -->
+
+                      </div>
+                      <!-- <div class="col-3"> -->
+
+                        <!-- Image -->
+                        <!-- <div class="ratio ratio-1x1 bg-light">
+                          <a class="ratio-item ratio-item-text text-reset" href="#!">
+                            <div class="fs-xxs fw-bold">
+                              +2 <br> more
+                            </div>
+                          </a>
+                        </div>
+
+                      </div> -->
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-6">
+                    <div class="row gx-5">
+                      <div class="col-6">
+
+                        <!-- Button -->
+                        <!-- <a class="btn btn-sm w-100 btn-outline-dark" href="account-order.html">
+                          Order Details
+                        </a> -->
+
+                      </div>
+                      <div class="col-6">
+
+                        <!-- Button -->
+                        <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order. details[0].productId %>">
+                          Cancel order
+                        </a>
+                        
+                        <!-- <% console.log("productIdfront",order. details[0].productId) %> -->
+                         <!-- <butto  class="btn btn-sm w-100 btn-outline-dark cancel-order-btn">Cancel order</button> -->
+                        
+
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+           
+            <% }); %>
+
+
+             <!-- Pagination -->
+             <nav class="d-flex justify-content-center justify-content-md-end mt-10">
+              <ul class="pagination pagination-sm text-gray-400">
+                <li class="page-item">
+                  <a class="page-link page-link-arrow" href="#">
+                    <i class="fa fa-caret-left"></i>
+                  </a>
+                </li>
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">4</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">5</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">6</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link page-link-arrow" href="#">
+                    <i class="fa fa-caret-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const cancelOrderButtons = document.querySelectorAll('.cancel-order-btn');
+    cancelOrderButtons.forEach(function(button) {
+      console.log("coming")
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            const orderId = button.getAttribute('data-order-id');
+            const productId = button.getAttribute('data-product-id'); 
+            console.log("orderIdjhj",orderId);
+            console.log("productId",productId)
+            cancelOrder(orderId, productId);
+          
+        });
+    });  
+
+    async function cancelOrder(orderId, productId) {
+        try {
+            const response = await fetch(`/cancel-order`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId: orderId,productId: productId })
+            });
+            if (response.ok) {
+              const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
+              console.log("coming in")
+              // console.log("oo",orderElement)
+              // const orderStatusElement = orderElement.closest('.card').querySelector('.order-status').textContent = 'Cancelled';
+              
+              console.log("coming in he")
+             
+                // $('#refreshDiv').load('/orders #refreshDiv');
+                window.location.href = '/orders';
+
+
+              
+             
+            } else {
+                console.error('Failed to cancel order:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Failed to cancel order:', error.message);
+        }
+    }
+});
+
+    </script>
+     
+
+    <%- include('../layouts/footer.ejs') %>

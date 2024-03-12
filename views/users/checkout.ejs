@@ -1,0 +1,493 @@
+<%- include('../layouts/header.ejs') %>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+
+    <!-- BREADCRUMB -->
+    <nav class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/">Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/cart">Shopping Cart</a>
+              </li>
+              <li class="breadcrumb-item active">
+                Checkout
+              </li>
+            </ol>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <section class="pt-7 pb-12">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+
+            <!-- Heading -->
+            <h3 class="mb-4">Checkout</h3>
+
+            <!-- Subheading -->
+            <p class="mb-10">
+              Already have an account? <a class="fw-bold text-reset" href="#!">Click here to login</a>
+            </p>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-7">
+
+            <!-- Form -->
+            <form>
+
+              <!-- Heading -->
+              <h6 class="mb-7"></h6>
+
+            
+              
+
+              <!-- Heading -->
+              <h6 class="mb-7">Shipping Details</h6>
+
+              <!-- Shipping details -->
+              <div class="table-responsive mb-6">
+                <table class="table table-bordered table-sm table-hover mb-0">
+                  <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+                    <% if (ckeckOutAddress) { %>
+                      <% ckeckOutAddress.address.forEach(address => { %>
+                        <div class="mb-4 position-relative">
+                          <!-- Action -->
+                          <div class="position-absolute top-0 end-0">
+                            <!-- Button -->
+                            <a class="btn btn-xs btn-circle btn-white-primary" href="/account-address-edit/<%= address._id %>">
+                              <i class="fe fe-edit-2"></i>
+                            </a>
+                            <!-- Button --><!--remove button -->
+                            <!-- <a href="/account-address-delete/<%= address._id %>">
+                              <button class="btn btn-xs btn-circle btn-white-primary" >
+                                <i class="fe fe-x"></i>
+                              </button>
+                            </a> -->
+                          </div>
+                          <!-- Address Details -->
+                          <p class="text-muted mb-0">
+                            <input type="radio" name="selectedAddress" value="<%= address._id %>"> <!-- Add a radio button -->
+                            <strong><%= address.userName %></strong> <br>
+                            <%= address.mobileNumber %> <br>
+                            <%= address.address %>, <%= address.city %>, <%= address.state %>, <%= address.country %>, <%= address.pincode %>
+                          </p>
+                        </div>
+                        <hr class="my-4"> <!-- Add a horizontal line to create space -->
+                      <% }); %>
+                    <% } %>
+                  </div>
+   
+                </table>
+              </div>
+                <!-- Billing details -->
+                <div class="row mb-9">
+                  <div class="col-12">
+                    <!-- Button -->
+                    <a class="btn w-100 btn-lg btn-outline-border" href="/account-address-add?frompage=checkout">
+                        Add Address <i class="fe fe-plus"></i>
+                    </a>
+                 </div>  
+                </div>
+  
+
+          
+
+
+              <!-- Heading -->
+              <h6 class="mb-7">Payment</h6>
+
+              <!-- List group -->
+              <div class="list-group list-group-sm mb-7">
+                <!-- <div class="list-group-item"> -->
+
+                  <!-- Radio -->
+                  <!-- <div class="form-check custom-radio"> -->
+
+                    <!-- Input -->
+                    <!-- <input class="form-check-input" id="checkoutPaymentCard" name="payment" type="radio" data-collapse="show" data-target="#checkoutPaymentCardCollapse"> -->
+
+                    <!-- Label -->
+                    <!-- <label class="form-check-label fs-sm text-body text-nowrap" for="checkoutPaymentCard">
+                      Credit Card <img class="ms-2" src="assets/img/brands/color/cards.svg" alt="...">
+                    </label>
+
+                  </div>
+
+                </div> -->
+                <!-- <div class="list-group-item collapse py-0" id="checkoutPaymentCardCollapse"> -->
+
+                  <!-- Form -->
+                  <!-- <div class="row gx-5 py-5">
+                    <div class="col-12">
+                      <div class="form-group mb-4">
+                        <label class="visually-hidden" for="checkoutPaymentCardNumber">Card Number</label>
+                        <input class="form-control form-control-sm" id="checkoutPaymentCardNumber" type="text" placeholder="Card Number *" required>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="form-group mb-4">
+                        <label class="visually-hidden" for="checkoutPaymentCardName">Name on Card</label>
+                        <input class="form-control form-control-sm" id="checkoutPaymentCardName" type="text" placeholder="Name on Card *" required>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group mb-md-0">
+                        <label class="visually-hidden" for="checkoutPaymentMonth">Month</label>
+                        <select class="form-select form-select-sm" id="checkoutPaymentMonth">
+                          <option>January</option>
+                          <option>February</option>
+                          <option>March</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="form-group mb-md-0">
+                        <label class="visually-hidden" for="checkoutPaymentCardYear">Year</label>
+                        <select class="form-select form-select-sm" id="checkoutPaymentCardYear">
+                          <option>2017</option>
+                          <option>2018</option>
+                          <option>2019</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <div class="input-group input-group-merge">
+                        <input class="form-control form-control-sm" id="checkoutPaymentCardCVV" type="text" placeholder="CVV *" required>
+                        <div class="input-group-append">
+                          <span class="input-group-text" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-content="The CVV Number on your credit card or debit card is a 3 digit number on VISA, MasterCard and Discover branded credit and debit cards.">
+                            <span><i class="fe fe-help-circle"></i></span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div> -->
+                <!-- <div class="list-group-item"> -->
+
+                  <!-- Radio -->
+                  <!-- <div class="form-check custom-radio"> -->
+
+                    <!-- Input -->
+                    <!-- <input class="form-check-input" id="checkoutPaymentPaypal" name="payment" type="radio" data-collapse="hide" data-target="#checkoutPaymentCardCollapse"> -->
+
+                    <!-- Label -->
+                    <!-- <label class="form-check-label fs-sm text-body text-nowrap" for="checkoutPaymentPaypal">
+                      <img src="assets/img/brands/color/paypal.svg" alt="...">
+                    </label>
+
+                  </div>
+
+                </div> -->
+
+                <div class="list-group-item">
+                  <!-- Radio button for selecting COD -->
+                  <div class="form-check custom-radio">
+                    <input class="form-check-input" id="checkoutPaymentCOD" name="paymentMethod" type="radio" value="COD" required>
+                    <label class="form-check-label fs-sm text-body text-nowrap" for="checkoutPaymentCOD">
+                      Cash on Delivery
+                    </label>
+                  </div>
+                </div>
+                
+              </div>
+
+              <!-- Notes -->
+              <!-- <textarea class="form-control form-control-sm mb-9 mb-md-0 fs-xs" rows="5" placeholder="Order Notes (optional)"></textarea> -->
+
+            </form>
+
+          </div>
+          <div class="col-12 col-md-5 col-lg-4 offset-lg-1">
+
+            <!-- Heading -->
+            <h6 class="mb-7">Order Items (3)</h6>
+
+            <!-- Divider -->
+            <!-- <hr class="my-7"> -->
+
+            <!-- List group -->
+            <!-- <ul class="list-group list-group-lg list-group-flush-y list-group-flush-x mb-7">
+              <li class="list-group-item">
+                <div class="row align-items-center">
+                  <div class="col-4"> -->
+
+                    <!-- Image -->
+                    <!-- <a href="product.html">
+                      <img src="assets/img/products/product-6.jpg" alt="..." class="img-fluid">
+                    </a> -->
+
+                  <!-- </div>
+                  <div class="col"> -->
+
+                    <!-- Title -->
+                    <!-- <p class="mb-4 fs-sm fw-bold">
+                      <a class="text-body" href="product.html">Cotton floral print Dress</a> <br>
+                      <span class="text-muted">$40.00</span>
+                    </p> -->
+
+                    <!-- Text -->
+                    <!-- <div class="fs-sm text-muted">
+                      Size: M <br>
+                      Color: Red
+                    </div> -->
+
+                  <!-- </div>
+                </div>
+              </li> -->
+              <!-- <li class="list-group-item">
+                <div class="row align-items-center">
+                  <div class="col-4"> -->
+
+                    <!-- Image -->
+                    <!-- <a href="product.html">
+                      <img src="assets/img/products/product-10.jpg" alt="..." class="img-fluid">
+                    </a> -->
+
+                  <!-- </div>
+                  <div class="col"> -->
+
+                    <!-- Title -->
+                    <!-- <p class="mb-4 fs-sm fw-bold">
+                      <a class="text-body" href="product.html">Suede cross body Bag</a> <br>
+                      <span class="text-muted">$49.00</span>
+                    </p> -->
+
+                    <!-- Text -->
+                    <!-- <div class="fs-sm text-muted">
+                      Color: Brown
+                    </div> -->
+
+                  <!-- </div>
+                </div>
+              </li>
+            </ul> -->
+
+            <!-- Card -->
+            <div class="card mb-9 bg-light">
+              <div class="card-body">
+                <ul class="list-group list-group-sm list-group-flush-y list-group-flush-x">
+                  <li class="list-group-item d-flex">
+                    <span>Subtotal</span> <span class="ms-auto fs-sm">₹<%=cartData.reduce((total,product)=>{
+                      return total+=(product.products.quantity*product.productz.price)
+                    },0)%></span>
+                  </li>
+                  <!-- <li class="list-group-item d-flex">
+                    <span>Tax</span> <span class="ms-auto fs-sm">$00.00</span>
+                  </li> -->
+                  <li class="list-group-item d-flex">
+                    <span>Shipping</span> <span class="ms-auto fs-sm">FREE</span>
+                  </li>
+                  <li class="list-group-item d-flex fs-lg fw-bold">
+                    <span>Total</span> <span class="ms-auto">₹<%=cartData.reduce((total,product)=>{
+                      return total+=(product.products.quantity*product.productz.price)
+                    },0)%></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <p class="mb-7 fs-xs text-gray-500">
+              Your personal data will be used to process your order, support
+              your experience throughout this website, and for other purposes
+              described in our privacy policy.
+            </p>
+
+            <!-- Button -->
+            <button id="place-order-btn" class="btn w-100 btn-dark">
+              Place Order
+            </button>
+            
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="bg-light py-9">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-md-6 col-lg-3">
+
+            <!-- Item -->
+            <div class="d-flex mb-6 mb-lg-0">
+
+              <!-- Icon -->
+              <i class="fe fe-truck fs-lg text-primary"></i>
+
+              <!-- Body -->
+              <div class="ms-6">
+
+                <!-- Heading -->
+                <h6 class="heading-xxs mb-1">
+                  Free shipping
+                </h6>
+
+                <!-- Text -->
+                <p class="mb-0 fs-sm text-muted">
+                  From all orders over $100
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+
+            <!-- Item -->
+            <div class="d-flex mb-6 mb-lg-0">
+
+              <!-- Icon -->
+              <i class="fe fe-repeat fs-lg text-primary"></i>
+
+              <!-- Body -->
+              <div class="ms-6">
+
+                <!-- Heading -->
+                <h6 class="mb-1 heading-xxs">
+                  Free returns
+                </h6>
+
+                <!-- Text -->
+                <p class="mb-0 fs-sm text-muted">
+                  Return money within 30 days
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+
+            <!-- Item -->
+            <div class="d-flex mb-6 mb-md-0">
+
+              <!-- Icon -->
+              <i class="fe fe-lock fs-lg text-primary"></i>
+
+              <!-- Body -->
+              <div class="ms-6">
+
+                <!-- Heading -->
+                <h6 class="mb-1 heading-xxs">
+                  Secure shopping
+                </h6>
+
+                <!-- Text -->
+                <p class="mb-0 fs-sm text-muted">
+                  You're in safe hands
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+          <div class="col-12 col-md-6 col-lg-3">
+
+            <!-- Item -->
+            <div class="d-flex">
+
+              <!-- Icon -->
+              <i class="fe fe-tag fs-lg text-primary"></i>
+
+              <!-- Body -->
+              <div class="ms-6">
+
+                <!-- Heading -->
+                <h6 class="mb-1 heading-xxs">
+                  Over 10,000 Styles
+                </h6>
+
+                <!-- Text -->
+                <p class="mb-0 fs-sm text-muted">
+                  We have everything you need
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+   
+    <script>
+      // Frontend code
+const placeOrderBtn = document.getElementById('place-order-btn');
+
+placeOrderBtn.addEventListener('click', async () => {
+  try {
+    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    console.log(selectedAddress)
+    console.log(paymentMethod)
+
+    const response = await fetch('/place-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ selectedAddress, paymentMethod }),
+    });
+
+    if (response.ok) {
+    
+      Swal.fire({
+        title: 'Order Placed!',
+        text: 'Your order has been placed successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+ 
+    } else {
+   
+      const errorMessage = await response.json();
+      Swal.fire({
+        title: 'Error!',
+        text: errorMessage.message || 'Failed to place order',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      title: 'Error!',
+      text: 'An unexpected error occurred. Please try again later.',
+      icon: 'error',
+      confirmButtonText: 'OK',
+    });
+  }
+});
+
+    </script>
+    
+    <%- include('../layouts/footer.ejs') %>

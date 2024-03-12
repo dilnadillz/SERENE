@@ -1,0 +1,111 @@
+<link rel="stylesheet" type="text/css" href="../style/style.css">
+
+<div class="container">
+    <h1>User Registration Form</h1>
+
+    <form action="/register" method="post" onsubmit="return validateForm()">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter Name" >
+        <p class="error"></p>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter Email" >
+        <p class="error"></p>
+
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" placeholder="Enter Mobile Number" >
+        <p class="error"></p>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter Password" >
+        <p class="error"></p>
+
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" >
+        <p class="error"></p>
+
+        <label for="showPassword">
+            <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()"> Show Password
+        </label>
+
+        <input type="submit" value="Register">
+    </form>
+
+    <div class="login-button-container">
+        <input type="button" value="Login" onclick="location.href='/login'">
+    </div>
+
+    <% if (typeof message !== 'undefined' && message) { %>
+        <script>
+            alert("<%= message %>");
+        </script>
+    <% } %>
+
+</div>
+
+<script>
+
+    const inputBox = document.querySelectorAll('input');
+    const error = document.querySelectorAll('.error');
+    
+    inputBox.forEach((element, index) => {
+        element.addEventListener('keyup', () => {
+            error[index].innerHTML = "";
+        });
+    });
+
+    function validateForm() {
+        var nameInput = document.getElementById('name').value.trim();
+        var email = document.getElementById('email').value;
+        var emailRegex = /^[^\s@]+@gmail\.com$/i;
+
+        var mobile = document.getElementById('mobile').value;
+        var mobileRegex = /^\d{10}$/;
+
+        var password = document.getElementById('password').value;
+        var confirmPassword = document.getElementById('confirmPassword').value;
+        var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+
+        let err = 0;
+
+        if (nameInput === "") {
+            error[0].innerHTML = "Please enter a valid name";
+            err = 1;
+        }
+
+        if (!emailRegex.test(email)) {
+            error[1].innerHTML = "Invalid email. Please enter a valid Gmail address";
+            err = 1;
+        }
+
+        if (!mobileRegex.test(mobile)) {
+            error[2].innerHTML = "Invalid mobile number. Please enter a 10-digit number";
+            err = 1;
+        }
+
+        if (!passwordRegex.test(password)) {
+            error[3].innerHTML = "Enter a strong password";
+            err = 1;
+        }
+
+        if (password !== confirmPassword) {
+            error[4].innerHTML = "Passwords do not match";
+            err = 1;
+        }
+
+        if (err === 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById('password');
+        var confirmPasswordInput = document.getElementById('confirmPassword');
+        var showPasswordCheckbox = document.getElementById('showPassword');
+
+        passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+        confirmPasswordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+    }
+</script>

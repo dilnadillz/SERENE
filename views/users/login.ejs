@@ -1,0 +1,73 @@
+<link rel="stylesheet" type="text/css" href="../style/style.css">
+
+<div class="container">
+   <h1>Login</h1>
+
+   <% if(typeof message !=='undefined' ){ %>
+      <h4>
+         <%= message %>
+      </h4>
+      <% } %>
+
+
+
+         <form action="/login" method="post" onsubmit="return validate()">
+            <input type="email" id="email" name="email" placeholder="Enter email">
+            <p class="error"></p>
+            <input type="password" id="password" name="password" placeholder="Enter password">
+            <p class="error"></p>
+            <br>
+            <input type="submit" value="Login">
+
+         </form>
+
+</div>
+
+<script>
+
+   const inputBox = document.querySelectorAll('input');
+   const error = document.querySelectorAll('.error');
+   inputBox.forEach((element, index) => {
+      element.addEventListener('keyup', () => {
+         error[index].innerHTML = ""
+      })
+   });
+
+
+   function validate() {
+
+      var email = document.getElementById('email').value;
+      var emailRegex = /^[^\s@]+@gmail\.com$/i;
+
+      var password = document.getElementById('password').value;
+
+
+
+
+
+      let err = 0
+      if (!emailRegex.test(email)) {
+         error[0].innerHTML = "Invalid email. Please enter a valid Gmail address"
+         err = 1
+      }
+
+      if(!email){
+         error[0].innerHTML = "This field is required"
+         err = 1
+      }
+
+
+      if(!password){
+         error[1].innerHTML = "This field is required"
+         err = 1
+      }
+
+      if(err===1){
+         return false;
+      }else{
+         return true;
+      }
+   }
+
+
+</script>

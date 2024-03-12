@@ -1,0 +1,99 @@
+<link rel="stylesheet" type="text/css" href="../style/style.css">
+
+<div class="container">
+    <h2>OTP Verification</h2>
+
+    <form method="post" action="/verify" onsubmit="return validateOTPForm()">
+
+        <input type="hidden" name="username" value="{{ username }}">
+
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" placeholder="Enter OTP" >
+
+        <input type="submit" value="Verify OTP">
+    </form>
+
+    <p id="errorText" style="color: red;"></p>
+
+    <form method="post" action="/resend">
+        <!-- Include a button in your HTML with the ID 'resendBtn' for the user to click -->
+        <button id="resendBtn" onclick="resendOtp()">Resend OTP</button>
+
+        <!-- Include a container for displaying OTP and timer -->
+     
+     
+
+        <div id="timerContainer">
+            <p id="timerText" class="text-center mt-3"></p>
+        </div>
+
+    </form>
+    
+</div>
+
+
+
+<script>
+    let timerDuration = 100;
+    let timerId; // Variable to store the timer ID
+    let timerRunning = false;
+
+    // Function to update the timer text
+    function updateTimer() {
+        const minutes = Math.floor(timerDuration / 60);
+        const seconds = timerDuration % 60;
+        document.getElementById('timerText').innerText = `Resend OTP in ${minutes}m ${seconds}s`;
+
+        if (timerDuration > 0) {
+            timerDuration--;
+            timerId = setTimeout(updateTimer, 10);
+        } else {
+            // Display the resend button after the timer expires
+            document.getElementById('resendBtn').removeAttribute('hidden');
+            document.getElementById('timerContainer').innerHTML = ""; // Remove the timer text
+            timerRunning = false; // Reset the timerRunning flag
+        }
+    }
+
+
+    // Function to handle resend button click
+    function resendOtp() {
+        // Check if the timer is already running
+        if (!timerRunning) {
+            // Clear the previous timer if it exists
+            clearTimeout(timerId);
+
+            // Hide the resend button and show the timer text
+            document.getElementById('resendBtn').setAttribute('hidden', 'true');
+
+            // Start the timer
+            timerRunning = true;
+            timerDuration = 100;
+            updateTimer();
+        }
+    }
+
+
+    
+    // Function to handle form submission and validation
+    function validateOTPForm() {
+        const otpInput = document.getElementById('otp')?.value.trim();
+
+        if(otpInput && (otpInput.length < 6  || otpInput.length > 6)){
+            // Display the error message for wrong OTP
+            document.getElementById('errorText').innerText = "Invalid otp.";
+            return false; // Prevent form submission
+        }else if (!otpInput) {
+            // Display the error message for wrong OTP
+            document.getElementById('errorText').innerText = "This field is required";
+            return false; // Prevent form submission
+        } else {
+            // Clear the error message if OTP is correct
+            document.getElementById('errorText').innerText = "";
+            return true; // Allow form submission
+        }
+        
+        
+    }
+</script>
+

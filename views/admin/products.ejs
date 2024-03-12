@@ -1,0 +1,174 @@
+<%- include('../adminlayouts/header.ejs') %>
+
+
+
+   
+
+
+      <!-- partial -->
+     
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="page-header">
+            <h3 class="page-title"> Products Details </h3>
+            <nav aria-label="breadcrumb">
+    
+            </nav>
+          </div>
+    
+         <!-- Your HTML Structure -->
+
+<div class="row">
+
+    <div class="col-md-6 mb-3">
+        <div class="input-group">
+            <input type="text" id="searchInput" placeholder="Search Products" class="form-control bg-white" style="width: 200px;" oninput="searchFunction()" />
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">Search</button>
+            </div>
+        </div>
+    </div>
+    
+
+
+
+  <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+          <div class="card-body">
+              <h4 class="card-title">Products List</h4>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                      <tr>
+                          <th>Product Image</th>
+                          <th>Product Name</th>
+                          <th>Description</th>
+                          <th>Category</th>
+                          <th>Color</th>
+                          <th>Stock</th>
+                          <th>Price</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <% productsData.forEach(product => { %>
+                          <tr>
+                              <td>
+                                  <div style="width: 100px; height: 100px; overflow: hidden; border-radius: 50%;">
+                                      <img src="<%= product.productImage[0] %>" alt=""
+                                          style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                                  </div>
+                              </td>
+                              <td><%= product.productName %></td>
+                              <td><%= product.productDescription %></td>
+                              <td><%= product.category %></td>
+                              <td><%= product.color %></td>
+                              <td><%= product.stock %></td>
+                              <td><%= product.price %></td>
+                              <td>
+                                  <div class="d-flex">
+                                    <a href="/admin/productsedit/<%= product._id %>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <form action="/admin/products/remove/<%= product._id %>" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                  </div>
+                              </td>
+                          </tr>
+                      <% }); %>
+                  </tbody>
+              </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+    
+
+           
+                
+      <style>
+        /* Style for the search button */
+        #searchButton {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Position the search button to the right */
+        .input-group-append {
+            margin-right: 10px; /* Move the button closer to the input field */
+        }
+
+      </style>                   
+                        
+           <script>
+                        function searchFunction() {
+                    var input, filter, table, tr, td, i, txtValue;
+                    input = document.getElementById("searchInput");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementsByClassName("table")[0];
+                    tr = table.getElementsByTagName("tr");
+                    var found = false;
+                    var noResultsRow = document.getElementById("noResultsRow");
+
+                    // Remove existing "No products available" row if it exists
+                    if (noResultsRow) {
+                        noResultsRow.remove();
+                    }
+
+                    for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[1]; // Search by Product Name (index 1)
+                        if (td) {
+                            txtValue = td.textContent || td.innerText;
+                            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = "";
+                                found = true;
+                            } else {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+
+                    // Show message if no products found
+                    if (!found) {
+                        noResultsRow = table.insertRow(-1);
+                        noResultsRow.id = "noResultsRow";
+                        var cell = noResultsRow.insertCell(0);
+                        cell.colSpan = "8"; // Set the colspan to match the number of columns
+                        cell.textContent = "No products available";
+                    }
+                }
+           </script>           
+      
+   
+      <!-- partial -->
+    </div>
+    <!-- main-panel ends -->
+  </div>
+  <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="/assetsadmin/vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="/assetsadmin/vendors/chart.js/Chart.min.js"></script>
+  <script src="/assetsadmin/js/jquery.cookie.js" type="text/javascript"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="/assetsadmin/js/off-canvas.js"></script>
+  <script src="/assetsadmin/js/hoverable-collapse.js"></script>
+  <script src="/assetsadmin/js/misc.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page -->
+  <script src="/assetsadmin/js/dashboard.js"></script>
+  <script src="/assetsadmin/js/todolist.js"></script>
+  <!-- End custom js for this page -->
+</body>
+
+<!-- Mirrored from demo.bootstrapdash.com/purple-admin-free/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Dec 2023 06:57:42 GMT -->
+
+</html>
+
+
+<%- include('../adminlayouts/footer.ejs') %>

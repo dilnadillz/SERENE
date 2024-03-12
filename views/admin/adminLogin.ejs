@@ -1,0 +1,149 @@
+
+
+<div class="login-container">
+    <h2>Admin Login</h2>
+    <form action="/admin/login-verify" method="post" onsubmit="return validate()">
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" >
+            <p class="error"></p>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" >
+            <p class="error"></p>
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Login</button>
+        </div>
+    </form>
+   
+
+    <% if(typeof message !=='undefined' ){ %>
+        <h4>
+           <%= message %>
+        </h4>
+        <% } %>
+</div>
+
+ 
+<script>
+
+    const inputBox = document.querySelectorAll('input');
+    const error = document.querySelectorAll('.error');
+    inputBox.forEach((element, index) => {
+       element.addEventListener('keyup', () => {
+          error[index].innerHTML = ""
+       })
+    });
+ 
+ 
+    function validate() {
+ 
+       var email = document.getElementById('email').value;
+       var emailRegex = /^[^\s@]+@gmail\.com$/i;
+ 
+       var password = document.getElementById('password').value;
+ 
+ 
+ 
+ 
+ 
+       let err = 0
+       if (!emailRegex.test(email)) {
+          error[0].innerHTML = "Invalid email. Please enter a valid Gmail address"
+          err = 1
+       }
+ 
+       if(!email){
+          error[0].innerHTML = "This field is required"
+          err = 1
+       }
+ 
+ 
+       if(!password){
+          error[1].innerHTML = "This field is required"
+          err = 1
+       }
+ 
+       if(err===1){
+          return false;
+       }else{
+          return true;
+       }
+    }
+ 
+ 
+ </script>
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #271022; /* Background color for the entire page */
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .login-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+        width: 400px;
+        text-align: center;
+    }
+
+    .login-container h2 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left; /* Align text to the left */
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .form-group input {
+        width: calc(100% - 20px); /* Adjust the width to leave room for padding */
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .form-group button {
+        background-color: #271022; /* Button color */
+        color: #fff;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 0 auto; /* Center the button */
+        display: block; /* Ensure it takes full width by default and centers */
+    }
+
+    .form-group button:hover {
+        background-color: #271022; /* Button color on hover */
+    }
+
+
+    .error{
+    color:red;
+    margin-top: 0;
+}
+
+</style>
