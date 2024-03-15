@@ -76,7 +76,7 @@
                           <h6 class="heading-xxxs text-muted">Order No:</h6>
                           <!-- Text -->
                           <p class="mb-lg-0 fs-sm fw-bold">
-                              <%= order._id %>
+                              <%= order._id.toString().slice(-6) %>
                           </p>
                       </div>
                       <div class="col-6 col-lg-2">
@@ -168,10 +168,10 @@
                       <div class="col-6">
 
                         <!-- Button -->
-                        <!-- <a class="btn btn-sm w-100 btn-outline-dark" href="account-order.html">
+                        <a class="btn btn-sm w-100 btn-outline-dark" href="/orderview?orderId=<%= order._id %>&productId=<%= order.details[0].productId %>">
                           Order Details
-                        </a> -->
-
+                        </a> 
+                       
                       </div>
                       <div class="col-6">
 
@@ -180,7 +180,7 @@
                           Cancel order
                         </a>
                         
-                        <!-- <% console.log("productIdfront",order. details[0].productId) %> -->
+                      
                          <!-- <butto  class="btn btn-sm w-100 btn-outline-dark cancel-order-btn">Cancel order</button> -->
                         
 

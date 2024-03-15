@@ -63,7 +63,7 @@
           <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
 
             <!-- Form -->
-            <form id="personal-info-form" action="/account-personal-info" method="POST">
+            <form id="personal-info-form" action="/account-personal-info" method="POST" onsubmit="return validateForm()">
               <div class="row">
                 <div class="col-12">
 
@@ -134,6 +134,52 @@
               }
           </script>
           
+
+          <script>
+            function validateForm() {
+              var firstName = document.getElementById('accountFirstName').value;
+              var email = document.getElementById('accountEmail').value;
+              var mobile = document.getElementById('accountmobile').value;
+          
+              // Trim spaces from input values
+              var trimmedFirstName = firstName.trim();
+              var trimmedEmail = email.trim();
+              var trimmedMobile = mobile.trim();
+          
+              // Check if any field is empty after trimming
+              if (trimmedFirstName === "" || trimmedEmail === "" || trimmedMobile === "") {
+                alert("All fields must be filled out");
+                return false;
+              }
+          
+              // Check if email is valid
+              if (!isValidEmail(trimmedEmail)) {
+                alert("Invalid email address");
+                return false;
+              }
+          
+              // Check if mobile number is valid
+              if (!isValidMobile(trimmedMobile)) {
+                alert("Invalid mobile number");
+                return false;
+              }
+          
+              return true;
+            }
+          
+            // Function to validate email format
+            function isValidEmail(email) {
+              var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              return emailRegex.test(email);
+            }
+          
+            // Function to validate mobile number format
+            function isValidMobile(mobile) {
+              var mobileRegex = /^\d{10}$/;
+              return mobileRegex.test(mobile);
+            }
+          </script>
+
 
 
 

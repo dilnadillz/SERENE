@@ -29,17 +29,17 @@ const storage = multer.diskStorage({
 }
 
 
-const loadAddCategory = async (req, res) => {
+const loadAddCategory = async (req, res,next) => {
     try {
 
         res.render('categoryadd');
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
 
-const catgoryAdding =async(req,res) =>{
+const catgoryAdding =async(req,res,next) =>{
     try {
 
 
@@ -68,22 +68,22 @@ const catgoryAdding =async(req,res) =>{
         }
         
     } catch (error) {
-        console.log("ERROR", error.message);
+        next(error);
     }
 };
 
-const editCategory = async(req,res)=>{
+const editCategory = async(req,res,next)=>{
     try{
         const {categoryId} = req.params;
         const category = await CategoryModel.findOne({ _id: categoryId });
         res.render('categoryedit', { category: category })
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 
 };
 
-const uploadCategory = async(req,res)=>{
+const uploadCategory = async(req,res,next)=>{
     try{
         const {categoryId} = req.params;
       
@@ -109,11 +109,11 @@ const uploadCategory = async(req,res)=>{
 
         res.status(200).redirect('/admin/category');
     }catch(error){
-        console.log(error);
+        next(error);
     }
 }
 
-const removeCategory = async(req,res) =>{
+const removeCategory = async(req,res,next) =>{
     try{
         const {categoryId} = req.params;
         const result = await CategoryModel.findOneAndDelete({ _id: categoryId });
@@ -122,7 +122,7 @@ const removeCategory = async(req,res) =>{
             res.redirect('/admin/category');
         }    
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 

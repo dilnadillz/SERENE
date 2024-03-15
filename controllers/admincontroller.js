@@ -5,6 +5,7 @@ const AdminModel = require("../models/adminModel");
 const UserModel = require('../models/userModel');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
+const orderModel = require('../models/orderModel')
 
 const adminlogin = async (req, res) => {
     try {
@@ -14,7 +15,7 @@ const adminlogin = async (req, res) => {
     }
 }       
 
-const verifyLogin = async (req, res) => {
+const verifyLogin = async (req, res,next) => {
     try {
         const {email,password} = req.body;
         console.log(email);
@@ -46,31 +47,31 @@ const verifyLogin = async (req, res) => {
             res.render('adminLogin', { message: "Email and password are incorrect" });
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
         res.render('adminLogin', { message: "An error occurred" });
     }
 };
 
-const adminWelcome = async (req, res) => {
+const adminWelcome = async (req, res,next) => {
     try {
         res.render('dashboard');
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const loadCustomers = async (req, res) => {
+const loadCustomers = async (req, res,next) => {
     try {
 
         const userData = await UserModel.find();
         console.log(userData);
         res.render('customers', { users: userData });
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }   
 }
 
-const blockUser = async (req, res) => {
+const blockUser = async (req, res,next) => {
   try {
     const {userId} = req.params;
     const user = await UserModel.findByIdAndUpdate(userId, { is_blocked: true });
@@ -81,12 +82,12 @@ const blockUser = async (req, res) => {
 
     res.redirect('/admin/customers'); 
   } catch (error) {
-    console.log(error.message);
+    next(error);
     
   }
 };
 
-const unblockUser = async (req, res) => {
+const unblockUser = async (req, res,next) => {
   try {
     const {userId} = req.params;
     const user = await UserModel.findByIdAndUpdate(userId, { is_blocked: false });
@@ -97,24 +98,94 @@ const unblockUser = async (req, res) => {
 
     res.redirect('/admin/customers'); 
   } catch (error) {
-    console.log(error.message);
+    next(error);
   }
 };
 
 
 
-const adminLogout = async (req, res) => {
+const adminLogout = async (req, res,next) => {
     try {
         res.clearCookie("admin-token"); 
         res.redirect('/admin'); 
     } catch (error) {
-        console.log(error.message);
+        next(error);
+    }
+}
+
+const loadUserOrder = async(req,res,next) => {
+    try{
+        orderData = await orderModel.aggregate([
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userz"
+                }
+            },
+            {
+                $unwind: "$userz"
+            }
+        ])
+       
+        // console.log("order coming",orderData)
+        
+        
+        res.render('order',{orderData:orderData});
+    }catch(error){
+        next(error);
     }
 }
 
 
+const loadUserOrderDetails = async(req,res,next) => {
+    try{
+        const {orderId} = req.query;
+      
+        const orderData = await orderModel.findById({_id:orderId});
 
+        const adminOrder = await orderModel.aggregate([
+            {
+                $match: { _id: new mongoose.Types.ObjectId(orderId) }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userz"
+                }
+            },
+            {
+                $unwind: "$userz"
+            },
+            {
+                $unwind: '$details'
+              },
+             
+              {
+                  $lookup: {
+                      from: "products",
+                      localField: "details.productId",
+                      foreignField: "_id",
+                      as: "productDetls"
+                  }
+              },
+              {
+                  $unwind: "$productDetls"
+              }
+         
+        ])
 
+        
+        // console.log("us",orderData)
+        console.log("ad",adminOrder)
+        res.render('order-details',{order:adminOrder[0]});
+    }catch(error){
+        next(error);
+    }
+}
 
 
 
@@ -127,7 +198,9 @@ module.exports = {
     loadCustomers,
     blockUser, 
     unblockUser,
-    adminLogout
+    adminLogout,
+    loadUserOrder,
+    loadUserOrderDetails
 
   
 }

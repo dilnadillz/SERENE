@@ -2,6 +2,7 @@ const productModel = require('../models/productModel');
 const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
+const categoryModel = require('../models/categoryModel');
 
 
 const storage = multer.diskStorage({
@@ -17,31 +18,34 @@ const storage = multer.diskStorage({
 
 
   
-const loadProductList = async(req,res)=>{
+const loadProductList = async(req,res,next)=>{
     try{
-        const productsData = await productModel.find();
+        const productsData = await productModel.find().populate('category');
         console.log(productsData);
         res.render('products', { productsData: productsData });
 
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
 
-const loadProductAdd = async(req,res)=>{
+const loadProductAdd = async(req,res,next)=>{
     try{
-        res.render('productsadd');
+        const catData = await categoryModel.find();
+        console.log('catdata',catData)
+        res.render('productsadd',{catData:catData});
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
 
-const productsAdding = async(req,res) => {
+const productsAdding = async(req,res,next) => {
     try{
         
         const {productName,productDescription,category,color,stock,price} = req.body;
+        console.log("hey",category);
         const uploadedImg = req.files.map(file => `/productUploads/resizedImg${file.filename}`);
       
          req.files.map(async file => {
@@ -73,26 +77,27 @@ const productsAdding = async(req,res) => {
         }
 
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
 
-const editProducts = async(req,res)=>{
+const editProducts = async(req,res,next)=>{
     try{
         const {productId} = req.params;
+        const catData = await categoryModel.find();
         const productData = await productModel.findOne({ _id: productId });
 
         if (productData) {
-            res.render('productsedit', { product: productData });
+            res.render('productsedit', { product: productData ,catData});
         }
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 
 };
 
-const uploadProducts = async (req, res) => {
+const uploadProducts = async (req, res,next) => {
     try {
         const {productId} = req.params;
         const product = await productModel.findById(productId);
@@ -110,11 +115,11 @@ const uploadProducts = async (req, res) => {
 
         res.status(200).redirect('/admin/products');
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
-const removeProducts = async(req,res) =>{
+const removeProducts = async(req,res,next) =>{
     try{
         const {productId} = req.params;
         const result = await productModel.findOneAndDelete({ _id: productId });
@@ -123,11 +128,11 @@ const removeProducts = async(req,res) =>{
             res.redirect('/admin/products');
         }    
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
-const removeSingleImage = async(req,res) => {
+const removeSingleImage = async(req,res,next) => {
     try{
         const {productId} = req.params;
         const {imageIndex} = req.params;
@@ -146,7 +151,7 @@ const removeSingleImage = async(req,res) => {
 
         res.json({sucess:true,message:'image delete sucessfully'})
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
             

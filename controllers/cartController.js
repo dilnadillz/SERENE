@@ -10,7 +10,7 @@ const mongoose = require('mongoose')
 
 
 
-const loadCart = async (req, res) => {
+const loadCart = async (req, res,next) => {
     try {
         const userId = res.locals.user;
         // console.log('helo',userId)
@@ -40,12 +40,12 @@ const loadCart = async (req, res) => {
 
         res.render('cart', { cartData: cartData });
     } catch (error) {
-        console.log(error.messsage);
+        next(error);
     }
 }
 
 
-const cartAdd = async (req, res) => {
+const cartAdd = async (req, res,next) => {
     try {
         const { productId } = req.params;
         const userId = res.locals.user;
@@ -77,11 +77,11 @@ const cartAdd = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const removeCart = async (req, res) => {
+const removeCart = async (req, res,next) => {
     try {
         const { productId } = req.params;
         // console.log(productId)
@@ -91,13 +91,13 @@ const removeCart = async (req, res) => {
             res.redirect('/cart');
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
 
 
-const updateQuantity = async(req,res) => {
+const updateQuantity = async(req,res,next) => {
     try{
 
         const userId = res.locals.user;
@@ -185,7 +185,7 @@ const updateQuantity = async(req,res) => {
         res.status(200).json({ cartProducts,Price,product, message: 'Cart updated successfully.' });
 
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
     

@@ -68,7 +68,7 @@
             </h6>
          
             <!-- Form -->
-            <form action="/account-address/<%= address.address[0]._id %>" method="post">
+            <form action="/account-address/<%= address.address[0]._id %>" method="post"    onsubmit="return validateForm()">
               <div class="row">
                 <div class="col-12">
                   <div class="form-group">
@@ -143,6 +143,7 @@
               <button class="btn btn-dark" type="submit">
                 Add Address
               </button>
+              
 
             </form>
 
@@ -150,5 +151,40 @@
         </div>
       </div>
     </section>
+
+
+
+
+    <script>
+      function validateForm() {
+        var userName = document.getElementById('firstName').value;
+        var mobileNumber = document.getElementById('mobileNumber').value;
+        var country = document.getElementById('country').value;
+        var state = document.getElementById('State').value;
+        var address = document.getElementById('addressLineOne').value;
+        var city = document.getElementById('townCity').value;
+        var pincode = document.getElementById('pincode').value;
+    
+        if (userName.trim() === "" || mobileNumber.trim() === "" || country.trim() === "" || state.trim() === "" || address.trim() === "" || city.trim() === "" || pincode.trim() === "") {
+          alert("All fields must be filled out");
+          return false;
+        }
+    
+        // Mobile number validation (10 digits)
+        if (!/^\d{10}$/.test(mobileNumber)) {
+          alert("Mobile number must be a 10-digit number");
+          return false;
+        }
+    
+        // Pincode validation (6 digits)
+        if (!/^\d{6}$/.test(pincode)) {
+          alert("PIN code must be a 6-digit number and use numbers");
+          return false;
+        }
+    
+        return true;
+      }
+    </script>
+
 
     <%- include('../layouts/footer.ejs') %>

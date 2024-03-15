@@ -22,7 +22,7 @@
             <div class="card-body">
               <h4 class="card-title">Edit Product</h4>
               <form action="/admin/products/productsedit/<%= product._id %>" method="POST"
-                enctype="multipart/form-data">
+                enctype="multipart/form-data" onsubmit="return validateForm()">
                 <div class="form-group">
                   <label for="productName">Product Name</label>
                   <input type="text" class="form-control" id="productName" name="productName"
@@ -35,8 +35,16 @@
                 </div>
                 <div class="form-group">
                   <label for="category">Category</label>
-                  <input type="text" class="form-control" id="category" name="category" value="<%= product.category %>"
-                    required>
+                  <select class="form-select form-control" id="category" name="category" required>
+                   
+                    <% for(let i = 0 ; i < catData.length ; i++) { %>
+                    
+                      <option value="<%= catData[i]._id %>" <%= (String(catData[i]._id)  === String(product.category) )? 'selected' : '' %>>
+                        <%= catData[i].categoryName %>
+                      </option>
+
+                      <% } %>
+                  </select>
                 </div>
                 <div class="form-group">
                   <label for="color">Color</label>
@@ -95,6 +103,39 @@
       </script>
 
 
+
+<script>
+  function validateForm() {
+    var productName = document.getElementById('productName').value;
+    var productDescription = document.getElementById('productDescription').value;
+    var category = document.getElementById('category').value;
+    var color = document.getElementById('color').value;
+    var price = document.getElementById('price').value;
+    var stock = document.getElementById('stock').value;
+
+    // Trim spaces from input values
+    var trimmedProductName = productName.trim();
+    var trimmedProductDescription = productDescription.trim();
+    var trimmedCategory = category.trim();
+    var trimmedColor = color.trim();
+    var trimmedPrice = price.trim();
+    var trimmedStock = stock.trim();
+
+    // Check if any field is empty after trimming
+    if (trimmedProductName === "" || trimmedProductDescription === "" || trimmedCategory === "" || trimmedColor === "" || trimmedPrice === "" || trimmedStock === "") {
+      alert("All fields must be filled out");
+      return false;
+    }
+
+    // Check if price and stock are not negative numbers
+    if (parseFloat(trimmedPrice) < 0 || parseFloat(trimmedStock) < 0) {
+      alert("Price and stock cannot be negative numbers");
+      return false;
+    }
+
+    return true;
+  }
+</script>
 
       <!-- partial -->
     </div>

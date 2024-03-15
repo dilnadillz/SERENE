@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require('path');
 const dotenv = require('dotenv').config({ path: path.resolve(__dirname, 'config', '.env') });
-
+const {errorHandler} = require('./middlewear/errorMiddlewear')
 const app = express();
 const mongoose = require("mongoose");
 
@@ -16,6 +16,7 @@ app.use(cookieParser())
 app.use(express.static('public'));
 // app.use(morgan('dev'));
 
+app.use(errorHandler)
 
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');

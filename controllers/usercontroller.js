@@ -11,12 +11,14 @@ const productModel = require('../models/productModel');
 const { findByIdAndUpdate } = require('../models/categoryModel');
 const bodyParser = require('body-parser');
 const addressModel = require('../models/addressModel');
-const cartModel = require('../models/cartModel')
+const cartModel = require('../models/cartModel');
+const categoryModel = require('../models/categoryModel');
+const { default: mongoose } = require('mongoose');
 
 
 
 
-const welcome = async (req, res) => {
+const welcome = async (req, res,next) => {
 
     try {
         console.log(res.locals.user);
@@ -25,15 +27,15 @@ const welcome = async (req, res) => {
         res.render("index-asymmetric", { products });
 
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const loadRegister = async (req, res) => {
+const loadRegister = async (req, res,next) => {
     try {
         res.render('registration');
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
@@ -50,7 +52,7 @@ const otpGenerator = () => {
 
 //signup
 
-const signUp = async (req, res) => {
+const signUp = async (req, res,next) => {
     try {
 
         const { name, email, password, mobile } = req.body;
@@ -79,7 +81,7 @@ const signUp = async (req, res) => {
         res.render("otp", { otp });
 
     } catch (error) {
-        console.log(error);
+        next(error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -128,7 +130,7 @@ function sendOtp(email, OTP) {
 
 
 
-const resendOtp = async (req, res) => {
+const resendOtp = async (req, res,next) => {
     try {
         otp = otpGenerator();
         console.log(otp);
@@ -150,14 +152,14 @@ const resendOtp = async (req, res) => {
             res.render("otp", { message: "Failed to update OTP. Please try again." });
         }
     } catch (error) {
-        console.log(error);
+        next(error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
 
 //verifying otp and completing user registration
 
-const verifyOtp = async (req, res) => {
+const verifyOtp = async (req, res,next) => {
     let userData
     const enteredOtp = req.body.otp;
     console.log(enteredOtp, 'entered otp');
@@ -195,21 +197,21 @@ const verifyOtp = async (req, res) => {
 
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
 
 
-const loadLogin = async (req, res) => {
+const loadLogin = async (req, res,next) => {
     try {
         res.render('login');
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
-const verifyLogin = async (req, res) => {
+const verifyLogin = async (req, res,next) => {
 
     try {
         const { email, password } = req.body;
@@ -249,49 +251,42 @@ const verifyLogin = async (req, res) => {
             res.render('login', { message: "Email and password are incorrect" });
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
         res.render('login', { message: "An error occurred" });
     }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res,next) => {
     try {
         res.cookie("access-token", "", { maxAge: 1 });
         res.redirect('/')
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
-const loadProductlist = async (req, res) => {
-    try {
-        const products = await Productdb.find();
-        res.render('productlist', { products: products });
-    } catch {
-        console.log(error.message);
-    }
-}
+      
 
-const loadUserProduct = async (req, res) => {
+const loadUserProduct = async (req, res,next) => {
     try {
         const { productId } = req.params;
         const product = await productModel.findOne({ _id: productId })
         res.render('product', { product });
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const LoadPersonalInfo = async (req, res) => {
+const LoadPersonalInfo = async (req, res,next) => {
     try {
         const user = await UserModel.findById(res.locals.user);
         res.render('account-personal-info', { user: user });
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const editPersonalInfo = async (req, res) => {
+const editPersonalInfo = async (req, res,next) => {
     try {
         const { name, email, mobile } = req.body;
         console.log(name, email, mobile);
@@ -299,12 +294,12 @@ const editPersonalInfo = async (req, res) => {
         console.log(updateUser);
         res.render('account-personal-info', { user: updateUser });
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
 
-const loadAddress = async (req, res) => {
+const loadAddress = async (req, res,next) => {
     try {
         // const user
         const userId = res.locals.user;
@@ -312,24 +307,24 @@ const loadAddress = async (req, res) => {
 
         res.render('account-address', { addresssData: addresssData })
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
 
 
-const loadAddAddress = async (req, res) => {
+const loadAddAddress = async (req, res,next) => {
     try {
         const address = await AddressModel.find({})
         // console.log(address);
         res.render('account-address-add');
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 };
 
 
-const addingAddress = async (req, res) => {
+const addingAddress = async (req, res,next) => {
     try {
 
         const userId = res.locals.user;
@@ -381,11 +376,11 @@ const addingAddress = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const loadEditAddress = async (req, res) => {
+const loadEditAddress = async (req, res,next) => {
     try {
         const { addressId } = req.params;
         // {"address.$":1} only  returnes the matched element from the address array
@@ -394,14 +389,14 @@ const loadEditAddress = async (req, res) => {
         res.render('account-address-edit', { address });
 
     } catch (error) {
-        console.log(error);
+        next(error);
     }
 }
 
 
 
 
-const editingAddress = async (req, res) => {
+const editingAddress = async (req, res,next) => {
     try {
         const { addressId } = req.params;
         const { userName, mobileNumber, country, state, address, city, pincode } = req.body;
@@ -424,12 +419,12 @@ const editingAddress = async (req, res) => {
         res.redirect("/account-address");
 
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 
 }
 
-const removeAddress = async (req, res) => {
+const removeAddress = async (req, res,next) => {
     try {
         const { addressId } = req.params;
         const updatedDocument = await AddressModel.findOneAndUpdate(
@@ -441,11 +436,11 @@ const removeAddress = async (req, res) => {
             res.redirect("/account-address");
         }
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const loadCheckout = async (req, res) => {
+const loadCheckout = async (req, res,next) => {
     try {
         const userId = res.locals.user;
         const ckeckOutAddress = await addressModel.findOne({ userId: userId });
@@ -474,28 +469,72 @@ const loadCheckout = async (req, res) => {
         res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData })
         // console.log("helllllllllllooooooooo",ckeckOutAddress)
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }
 
-const productFilter = async(req,res) =>{
-    try{
-        const { category } = req.query;
-        
-        const filteredProducts = await productModel.find({ category });
+const loadProductlist = async (req, res,next) => {
+    try {
+        const category = req.query.category;
+        const price = req.query.price;
+        const filterObject = {}
+        console.log("category",category);
+        console.log("price",price);
+
+            if(price){
+                const prices = price.split('-');
+                const minPrice = Number(prices[0].trim().substring(1));
+                const maxPrice = Number(prices[1].trim().substring(1));
+
+                filterObject.$and= [{price: {$gte: minPrice}},{price: {$lte: maxPrice}} ]
+            }
+
+            if(category){
+                let categoryIds
+                if(Array.isArray(category)) {
+                    categoryIds = category.map(id => new mongoose.Types.ObjectId(id));
+                } else {
+                    categoryIds = [new mongoose.Types.ObjectId(category)];
+                }
+                console.log("categoryIds",categoryIds)
+                
+                if(categoryIds.length>0){
+                    filterObject.$or=[]
+                    categoryIds.forEach(catId => {
+                        const expersion = {category: catId};
+                        filterObject.$or.push(expersion);
+                    })
+                }
     
-        res.render({filteredProducts,message:'done'})
-    }catch(error){
-        console.log(error.message);
+            }
+
+        const products = await Productdb.find(filterObject).populate('category');
+        const cat = await categoryModel.find();
+        
+        res.render('productlist', { products: products,cat:cat });
+    } catch (error) {
+        next(error);
     }
-}
+} 
+
+// const productFilter = async(req,res,next) =>{
+//     try{
+//         const { category } = req.query;
+        
+//         const filteredProducts = await productModel.find({ category });
+    
+//         res.render({filteredProducts,message:'done'})
+//     }catch(error){
+//         next(error);
+//     }
+// }
 
 
-const load404 = async(req,res) => {
+const load404 = async(req,res,next) => {
     try{
         res.render('404')
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
@@ -508,7 +547,7 @@ module.exports = {
     loadLogin,
     verifyLogin,
     logout,
-    loadProductlist,
+    
     loadUserProduct,
     LoadPersonalInfo,
     editPersonalInfo,
@@ -519,7 +558,8 @@ module.exports = {
     editingAddress,
     removeAddress,
     loadCheckout,
-    productFilter,
+    loadProductlist,
+    // productFilter,
     load404
 
 }

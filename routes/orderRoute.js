@@ -18,6 +18,8 @@ order_route.get('/orders',checkBlockUser,orderController.loadOrder);
 
 order_route.post('/cancel-order',orderController.orderCancel);
 
+order_route.get('/orderview',checkBlockUser,orderController.viewOrder);
+
 
 
 module.exports = order_route

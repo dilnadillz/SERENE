@@ -8,7 +8,7 @@ const orderModel = require('../models/orderModel');
 
 
 
-const orderPlace = async(req,res) => {
+const orderPlace = async(req,res,next) => {
     try{
         
         const userId = res.locals.user;
@@ -20,7 +20,7 @@ const orderPlace = async(req,res) => {
         if(!cart){
             return res.status(404).json({ message: "Cart not found" });
         }
-        // console.log("cart",cart)
+        console.log("cart",cart)
         const totalAmount = cart.products.reduce((total,product)=>{
             return total+=(product.quantity*product.productId.price)
           },0)
@@ -44,26 +44,28 @@ const orderPlace = async(req,res) => {
         // console.log("order",order)
         await order.save();
 
+        await cartModel.findOneAndDelete({userId:userId});
+
         res.status(200).json({ order, message: 'order updated successfully.' });
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
 
 
-const loadOrder = async (req, res) => {
+const loadOrder = async (req, res,next) => {
     try {
-
-        const orderData = await orderModel.find();
-        // console.log(orderData)
+        const userId = res.locals.user
+        const orderData = await orderModel.find({userId:userId});
+        console.log(orderData)
         res.render('orders',{orderData:orderData});
     } catch (error) {
-        console.log(error.message);
+        next(error);
     }
 }       
 
-const orderCancel = async(req,res) => {
+const orderCancel = async(req,res,next) => {
     try{
           
         const {orderId} = req.body;
@@ -90,16 +92,72 @@ const orderCancel = async(req,res) => {
 
         return res.status(200).json({ message: 'Product cancelled successfully' });
     }catch(error){
-        console.log(error.message);
+        next(error);
     }
 }
 
+const viewOrder = async(req,res,next) => {
+    try{
+        const userId = res.locals.user; 
+        const{ orderId,productId} = req.query;
+       
+        // console.log("ordeer",orderId)
+        // console.log("product",productId)
 
+        const orderDetails = await orderModel.findOne({_id:orderId})
+        const order = await orderModel.aggregate([
+            {
+              $match: { _id: new mongoose.Types.ObjectId(orderId) }
+            },
+            {
+              $unwind: '$details'
+            },
+            {
+              $match: { 'details.productId': new mongoose.Types.ObjectId(productId) }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "details.productId",
+                    foreignField: "_id",
+                    as: "productDetls"
+                }
+            },
+            {
+                $unwind: "$productDetls"
+            }
+            
+          ]);
+        const addressId =  orderDetails.delivery_address
+        // console.log("ID", addressId)
 
+        const userAddress = await addressModel.aggregate([
+            {
+              $match: { userId: userId }
+            },
+            {
+              $unwind: '$address'   
+            },
+            {
+              $match: { 'address._id': new mongoose.Types.ObjectId(addressId) }
+            }
+           
+          ]);
+
+        console.log("order", order);
+        console.log("address", userAddress[0]);  
+        
+        res.render('order-view',{order:order[0],address:userAddress[0]});
+    }catch(error){
+        next(error);
+    }
+}
+                    
 
 module.exports = {
     orderPlace,
     loadOrder,
-    orderCancel
+    orderCancel,
+    viewOrder
    
 }

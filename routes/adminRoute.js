@@ -25,7 +25,9 @@ admin_route.post('/unblock/:userId', admincontroller.unblockUser);
 
 admin_route.get('/adminout', admincontroller.adminLogout);
 
+admin_route.get('/order',requireAdminAuth,admincontroller.loadUserOrder);
 
+admin_route.get('/order-details',requireAdminAuth,admincontroller.loadUserOrderDetails);
 
 
 

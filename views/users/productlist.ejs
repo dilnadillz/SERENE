@@ -1,243 +1,180 @@
 <%- include('../layouts/header.ejs') %>
 
-    <!-- CONTENT -->
-    <section class="py-11">
-      <div class="container">
-        <div class="row">
-          <div class="col-12 col-md-4 col-lg-3">
+  <!-- CONTENT -->
+  <section class="py-11">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 col-md-4 col-lg-3">
 
-            <!-- Filters -->
-            <form class="mb-10 mb-md-0">
-              <ul class="nav nav-vertical" id="filterNav">
-                <li class="nav-item">
+          <!-- Filters -->
+          <form class="mb-10 mb-md-0" method="get" id="filterForm">
+            <ul class="nav nav-vertical" id="filterNav">
+              <li class="nav-item">
 
-                  <!-- Toggle -->
-                  <a class="nav-link dropdown-toggle fs-lg text-reset border-bottom mb-6" data-bs-toggle="collapse" href="#categoryCollapse">
-                    Category
-                  </a>
+                <!-- Toggle -->
+                <a class="nav-link dropdown-toggle fs-lg text-reset border-bottom mb-6" data-bs-toggle="collapse"
+                  href="#categoryCollapse">
+                  Category
+                </a>
 
-                  <!-- Collapse -->
-                  <div class="collapse show" id="categoryCollapse">
-                    <div class="form-group">
-                      <ul class="list-styled mb-0" id="productsNav">
-                        <li class="list-styled-item">
-                          <a class="list-styled-link" href="#">
-                            All Products
-                          </a>
-                        </li>
-                        <li class="list-styled-item">
+                <!-- Collapse -->
+                <div class="collapse show" id="categoryCollapse">
+                  <div class="form-group">
+                    <ul class="list-styled mb-0" id="productsNav">
+                      <li class="list-styled-item">
+                        <a class="list-styled-link" href="#">
+                          All Products
+                        </a>
+                      </li>
+                      <li class="list-styled-item">
 
-         
-                        </li>
-                        <li class="list-styled-item">
 
-                          <!-- Toggle -->
-                          <a class="list-styled-link" data-bs-toggle="collapse" href="#dressesCollapse" aria-expanded="true">
-                            T-Shirt
-                          </a>
+                      </li>
+                      <li class="list-styled-item">
 
-                          <!-- Collapse -->
-                          <div class="collapse show" id="dressesCollapse" data-bs-parent="#productsNav">
-                            <div class="py-4 ps-5">
+                        <!-- Toggle -->
+                        <a class="list-styled-link" data-bs-toggle="collapse" href="#dressesCollapse"
+                          aria-expanded="true">
+                          T-Shirt
+                        </a>
+
+                        <!-- Collapse -->
+                        <div class="collapse show" id="dressesCollapse">
+                          <div class="py-4 ps-5">
+                            <% for(let i=0 ; i < cat.length ; i++) { %>
                               <div class="form-check mb-3">
-                                <input class="form-check-input" id="dressesOne" type="checkbox">
-                                <label class="form-check-label" for="dressesOne">
-                                  Women
+
+                                <label class="form-check-label"> <input name="category" type="checkbox"
+                                    value="<%= cat[i]._id  %>">
+                                  <%= cat[i].categoryName %>
                                 </label>
                               </div>
-                              <div class="form-check mb-3">
-                                <input class="form-check-input" id="dressesTwo" type="checkbox" checked>
-                                <label class="form-check-label" for="dressesTwo">
-                                  Men
-                                </label>
-                              </div>
-                              <div class="form-check mb-3">
-                                <input class="form-check-input" id="dressesThree" type="checkbox">
-                                <label class="form-check-label" for="dressesThree">
-                                  Kids
-                                </label>
-                              </div>                             
-                            </div>
+                              <% } %>
+
                           </div>
+                        </div>
 
-                        </li>
-                      </ul>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+              </li>
+
+
+
+
+              <li class="nav-item">
+
+                <!-- Toggle -->
+                <a class="nav-link dropdown-toggle fs-lg text-reset border-bottom mb-6" data-bs-toggle="collapse"
+                  href="#priceCollapse">
+                  Price
+                </a>
+
+                <!-- Collapse -->
+                <div class="collapse" id="priceCollapse" data-simplebar-collapse="#priceGroup">
+
+                  <!-- Form group-->
+                  <div class="form-group form-group-overflow mb-6" id="priceGroup">
+                    <div class="form-check mb-3">
+
+                      <label class="form-check-label" for="price"> <input class="form-check-input" name="price"
+                          type="checkbox" value="₹299 - ₹499">
+                        ₹299 - ₹499
+                      </label>
+                    </div>
+                    <div class="form-check mb-3">
+                      <input value=" ₹499 - ₹599" class="form-check-input" name="price" type="checkbox">
+                      <label class="form-check-label" for="priceTwo">
+                        ₹499 - ₹599
+                      </label>
+                    </div>
+                    <div class="form-check mb-3">
+                      <input value=" ₹599 - ₹699" class="form-check-input" name="price" type="checkbox">
+                      <label class="form-check-label" for="priceThree">
+                        ₹599 - ₹699
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input value=" ₹699" class="form-check-input" name="price" type="checkbox">
+                      <label class="form-check-label" for="priceFour">
+                        ₹699 and Up
+                      </label>
                     </div>
                   </div>
 
-                </li>
-               
-              
-                <li class="nav-item">
 
-                  <!-- Toggle -->
-                  <a class="nav-link dropdown-toggle fs-lg text-reset border-bottom mb-6" data-bs-toggle="collapse" href="#colorCollapse">
-                    Color
-                  </a>
 
-                  <!-- Collapse -->
-                  <div class="collapse" id="colorCollapse" data-simplebar-collapse="#colorGroup">
-                    <div class="form-group form-group-overflow mb-6" id="colorGroup">
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorOne" type="checkbox" style="background-color: black">
-                        <label class="form-check-label text-body" for="colorOne">
-                          Black
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorTwo" type="checkbox" style="background-color: #f9f9f9;" checked>
-                        <label class="form-check-label text-body" for="colorTwo">
-                          White
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorThree" type="checkbox" style="background-color: #3b86ff">
-                        <label class="form-check-label text-body" for="colorThree">
-                          Blue
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorFour" type="checkbox" style="background-color: #ff6f61">
-                        <label class="form-check-label text-body" for="colorFour">
-                          Red
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorFive" type="checkbox" style="background-color: #795548" >
-                        <!-- disabled -->
-                        <label class="form-check-label text-body" for="colorFive">
-                          Brown
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorSix" type="checkbox" style="background-color: #bababa">
-                        <label class="form-check-label text-body" for="colorSix">
-                          Gray
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color mb-3">
-                        <input class="form-check-input" id="colorSeven" type="checkbox" style="background-color: orangered;">
-                        <label class="form-check-label text-body" for="colorSeven">
-                          Orange
-                        </label>
-                      </div>
-                      <div class="form-check form-check-color">
-                        <input class="form-check-input" id="colorEight" type="checkbox" style="background-color: #e83e8c;">
-                        <label class="form-check-label text-body" for="colorEight">
-                          Pink
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+                </div>
 
-                </li>
-              
-                <li class="nav-item">
+              </li>
 
-                  <!-- Toggle -->
-                  <a class="nav-link dropdown-toggle fs-lg text-reset border-bottom mb-6" data-bs-toggle="collapse" href="#priceCollapse">
-                    Price
-                  </a>
 
-                  <!-- Collapse -->
-                  <div class="collapse" id="priceCollapse" data-simplebar-collapse="#priceGroup">
+            </ul>
+            <button type="submit">filter</button>
+          </form>
 
-                    <!-- Form group-->
-                    <div class="form-group form-group-overflow mb-6" id="priceGroup">
-                      <div class="form-check mb-3">
-                        <input class="form-check-input" id="priceOne" type="checkbox" checked>
-                        <label class="form-check-label" for="priceOne">
-                          ₹299 - ₹499
-                        </label>
-                      </div>
-                      <div class="form-check mb-3">
-                        <input class="form-check-input" id="priceTwo" type="checkbox" checked>
-                        <label class="form-check-label" for="priceTwo">
-                          ₹499 - ₹599
-                        </label>
-                      </div>
-                      <div class="form-check mb-3">
-                        <input class="form-check-input" id="priceThree" type="checkbox">
-                        <label class="form-check-label" for="priceThree">
-                          ₹599 - ₹699
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" id="priceFour" type="checkbox">
-                        <label class="form-check-label" for="priceFour">
-                          ₹699 and Up
-                        </label>
-                      </div>
-                    </div>
-
-                   
-
-                  </div>
-
-                </li>
-              </ul>
-            </form>
+        </div>
+        <div class="col-12 col-md-8 col-lg-9">
+          <!------------------------------------------------------------------------------------------------------------>
+          <!-- Slider -->
+          <div class="flickity-page-dots-inner mb-9" data-flickity='{"pageDots": true}'>
 
           </div>
-          <div class="col-12 col-md-8 col-lg-9">
-<!------------------------------------------------------------------------------------------------------------>
-            <!-- Slider -->
-            <div class="flickity-page-dots-inner mb-9" data-flickity='{"pageDots": true}'>
+
+          <!-- Header -->
+          <div class="row align-items-center mb-7">
+            <div class="col-12 col-md">
+
+              <!-- Heading -->
+              <h3 class="mb-1">Free Size Collections</h3>
+
+              <!-- Breadcrumb -->
+              <ol class="breadcrumb mb-md-0 fs-xs text-gray-400">
+                <li class="breadcrumb-item">
+                  <a class="text-gray-400" href="/">Home</a>
+                </li>
+                <li class="breadcrumb-item active">
+                  Clothing
+                </li>
+              </ol>
 
             </div>
 
-            <!-- Header -->
-            <div class="row align-items-center mb-7">
-              <div class="col-12 col-md">
 
-                <!-- Heading -->
-                <h3 class="mb-1">Free Size Collections</h3>
-
-                <!-- Breadcrumb -->
-                <ol class="breadcrumb mb-md-0 fs-xs text-gray-400">
-                  <li class="breadcrumb-item">
-                    <a class="text-gray-400" href="/">Home</a>
-                  </li>
-                  <li class="breadcrumb-item active">
-                     Clothing
-                  </li>
-                </ol>
-
+            <div class="row justify-content-end">
+              <div class="col-auto">
+                <select class="form-select form-select-xs" onchange="sortItems(this.value)">
+                  <option selected disabled>Sort by</option>
+                  <option value="popular">Most popular</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="new">New Arrivals</option>
+                  <option value="aA-zZ">aA-zZ</option>
+                  <option value="zZ-aA">zZ-aA</option>
+                </select>
               </div>
-
-             
-              <div class="row justify-content-end">
-                <div class="col-auto">
-                  <select class="form-select form-select-xs" onchange="sortItems(this.value)">
-                    <option selected disabled>Sort by</option>
-                    <option value="popular">Most popular</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="new">New Arrivals</option>
-                    <option value="aA-zZ">aA-zZ</option>
-                    <option value="zZ-aA">zZ-aA</option>
-                  </select>
+              <div class="col-auto">
+                <div class="input-group">
+                  <input type="text" id="search-item" class="form-control form-select-xs" placeholder="Search Products"
+                    onclick="searchProducts()">
+                  <i class="fe fe-search search-icon"></i>
                 </div>
-                <div class="col-auto">
-                  <div class="input-group">
-                      <input type="text" id="search-item" class="form-control form-select-xs" placeholder="Search Products"
-                      onclick="searchProducts()">
-                      <i class="fe fe-search search-icon" ></i> 
-                  </div>
               </div>
-              </div>
-              
-              
-              
             </div>
 
-           
 
-            <!-- Products -->
-            <div class="row" id="product-list">
-              <% products.forEach(product => { %>
+
+          </div>
+
+
+
+          <!-- Products -->
+          <div class="row" id="product-list">
+            <% products.forEach(product=> { %>
               <div class="col-6 col-md-4 product">
-                
+
                 <!-- Card -->
                 <div class="card mb-7">
 
@@ -248,7 +185,7 @@
 
                   <!-- Image -->
                   <div class="card-img">
-                    
+
                     <!-- Image -->
                     <a class="card-img-hover" href="/product/<%= product._id %>">
                       <img class="card-img-top card-img-back" src="<%= product.productImage[0] %>" alt="...">
@@ -264,10 +201,10 @@
                       </span> -->
                       <span class="card-action">
                         <a href="/addToCart/<%= product._id %>">
-                        <button class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
-                          <i class="fe fe-shopping-cart"></i>
-                        </button>
-                      </a>
+                          <button class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
+                            <i class="fe fe-shopping-cart"></i>
+                          </button>
+                        </a>
                       </span>
                       <span class="card-action">
                         <button class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
@@ -275,7 +212,7 @@
                         </button>
                       </span>
                     </div>
-                   
+
                   </div>
 
                   <!-- Body -->
@@ -283,7 +220,9 @@
 
                     <!-- Category -->
                     <div class="fs-xs">
-                      <a class="text-muted" ><%= product.category %></a>
+                      <a class="text-muted">
+                        <%= product.category.categoryName %>
+                      </a>
                     </div>
 
                     <!-- Title -->
@@ -299,175 +238,182 @@
                     </div>
 
                   </div>
-                 
+
                 </div>
 
               </div>
               <% }) %>
-            </div>
-
-            <!-- Pagination -->
-            <nav class="d-flex justify-content-center justify-content-md-end">
-              <ul class="pagination pagination-sm text-gray-400">
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-left"></i>
-                  </a>
-                </li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">4</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">5</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">6</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-right"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-
           </div>
+
+          <!-- Pagination -->
+          <nav class="d-flex justify-content-center justify-content-md-end">
+            <ul class="pagination pagination-sm text-gray-400">
+              <li class="page-item">
+                <a class="page-link page-link-arrow" href="#">
+                  <i class="fa fa-caret-left"></i>
+                </a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">2</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">4</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">5</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">6</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link page-link-arrow" href="#">
+                  <i class="fa fa-caret-right"></i>
+                </a>
+              </li>
+            </ul>
+          </nav>
+
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
 
-    <style>
-      .input-group {
-          position: relative;
-      }
-      .search-icon {
-          position: absolute;
-          top: 50%;
-          right: 10px;
-          transform: translateY(-50%);
-          cursor: pointer;
-      }
-  </style>
-<!---------------------------------------filter------------------------------------------------------------>
-<script>
-  document.querySelectorAll('.list-styled-link').forEach(link => {
-  link.addEventListener('click', async (event) => {
-    event.preventDefault();
-    const category = link.textContent.trim();
-    console.log("cat coming",category)
-    try {
-      const response = await axios.get(`/product-filters?category=${encodeURIComponent(category)}`);
-      const filteredProducts = response.data;
-      console.log(filteredProducts);
-      // Update the UI with the filtered products
-    } catch (error) {
-      console.error('Error filtering products:', error);
+  <style>
+    .input-group {
+      position: relative;
     }
-  });
-});
 
-</script>
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  </style>
+  <!---------------------------------------filter------------------------------------------------------------>
 
-<!-------------------------------------search-------------------------------------------------------->
-<script>
-  const searchProducts = () => {
-    const searchBox = document.getElementById("search-item").value.toUpperCase();
-    const productCards = document.querySelectorAll(".product");
 
-    productCards.forEach(card => {
-      const productName = card.querySelector(".fw-bold a").textContent.toUpperCase();
+  <!-------------------------------------search-------------------------------------------------------->
+  <script>
+    const searchProducts = () => {
+      const searchBox = document.getElementById("search-item").value.toUpperCase();
+      const productCards = document.querySelectorAll(".product");
 
-      if (productName.includes(searchBox)) {
-        card.style.display = ""; 
-      } else {
-        card.style.display = "none"; 
+      productCards.forEach(card => {
+        const productName = card.querySelector(".fw-bold a").textContent.toUpperCase();
+
+        if (productName.includes(searchBox)) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    }
+
+    document.getElementById("search-item").addEventListener("input", searchProducts);
+  </script>
+
+
+
+  <!----------------------------------------sort------------------------------------------------------------>
+  <script>
+    const parentDiv = document.getElementById('priceGroup');
+    var checkboxes = parentDiv.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(function (checkbox, index) {
+      checkbox.addEventListener("change", function () {
+        checkboxes.forEach(function (checkbox) {
+       
+          if (checkbox.checked) {
+           
+            checkbox.checked = false;
+          }
+        });
+        this.checked=true;
+
+      });
+    })
+
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+
+  <script>
+    function sortItems(sortBy) {
+
+      const products = document.querySelectorAll('.product');
+      const productsArray = Array.from(products);
+
+      switch (sortBy) {
+        case 'price-low':
+          productsArray.sort((a, b) => {
+            const priceA = parseInt(a.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
+            const priceB = parseInt(b.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
+            return priceA - priceB;
+          });
+          break;
+        case 'price-high':
+          productsArray.sort((a, b) => {
+            const priceA = parseInt(a.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
+            const priceB = parseInt(b.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
+            return priceB - priceA;
+          });
+          break;
+        case 'new':
+          productsArray.sort((a, b) => {
+            const newnessA = parseInt(a.querySelector('.badge.bg-white.text-body.card-badge.card-badge-start.text-uppercase').textContent.trim());
+            const newnessB = parseInt(b.querySelector('.badge.bg-white.text-body.card-badge.card-badge-start.text-uppercase').textContent.trim());
+            return newnessB - newnessA;
+          });
+          break;
+
+        case 'aA-zZ':
+          productsArray.sort((a, b) => {
+            const nameA = a.querySelector('.fw-bold a').textContent.trim().toLowerCase();
+            const nameB = b.querySelector('.fw-bold a').textContent.trim().toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+          });
+          break;
+
+        case 'zZ-aA':
+          productsArray.sort((a, b) => {
+            const nameA = a.querySelector('.fw-bold a').textContent.trim().toLowerCase();
+            const nameB = b.querySelector('.fw-bold a').textContent.trim().toLowerCase();
+            if (nameA > nameB) return -1;
+            if (nameA < nameB) return 1;
+            return 0;
+          });
+          break;
+
+        default:
+
+          break;
       }
-    });
-  }
-
-  document.getElementById("search-item").addEventListener("input", searchProducts);
-</script>
 
 
-
-<!----------------------------------------sort------------------------------------------------------------>
-<script>
-function sortItems(sortBy) {
-  
-  const products = document.querySelectorAll('.product');
-  const productsArray = Array.from(products);
-
-  switch (sortBy) {
-    case 'price-low':
-      productsArray.sort((a, b) => {
-        const priceA = parseInt(a.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
-        const priceB = parseInt(b.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
-        return priceA - priceB;
+      const productList = document.getElementById('product-list');
+      // to remove all existing products from the container
+      productList.innerHTML = '';
+      // to dd sorted products back to the container
+      productsArray.forEach(product => {
+        productList.appendChild(product);
       });
-      break;
-    case 'price-high':
-      productsArray.sort((a, b) => {
-        const priceA = parseInt(a.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
-        const priceB = parseInt(b.querySelector('.fw-bold.text-muted').textContent.trim().slice(1));
-        return priceB - priceA;
-      });
-      break;
-    case 'new':
-      productsArray.sort((a, b) => {
-        const newnessA = parseInt(a.querySelector('.badge.bg-white.text-body.card-badge.card-badge-start.text-uppercase').textContent.trim());
-        const newnessB = parseInt(b.querySelector('.badge.bg-white.text-body.card-badge.card-badge-start.text-uppercase').textContent.trim());
-        return newnessB - newnessA;
-      });
-      break;
+    }
 
-    case 'aA-zZ':
-      productsArray.sort((a, b) => {
-        const nameA = a.querySelector('.fw-bold a').textContent.trim().toLowerCase();
-        const nameB = b.querySelector('.fw-bold a').textContent.trim().toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      break;
+   
 
-    case 'zZ-aA':
-      productsArray.sort((a, b) => {
-        const nameA = a.querySelector('.fw-bold a').textContent.trim().toLowerCase();
-        const nameB = b.querySelector('.fw-bold a').textContent.trim().toLowerCase();
-        if (nameA > nameB) return -1;
-        if (nameA < nameB) return 1;
-        return 0;
-      });
-      break;
-
-    default:
-     
-      break;
-  }
-
-  
-  const productList = document.getElementById('product-list');
-  // to remove all existing products from the container
-  productList.innerHTML = '';
-  // to dd sorted products back to the container
-  productsArray.forEach(product => {
-    productList.appendChild(product);
-  });
-}
-
-</script>
+  </script>
 
 
 
 
-    <%- include('../layouts/footer.ejs') %>
+  <%- include('../layouts/footer.ejs') %>
