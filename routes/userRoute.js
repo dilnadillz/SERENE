@@ -54,7 +54,7 @@ user_route.get('/account-address-delete/:addressId',usercontroller.removeAddress
 
 user_route.get('/checkout',checkBlockUser,usercontroller.loadCheckout);
 
-// user_route.post('/product-filter',usercontroller.productFilter);
+user_route.get('/order-sucess',checkBlockUser,usercontroller.loadOrderThankyou);
 
 
 

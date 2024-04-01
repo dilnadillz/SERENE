@@ -112,22 +112,23 @@
 
               <!-- List group -->
               <div class="list-group list-group-sm mb-7">
-                <!-- <div class="list-group-item"> -->
+                <div class="list-group-item">
 
                   <!-- Radio -->
-                  <!-- <div class="form-check custom-radio"> -->
+                  <div class="form-check custom-radio">
 
                     <!-- Input -->
-                    <!-- <input class="form-check-input" id="checkoutPaymentCard" name="payment" type="radio" data-collapse="show" data-target="#checkoutPaymentCardCollapse"> -->
+                    <input class="form-check-input" id="checkoutPaymentCard" name="payment" type="radio" data-collapse="show" data-target="#checkoutPaymentCardCollapse">
 
                     <!-- Label -->
-                    <!-- <label class="form-check-label fs-sm text-body text-nowrap" for="checkoutPaymentCard">
-                      Credit Card <img class="ms-2" src="assets/img/brands/color/cards.svg" alt="...">
+                     <label class="form-check-label fs-sm text-body text-nowrap" for="checkoutPaymentCard">
+                      Pay Online 
+                      <!-- <img class="ms-2" src="assets/img/brands/color/cards.svg" alt="..."> -->
                     </label>
 
                   </div>
 
-                </div> -->
+                </div> 
                 <!-- <div class="list-group-item collapse py-0" id="checkoutPaymentCardCollapse"> -->
 
                   <!-- Form -->
@@ -215,7 +216,7 @@
           <div class="col-12 col-md-5 col-lg-4 offset-lg-1">
 
             <!-- Heading -->
-            <h6 class="mb-7">Order Items (3)</h6>
+            <h6 class="mb-7">Order Items</h6>
 
             <!-- Divider -->
             <!-- <hr class="my-7"> -->
@@ -282,9 +283,13 @@
               <div class="card-body">
                 <ul class="list-group list-group-sm list-group-flush-y list-group-flush-x">
                   <li class="list-group-item d-flex">
-                    <span>Subtotal</span> <span class="ms-auto fs-sm">₹<%=cartData.reduce((total,product)=>{
-                      return total+=(product.products.quantity*product.productz.price)
-                    },0)%></span>
+                    <span>Subtotal</span> <span class="ms-auto fs-sm">₹<%= Number(cartData.reduce((total, product) => {
+                      if (product.offerDetails && product.offerDetails.length > 0) {
+                        return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
+                      } else {
+                        return total += product.productz.price * product.products.quantity;
+                      }
+                    }, 0)) %></span>
                   </li>
                   <!-- <li class="list-group-item d-flex">
                     <span>Tax</span> <span class="ms-auto fs-sm">$00.00</span>
@@ -293,9 +298,13 @@
                     <span>Shipping</span> <span class="ms-auto fs-sm">FREE</span>
                   </li>
                   <li class="list-group-item d-flex fs-lg fw-bold">
-                    <span>Total</span> <span class="ms-auto">₹<%=cartData.reduce((total,product)=>{
-                      return total+=(product.products.quantity*product.productz.price)
-                    },0)%></span>
+                    <span>Total</span> <span class="ms-auto">₹<%= Number(cartData.reduce((total, product) => {
+                      if (product.offerDetails && product.offerDetails.length > 0) {
+                        return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
+                      } else {
+                        return total += product.productz.price * product.products.quantity;
+                      }
+                    }, 0)) %></span>
                   </li>
                 </ul>
               </div>
@@ -309,7 +318,7 @@
             </p>
 
             <!-- Button -->
-            <button id="place-order-btn" class="btn w-100 btn-dark">
+            <button id="place-order-btn" class="btn w-100 btn-dark" onclick="razorpayment()">
               Place Order
             </button>
             
@@ -431,6 +440,100 @@
       </div>
     </section>
 
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+      function razorpayment(){
+        fetch('/razorpay-payment',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => response.json())
+	  
+        .then(order => {
+        // Log order details for debugging
+        // console.log('Received order details:', order);
+        // console.log("payment order created successfully....")
+        // console.log("payment order created successfully....", order.id)
+
+
+        
+        // Configure Razorpay button
+        var options = {
+          key: '<%= razorpayKey %>',
+          amount: order.amount,
+          currency: order.currency,
+          order_id: order.id,
+          name: 'SERENE',
+          description: 'Order Payment',
+          handler: function (response) {
+          // Handle successful payment
+          // console.log('Razorpay payment success:', response);
+          //   console.log("option coming",options)
+          // Call the create-order API after successful payment
+          createOrder(order.id); // Assuming order.id is the Razorpay order ID
+          },
+          prefill: {
+          name: 'User Name',
+          email: 'user@example.com',
+          contact: '1234567890',
+          },
+          notes: {
+          address: 'User Address',
+          },
+          theme: {
+          color: '#012652', 
+          },
+        };
+      
+        var rzp = new Razorpay(options);
+        rzp.open();
+        }) 
+      }
+
+      async function createOrder() {
+      const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
+          try {
+              const response = await fetch('/place-order', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ selectedAddress, paymentMethod: 'Razorpay' }),
+              });
+
+              
+                if (response.ok) {
+                
+                Swal.fire({
+                  title: 'Order Placed!',
+                  text: 'Your order has been placed successfully.',
+                  icon: 'success',
+                  confirmButtonText: 'OK',
+                }).then(() => {
+                  window.location.href = '/order-sucess' //to redirect to the sucesss page
+                })
+
+              }  else {
+                console.error("Error creating order: ", result.error);
+              }
+          } catch (error) {
+              console.error('Error creating order:', error);
+              
+              Swal.fire({
+                title: 'Error!',
+                text: 'Failed to place order. Please try again later.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+              });
+          }
+          }
+    </script>
+
+
 
 
 
@@ -464,7 +567,9 @@ placeOrderBtn.addEventListener('click', async () => {
         text: 'Your order has been placed successfully.',
         icon: 'success',
         confirmButtonText: 'OK',
-      });
+      }).then(() => {
+        window.location.href = '/order-sucess' //to redirect to the sucesss page
+      })
  
     } else {
    
@@ -479,12 +584,12 @@ placeOrderBtn.addEventListener('click', async () => {
   } catch (error) {
     console.error(error);
 
-    Swal.fire({
-      title: 'Error!',
-      text: 'An unexpected error occurred. Please try again later.',
-      icon: 'error',
-      confirmButtonText: 'OK',
-    });
+    // Swal.fire({
+    //   title: 'Error!',
+    //   text: 'An unexpected error occurred. Please try again later.',
+    //   icon: 'error',
+    //   confirmButtonText: 'OK',
+    // });
   }
 });
 

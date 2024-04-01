@@ -172,7 +172,7 @@
 
           <!-- Products -->
           <div class="row" id="product-list">
-            <% products.forEach(product=> { %>
+            <% products.forEach((product,index)=> { %>
               <div class="col-6 col-md-4 product">
 
                 <!-- Card -->
@@ -207,9 +207,11 @@
                         </a>
                       </span>
                       <span class="card-action">
+                        <a href="/wishlist-add/<%= product._id %>">
                         <button class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
                           <i class="fe fe-heart"></i>
                         </button>
+                      </a>
                       </span>
                     </div>
 
@@ -230,11 +232,27 @@
                       <a class="text-body" href="/product/<%= product._id %>">
                         <%= product.productName %>
                       </a>
+                      
                     </div>
 
                     <!-- Price -->
                     <div class="fw-bold text-muted">
-                      ₹<%= product.price %>
+                      <% if(product.offer ) { %>
+                       
+                        <span style="color: green;">₹<%= product.price-(product.price * (productOffer[index].offer.percentage/100)).toFixed(2) %></span>
+                        <del><span style="color: rgb(59, 56, 56);">₹<%= product.price %></span></del>
+
+                        <% }else if (product.category.offer){ %>
+
+                          <span style="color:green;">₹<%= product.price-(product.price * (productOffer[index].category.offer.percentage/100)).toFixed(2) %></span>
+
+                          <del><span style="color: rgb(59, 56, 56);"></span>₹<%= product.price %></span></del>
+                          
+                        <% } else { %>
+                          <span style="color: green;">₹<%= product.price %></span>
+                        <% } %>
+
+                        
                     </div>
 
                   </div>
@@ -298,7 +316,7 @@
       cursor: pointer;
     }
   </style>
-  <!---------------------------------------filter------------------------------------------------------------>
+  
 
 
   <!-------------------------------------search-------------------------------------------------------->
@@ -322,8 +340,8 @@
   </script>
 
 
-
-  <!----------------------------------------sort------------------------------------------------------------>
+  <!----------------------------------------filter------------------------------------------------------------>
+ 
   <script>
     const parentDiv = document.getElementById('priceGroup');
     var checkboxes = parentDiv.querySelectorAll('input[type="checkbox"]');
@@ -344,6 +362,7 @@
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+   <!----------------------------------------sort------------------------------------------------------------>
 
   <script>
     function sortItems(sortBy) {
@@ -413,7 +432,16 @@
 
   </script>
 
+  <script>
+    // to display all product when refesh the page
+    function clearAllFilters() {
+        const url = new URL(window.location.href);
+        url.search = ''; // Remove all query parameters
+        window.history.replaceState({}, document.title, url);
+    }
 
+    document.addEventListener('DOMContentLoaded', clearAllFilters);
+  </script>
 
 
   <%- include('../layouts/footer.ejs') %>

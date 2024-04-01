@@ -131,7 +131,19 @@
                 <!-- Price -->
                 <div class="mb-7">
                   <!-- <span class="fs-lg fw-bold text-gray-350 text-decoration-line-through">$115.00</span> -->
-                  <span class="ms-1 fs-5 fw-bolder text-primary"><%=product.price%></span>
+                  <% if (product.offer) { %>
+                    <del><span style="color: rgb(59, 56, 56);">₹<%= product.price %></span></del> 
+                    <span style="color: green;">₹<%= product.price - (product.price * (product.offer.percentage/100)).toFixed(2) %></span>
+
+                    <% }else if (product.category.offer){ %>
+
+                      <del><span style="color: rgb(59, 56, 56);"></span>₹<%= product.price %></span></del>
+                      <span style="color:green;">₹<%= product.price-(product.price * (product.category.offer.percentage/100)).toFixed(2) %></span>
+
+                    
+                  <% } else { %>
+                    <span style="color: green;">₹<%= product.price %></span>
+                  <% } %>
                   <span class="fs-sm ms-1">(In Stock)</span>
                 </div>
 
@@ -173,9 +185,13 @@
                       <div class="col-12 col-lg-auto">
 
                         <!-- Wishlist -->
-                        <button class="btn btn-outline-dark w-100 mb-2" data-toggle="button">
-                          Wishlist <i class="fe fe-heart ms-2"></i>
-                        </button>
+                        <form action="" id="addToWishlistForm" method="POST">
+                          <input type="hidden" name="productId" value="<%= product._id %>">
+                          <button class="btn btn-outline-dark w-100 mb-2" data-toggle="button" type="button" onclick="addToWishlist()">
+                            Wishlist <i class="fe fe-heart ms-2"></i>
+                          </button>
+                        </form>
+                        
 
                       </div>
                     </div>
@@ -248,6 +264,44 @@
       </div>
     </section>
 
+
+    <!-- Include SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- Include SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      async function addToWishlist(){
+        try{
+          const productId = document.querySelector('input[name="productId"]').value;
+          const response = await axios.post('/wishlist-add',{productId})
+          console.log(response.data.message);
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Product added to wishlist',
+            showConfirmButton: false,
+            timer: 1500
+        });
+        }catch(error){
+          console.error(error);
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+        });
+        }
+      }
+    </script>
+
+
+
    
     
     <style>
@@ -290,18 +344,3 @@
 
     <%- include('../layouts/footer.ejs') %>
 
-
-    <!-- JAVASCRIPT -->
-    <!-- Map (replace the API key to enable) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnKt8_N4-FKOnhI_pSaDL7g_g-XI1-R9E"></script>
-    
-    <!-- Vendor JS -->
-    <script src="/assets/js/vendor.bundle.js"></script>
-    
-    <!-- Theme JS -->
-    <script src="/assets/js/theme.bundle.js"></script>
-
-  </body>
-
-<!-- Mirrored from yevgenysim-turkey.github.io/shopper/product.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 16 Jan 2024 03:51:32 GMT -->
-</html>

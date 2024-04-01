@@ -41,8 +41,8 @@
                 <a class="list-group-item list-group-item-action dropend-toggle " href="/orders">
                   Orders
                 </a>
-                <a class="list-group-item list-group-item-action dropend-toggle " href="account-wishlist.html">
-                  Widhlist
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/wishlist">
+                  Wishlist
                 </a>
                 <a class="list-group-item list-group-item-action dropend-toggle active" href="account-personal-info.html">
                   Personal Info
@@ -114,21 +114,20 @@
 
             <script>
               function submitForm(event) {
-                  event.preventDefault(); // Prevent default form submission
-                  
-                  // Get form data
+                  event.preventDefault();
+                
                   const formData = new FormData(document.getElementById('personal-info-form'));
                   
-                  // Make AJAX request
+                
                   fetch('/account-personal-info', {
                       method: 'POST',
                       body: formData
                   })
                   .then(response => response.json())
                   .then(data => {
-                      // Handle response data
+                    
                       console.log(data);
-                      // Update UI if necessary
+                    
                   })
                   .catch(error => console.error('Error:', error));
               }

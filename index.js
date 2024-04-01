@@ -3,9 +3,8 @@ const path = require('path');
 const dotenv = require('dotenv').config({ path: path.resolve(__dirname, 'config', '.env') });
 const {errorHandler} = require('./middlewear/errorMiddlewear')
 const app = express();
-const mongoose = require("mongoose");
-
-mongoose.connect(process.env.MONGO_URI);
+const connectDb = require('./config/db')
+connectDb();
 
 require('dotenv').config({path: './config/.env'});
 console.log(process.env.ACCESS_TOKEN_SECRET)
@@ -38,11 +37,17 @@ app.use('/admin', category_route);
 const product_route = require('./routes/productRoute');
 app.use('/admin',product_route);
 
+const offer_route = require('./routes/offerRoute');
+app.use('/admin',offer_route);
+
 const cart_route = require('./routes/cartRoute');
 app.use('/',cart_route);
 
 const order_route = require('./routes/orderRoute');
 app.use('/',order_route);
+
+const wishlist_route = require('./routes/wishlistRoute');
+app.use('/',wishlist_route);
 
 const PORT = process.env.PORT||3000 
 app.listen(PORT,function(){

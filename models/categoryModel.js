@@ -8,6 +8,11 @@ const categorySchema =new mongoose.Schema({
   image: {
     type: String,
     required: true
+  },
+  offer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Offers',
+   
   }
 });
 

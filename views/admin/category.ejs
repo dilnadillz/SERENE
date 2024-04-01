@@ -19,6 +19,14 @@
             <div class="card">
               <div class="card-body">
                 <!-- Category item content -->
+                <div class="row justify-content-lg-end ">
+                  <% if (category.offer) { %>
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="removeCatOffer('<%= category._id %>')">Remove Offer</button>
+                  <% } else { %>
+                  <button type="submit" class="btn btn-sm btn-outline-success" onclick="showModal('<%= category._id %>')">Apply Offer</button>
+                  <% } %>
+                </div>
+
                 <div class="category-item">
                   <p>
                     <%= category.categoryName %>
@@ -38,6 +46,104 @@
           </div>
           <% }); %>
       </div>
+
+
+
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+         
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Apply Category Offer</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+              
+                <% catOfferId.forEach(offer => { %>
+                    <div class="modal-body" data-offerid="<%= offer._id %>">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <%# console.log("offeraaa") %>
+                                <p>Do you want to apply the offer for category?</p>
+                                <hr>
+                                <p><strong>Offer Name:</strong> <%= offer.name %></p>
+                                <p><strong>Discount:</strong> <%= offer.percentage %>%</p>
+                                <p><strong>Starting Date:</strong> <%= offer.startingDate.toLocaleDateString() %></p> 
+                                <p><strong>Ending Date:</strong> <%= offer.expiryDate.toLocaleDateString() %></p> 
+                                
+                            </div>
+                        </div>
+                    
+                        <%# console.log("of",  data ) %>
+                        <div class="row justify-content-center mt-3">
+                            <button type="button" class="btn btn-outline-success" onclick="applyCatOffer('<%= offer._id %>')">Apply</button>
+                        </div>
+                    </div>
+                    
+                <div class="modal-footer">
+                    <!-- <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button> -->
+                   
+                </div>
+              
+                <% }); %>
+            </div>
+         
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+    <script>
+        function showModal(categoryId){
+            $('#myModal').modal('show');
+            $('#myModal').data('categoryId',categoryId)
+            console.log("gg",categoryId)
+           
+        }
+
+        const offerElements = document.querySelectorAll('.modal-body');
+        offerElements.forEach(elements => {
+            elements.onclick = function(){
+                const offerId =  this.getAttribute('data-offerid')
+                console.log("aaa",offerId)
+               
+            }
+        })
+
+        async function applyCatOffer(offerId){
+          console.log("of",offerId)
+          const categoryId = $('#myModal').data('categoryId')
+            console.log("apply cat offer",categoryId)
+            $('#myModal').modal('hide'); 
+          try{
+            const response = await axios.post('/admin/addCategoryOffer',{offerId,categoryId})
+            if(response.data.sucess){
+                    console.log('message:sucess');
+                    window.location.reload()
+                }
+          }catch(error){
+            console.error('message:error',error)
+          }
+        }
+
+
+        async function removeCatOffer(categoryId){
+          try{
+            const response = await axios.post('/admin/deleteCategoryOffer',{categoryId});
+            
+              console.log('message:sucess');
+              window.location.reload()
+            
+          }catch(error){
+            console.log('message:error',error)
+          }
+        }
+
+    </script>
+
+
+
 
 
 

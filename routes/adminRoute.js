@@ -29,6 +29,7 @@ admin_route.get('/order',requireAdminAuth,admincontroller.loadUserOrder);
 
 admin_route.get('/order-details',requireAdminAuth,admincontroller.loadUserOrderDetails);
 
+admin_route.post('/orders/update-status',admincontroller.updateOrderStatus);
 
 
 module.exports = admin_route

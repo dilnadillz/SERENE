@@ -149,7 +149,7 @@ const loadUserOrderDetails = async(req,res,next) => {
             {
                 $match: { _id: new mongoose.Types.ObjectId(orderId) }
             },
-            {
+            {   
                 $lookup: {
                     from: "users",
                     localField: "userId",
@@ -180,15 +180,32 @@ const loadUserOrderDetails = async(req,res,next) => {
 
         
         // console.log("us",orderData)
-        console.log("ad",adminOrder)
+        // console.log("ad",adminOrder)
         res.render('order-details',{order:adminOrder[0]});
     }catch(error){
         next(error);
     }
+}   
+
+const updateOrderStatus = async(req,res,next)  => {
+    try{
+        const {orderId,productId,orderStatus} =req.body;
+        console.log("odrid",orderId)
+        console.log("prdtid",productId)
+
+        const order = await orderModel.findOneAndUpdate(
+            { _id: orderId, "details.productId": productId },
+            { $set: { "details.$.status": orderStatus } },
+            { new: true }
+        );
+      
+       
+        res.status(200).json({order , message: "Order status updated successfully"});
+       
+    }catch(error){
+    next(error);
+    }
 }
-
-
-
 
 
 module.exports = {
@@ -200,7 +217,8 @@ module.exports = {
     unblockUser,
     adminLogout,
     loadUserOrder,
-    loadUserOrderDetails
+    loadUserOrderDetails,
+    updateOrderStatus
 
   
 }

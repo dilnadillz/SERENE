@@ -1,0 +1,200 @@
+<%- include('../layouts/header.ejs') %>
+
+    <!-- BREADCRUMB -->
+    <nav class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/">Home</a>
+              </li>
+              <li class="breadcrumb-item active">
+                My Account
+              </li>
+            </ol>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <section class="pt-7 pb-12">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+
+            <!-- Heading -->
+            <h3 class="mb-10">My Account</h3>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-3">
+
+            <!-- Nav -->
+            <nav class="mb-10 mb-md-0">
+              <div class="list-group list-group-sm list-group-strong list-group-flush-x">
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-orders.html">
+                  Orders
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle active" href="account-wishlist.html">
+                  Wishlist
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-personal-info.html">
+                  Personal Info
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-address.html">
+                  Addresses
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="account-payment.html">
+                  Payment Methods
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle" href="#!">
+                  Logout
+                </a>
+              </div>
+            </nav>
+
+          </div>
+          <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+
+            <!-- Products -->
+            <div class="row">
+                <!-- Item -->
+                <div class="col-12">
+                  <div id="refreshDiv">
+                      <% if(wishlistData) { %>
+                          <% wishlistData.forEach(wishlist => { %>
+                              <!-- List group -->
+                              <ul class="list-group list-group-lg list-group-flush-x mb-6">
+                                  <li class="list-group-item">
+                                      <div class="row align-items-center">
+                                          <div class="col-3">
+                                              <!-- Image product id is here-->
+                                              <a href="/product/<%= wishlist.detailz._id %>">
+                                                  <img class="card-img-top" src="<%= wishlist.detailz.productImage[0] %>"
+                                                      alt="...">
+                                              </a>
+                                          </div>
+                                          <div class="col">
+                                              <!-- Title -->
+                                              <div class="d-flex mb-2 fw-bold">
+                                                  <a class="text-body" href="/product/<%= wishlist.detailz._id %>"><%= wishlist.detailz.productName %></a> <br>
+                                                  <span class="ms-auto">
+                                                      <a class="fs-xs text-gray-400" href="#" onclick="removeFromWishlist('<%= wishlist.detailz._id %>')">
+                                                          <i class="fe fe-x"></i> Remove
+                                                      </a>
+                                                  </span>
+                                              </div>
+                                              <!-- Text -->
+                                              <p class="mb-7 fs-sm text-muted">
+                                                  ₹<%= wishlist.detailz.price %>
+                                                  <!-- <%# if (wishlist.offerDetails) { %>
+                                                    <span style="color: green;">₹<%#= wishlist.detailz.price - (wishlist.detailz.price * (wishlist.offerDetails.percentage/100)).toFixed(2) %></span><br>
+                                                    <del><span class="smaller-price">₹<%#= wishlist.detailz.price %></span></del>
+                                                <%# } else { %>
+                                                    <span style="color: green;">₹<%#= wishlist.detailz.price %></span>
+                                                <%# } %> -->
+                                              </p>
+                                          </div>
+                                      </div>
+                                  </li>
+                              </ul>
+                          <% }); %>
+                      <% } %>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="d-flex justify-content-center justify-content-md-end">
+              <ul class="pagination pagination-sm text-gray-400">
+                <li class="page-item">
+                  <a class="page-link page-link-arrow" href="#">
+                    <i class="fa fa-caret-left"></i>
+                  </a>
+                </li>
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">4</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">5</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">6</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link page-link-arrow" href="#">
+                    <i class="fa fa-caret-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+    <script>
+      function removeFromWishlist(productId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You are about to remove this product from your wishlist.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/wishlist/remove/${productId}`)
+                .then(response => {
+                    console.log('Product removed successfully');
+                }).catch(error => {
+                    console.error('Error removing product:', error);
+                    window.location.reload();
+                });
+        }
+    });
+}
+
+    </script>
+
+
+
+
+    <!-- <script>
+       function removeFromWishlist(productId){
+      axios.delete(`/wishlist/remove/${productId}`)
+      .then(response => {
+        console.log('product removed successfully');
+      }).catch(error => {
+        console.error('product removing',error);
+        window.location.reload()
+      })
+    }
+    </script> -->
+
+
+
+
+    <%- include('../layouts/footer.ejs') %>

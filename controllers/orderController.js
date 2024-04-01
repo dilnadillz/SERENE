@@ -5,8 +5,12 @@ const UserModel = require('../models/userModel');
 const cartModel = require('../models/cartModel');
 const addressModel = require('../models/addressModel');
 const orderModel = require('../models/orderModel');
+const Razorpay = require('razorpay');
 
-
+const instance = new Razorpay({
+    key_id: process.env.key_id,
+    key_secret: process.env.key_secret,
+});
 
 const orderPlace = async(req,res,next) => {
     try{
@@ -44,6 +48,16 @@ const orderPlace = async(req,res,next) => {
         // console.log("order",order)
         await order.save();
 
+        //reduce stock after sucessfull order placement
+        for(const product of cart.products){
+            await productModel.updateOne(
+                {_id:product.productId},
+                {
+                    $inc: {stock: -product.quantity}
+                }
+            )
+        }
+
         await cartModel.findOneAndDelete({userId:userId});
 
         res.status(200).json({ order, message: 'order updated successfully.' });
@@ -57,8 +71,9 @@ const orderPlace = async(req,res,next) => {
 const loadOrder = async (req, res,next) => {
     try {
         const userId = res.locals.user
-        const orderData = await orderModel.find({userId:userId});
+        const orderData = await orderModel.find({userId:userId}).sort({date:-1});
         console.log(orderData)
+        
         res.render('orders',{orderData:orderData});
     } catch (error) {
         next(error);
@@ -72,22 +87,27 @@ const orderCancel = async(req,res,next) => {
        const { productId } = req.body;
         
     
-        const order = await orderModel.findOne({_id:orderId});
-        if(!order){
-            res.status(404).json({message:'order not found'});
-        }
+        // const order = await orderModel.findOne({_id:orderId});
+        // if(!order){
+        //     res.status(404).json({message:'order not found'});
+        // }
 
 
-
-        const productIndex = order.details.findIndex((item)=>item.productId==productId);
-        console.log("working",productIndex)
+        // const productIndex = order.details.findIndex((item)=>item.productId==productId);
+        // console.log("working",productIndex)
         
-        if(productIndex===-1){
-            res.status(404).json({order,message:'product not found in the cart'});
+        // if(productIndex===-1){
+        //     res.status(404).json({order,message:'product not found in the cart'});
+        // }
+
+
+        // order.details[productIndex].status = 'Cancelled';  
+        // await order.save();
+        const order = await orderModel.findOneAndUpdate({_id:orderId , 'details.productId':productId},{$set: {'details.$.status':"Cancelled"}},{new:true});
+        if(!order){
+            return res.status(404).json({message:'not found'})
         }
-        order.details[productIndex].status = 'Cancelled';  
-        await order.save();
-      
+       
       
 
         return res.status(200).json({ message: 'Product cancelled successfully' });
@@ -151,13 +171,49 @@ const viewOrder = async(req,res,next) => {
     }catch(error){
         next(error);
     }
-}
-                    
+}               
+
+const razorpayPayment = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+
+        const cart = await cartModel.findOne({userId:userId}).populate({path: "products.productId"})
+        if(!cart){
+            return res.status(404).json({ message: "Cart not found" });
+        }
+        // Calculated total amount by iterating over the products and summing up their prices
+        let totalAmount = 0;
+        cart.products.forEach(product => {
+            totalAmount += product.productId.price * product.quantity;
+        });
+            
+      console.log("mm",cart)
+      console.log("kk",totalAmount)
+      
+        // Use this endpoint to create an order using the Orders API.
+        const razor = {
+            amount: totalAmount *100, //Convert the total amount to paisa (multiply by 100)
+            currency: "INR",
+            receipt: "orderId",
+        }
+        // console.log("amount",totalAmount);
+        console.log("razor",razor); 
+
+        const order = await instance.orders.create(razor);
+        console.log("hey",order)
+        res.status(200).json(order);
+
+    }catch(error){  
+        next(error);
+    }
+}   
+
 
 module.exports = {
     orderPlace,
     loadOrder,
     orderCancel,
-    viewOrder
+    viewOrder,
+    razorpayPayment
    
 }

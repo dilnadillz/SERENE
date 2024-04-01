@@ -41,8 +41,8 @@
                 <a class="list-group-item list-group-item-action dropend-toggle active" href="/orders">
                   Orders
                 </a>
-                <a class="list-group-item list-group-item-action dropend-toggle " href="account-wishlist.html">
-                  Widhlist
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/wishlist">
+                  Wishlist
                 </a>
                 <a class="list-group-item list-group-item-action dropend-toggle " href="/account-personal-info">
                   Personal Info
@@ -134,7 +134,7 @@
                       <div class="col-3">
 
                         <!-- Image -->
-                        <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-5.jpg);"></div> -->
+                      <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-5.jpg);"></div> -->
 
                       </div>
                       <div class="col-3">
@@ -176,9 +176,17 @@
                       <div class="col-6">
 
                         <!-- Button -->
-                        <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order. details[0].productId %>">
-                          Cancel order
-                        </a>
+                        <% if (order.details[0].status === 'Delivered') { %>
+                          <!-- Return Button -->
+                          <a class="btn btn-sm w-100 btn-outline-dark" href="#" onclick="showReturnReasonPrompt('<%= order._id %>', '<%= order.details[0].productId %>')">
+                            Return
+                         </a>
+                        <% } else { %>
+                          <!-- Cancel Button -->
+                          <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order.details[0].productId %>">
+                            Cancel order
+                          </a>
+                        <% } %>
                         
                       
                          <!-- <butto  class="btn btn-sm w-100 btn-outline-dark cancel-order-btn">Cancel order</button> -->
@@ -238,6 +246,10 @@
       </div>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
@@ -267,15 +279,14 @@
             if (response.ok) {
               const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
               console.log("coming in")
-              // console.log("oo",orderElement)
-              // const orderStatusElement = orderElement.closest('.card').querySelector('.order-status').textContent = 'Cancelled';
+             
               
               console.log("coming in he")
+              
              
-                // $('#refreshDiv').load('/orders #refreshDiv');
                 window.location.href = '/orders';
 
-
+                // button.style.display = 'none';
               
              
             } else {
@@ -286,6 +297,32 @@
         }
     }
 });
+
+
+      function showReturnReasonPrompt(orderId, productId) {
+          Swal.fire({
+            title: 'Return Reason',
+            input: 'text',
+            inputPlaceholder: 'Enter your return reason here',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+              if (!value) {
+                return 'You need to write something!'
+              }
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Handle the return reason submission here
+              console.log('Return reason:', result.value);
+              // You can now send the return reason to your server for processing
+              document.getElementById('cancel').textContent = 'Return request sent';
+              
+              
+            }
+          });
+      }
 
     </script>
      

@@ -231,44 +231,44 @@
           <% } %>
         </div>
 
-        <% if (products?.length > 5) { %>
+        <%# if (products?.length > 5) { %>
         <div class="row justify-content-center pt-12">
           <div class="col-12 col-md-10">
-            <div class="row align-items-center">
-              <div class="col-10 col-md-8">
+            <!-- <div class="row align-items-center"> -->
+              <!-- <div class="col-10 col-md-8"> -->
 
                 <!-- Card -->
-                <div class="card">
+                <!-- <div class="card"> -->
 
                   <!-- Price -->
-                  <div class="btn btn-white btn-sm card-price card-price-start">₹<%= products[5].price %></div>
+                  <!-- <div class="btn btn-white btn-sm card-price card-price-start">₹<%#= products[5].price %></div> -->
 
                   <!-- Image -->
-                  <a href="/product/<%= products[5]._id %>">
-                    <img src="<%= products[5].productImage[0] %>" alt="..." class="card-img-top">
+                  <!-- <a href="/product/<%#= products[5]._id %>">
+                    <img src="<%#= products[5].productImage[0] %>" alt="..." class="card-img-top">
                   </a>
 
                 </div>
 
-              </div>
-              <div class="col-7 col-md-4 offset-n5 offset-md-n1 position-relative">
+              </div> -->
+              <!-- <div class="col-7 col-md-4 offset-n5 offset-md-n1 position-relative"> -->
 
                 <!-- Heading -->
-                <h2 class="mb-0">
-                  <a class="text-reset" href="/product/<%= products[5]._id %>"><%= products[5].productName %></a>
-                </h2>
+                <!-- <h2 class="mb-0">
+                  <a class="text-reset" href="/product/<%#= products[5]._id %>"><%#= products[5].productName %></a>
+                </h2> -->
 
                 <!-- Link -->
-                <a class="btn btn-link px-0 text-body" href="/product/<%= products[5]._id %>">
+                <!-- <a class="btn btn-link px-0 text-body" href="/product/<%#= products[5]._id %>">
                   Shop Now <i class="fe fe-arrow-right ms-2"></i>
                 </a>
 
-              </div>
-            </div>
-          </div>
+              </div> -->
+            <!-- </div> -->
+          <!-- </div> -->
         </div>
       </div>
-      <% } %>
+      <%# } %>
     </div>
 <!----------------------------------------------------------------------------------------------------------------------->
     <!-- SALE -->

@@ -20,6 +20,8 @@ order_route.post('/cancel-order',orderController.orderCancel);
 
 order_route.get('/orderview',checkBlockUser,orderController.viewOrder);
 
+order_route.post('/razorpay-payment',orderController.razorpayPayment);
+
 
 
 module.exports = order_route

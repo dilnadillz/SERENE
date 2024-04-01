@@ -254,7 +254,7 @@ const verifyLogin = async (req, res,next) => {
         next(error);
         res.render('login', { message: "An error occurred" });
     }
-};
+};  
 
 const logout = async (req, res,next) => {
     try {
@@ -270,7 +270,8 @@ const logout = async (req, res,next) => {
 const loadUserProduct = async (req, res,next) => {
     try {
         const { productId } = req.params;
-        const product = await productModel.findOne({ _id: productId })
+        const product = await productModel.findOne({ _id: productId }).populate('offer').populate({path: "category", populate:{path:"offer"}})
+        console.log("offer coming",product)
         res.render('product', { product });
     } catch (error) {
         next(error);
@@ -462,11 +463,19 @@ const loadCheckout = async (req, res,next) => {
             }
         },
         {
-            $unwind: "$productz"
-        }
+            $unwind: "$productz"            
+        },
+        {
+            $lookup: {
+                from: 'offers',
+                localField: 'productz.offer',
+                foreignField: '_id',
+                as: 'offerDetails'
+            }
+        } 
         ]);
 
-        res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData })
+        res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData, razorpayKey:process.env.key_id})
         // console.log("helllllllllllooooooooo",ckeckOutAddress)
     } catch (error) {
         next(error);
@@ -475,11 +484,14 @@ const loadCheckout = async (req, res,next) => {
 
 const loadProductlist = async (req, res,next) => {
     try {
+        const productOffer = await productModel.find({}).populate('offer').populate({path: "category" , populate: {path: "offer"}})
+        console.log("offer coming",productOffer)
+
         const category = req.query.category;
         const price = req.query.price;
         const filterObject = {}
-        console.log("category",category);
-        console.log("price",price);
+        // console.log("category",category);
+        // console.log("price",price);
 
             if(price){
                 const prices = price.split('-');
@@ -488,7 +500,7 @@ const loadProductlist = async (req, res,next) => {
 
                 filterObject.$and= [{price: {$gte: minPrice}},{price: {$lte: maxPrice}} ]
             }
-
+            //filtering product baesd on category
             if(category){
                 let categoryIds
                 if(Array.isArray(category)) {
@@ -496,7 +508,7 @@ const loadProductlist = async (req, res,next) => {
                 } else {
                     categoryIds = [new mongoose.Types.ObjectId(category)];
                 }
-                console.log("categoryIds",categoryIds)
+                console.log("categoryIds",categoryIds)  
                 
                 if(categoryIds.length>0){
                     filterObject.$or=[]
@@ -511,23 +523,19 @@ const loadProductlist = async (req, res,next) => {
         const products = await Productdb.find(filterObject).populate('category');
         const cat = await categoryModel.find();
         
-        res.render('productlist', { products: products,cat:cat });
+        res.render('productlist', { products: products,cat:cat ,productOffer});
     } catch (error) {
         next(error);
     }
 } 
 
-// const productFilter = async(req,res,next) =>{
-//     try{
-//         const { category } = req.query;
-        
-//         const filteredProducts = await productModel.find({ category });
-    
-//         res.render({filteredProducts,message:'done'})
-//     }catch(error){
-//         next(error);
-//     }
-// }
+const loadOrderThankyou = async(req,res,next) =>{
+    try{
+        res.render('order-sucess') ;      
+    }catch(error){
+        next(error);
+    }
+}
 
 
 const load404 = async(req,res,next) => {
@@ -547,7 +555,6 @@ module.exports = {
     loadLogin,
     verifyLogin,
     logout,
-    
     loadUserProduct,
     LoadPersonalInfo,
     editPersonalInfo,
@@ -559,7 +566,7 @@ module.exports = {
     removeAddress,
     loadCheckout,
     loadProductlist,
-    // productFilter,
+    loadOrderThankyou,
     load404
 
 }

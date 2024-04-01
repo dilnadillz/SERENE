@@ -1,8 +1,10 @@
+const mongoose = require('mongoose');
 const productModel = require('../models/productModel');
 const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
 const categoryModel = require('../models/categoryModel');
+const offerModel = require('../models/offerModel');
 
 
 const storage = multer.diskStorage({
@@ -17,35 +19,36 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
 
-  
 const loadProductList = async(req,res,next)=>{
     try{
-        const productsData = await productModel.find().populate('category');
+        const offerId = await offerModel.find();
+        const productsData = await productModel.find().populate('category').populate('offer');
         console.log(productsData);
-        res.render('products', { productsData: productsData });
+        // console.log("hey offer",offerId);
+      
+        res.render('products', { productsData: productsData,offerId});
 
     }catch(error){
-        next(error);
+        next(error);    
     }
-}
+}       
 
 
 const loadProductAdd = async(req,res,next)=>{
     try{
         const catData = await categoryModel.find();
-        console.log('catdata',catData)
+        // console.log('catdata',catData)
         res.render('productsadd',{catData:catData});
     }catch(error){
         next(error);
     }
 }
 
-
 const productsAdding = async(req,res,next) => {
     try{
         
         const {productName,productDescription,category,color,stock,price} = req.body;
-        console.log("hey",category);
+        // console.log("hey",category);
         const uploadedImg = req.files.map(file => `/productUploads/resizedImg${file.filename}`);
       
          req.files.map(async file => {
@@ -69,7 +72,7 @@ const productsAdding = async(req,res,next) => {
         });
 
         const productData = await newProduct.save();
-        console.log("frdf",newProduct);
+        // console.log("frdf",newProduct);
         if(productData){
             res.redirect('/admin/products');
         }else{
@@ -124,19 +127,19 @@ const removeProducts = async(req,res,next) =>{
         const {productId} = req.params;
         const result = await productModel.findOneAndDelete({ _id: productId });
         if (result) {
-            console.log(productId);
+            // console.log(productId);
             res.redirect('/admin/products');
         }    
     }catch(error){
         next(error);
     }
 }
-
+        
 const removeSingleImage = async(req,res,next) => {
     try{
         const {productId} = req.params;
         const {imageIndex} = req.params;
-        console.log("kkk",productId,imageIndex)
+        // console.log("kkk",productId,imageIndex)
        
         const existingProduct = await productModel.findById(productId);
         if(!existingProduct){
@@ -144,7 +147,7 @@ const removeSingleImage = async(req,res,next) => {
         }
 
        
-
+        //removing the image path from the products image array
         existingProduct.productImage.splice(imageIndex,1)
 
         await existingProduct.save();
@@ -152,7 +155,7 @@ const removeSingleImage = async(req,res,next) => {
         res.json({sucess:true,message:'image delete sucessfully'})
     }catch(error){
         next(error);
-    }
+    }           
 }
             
 module.exports = {

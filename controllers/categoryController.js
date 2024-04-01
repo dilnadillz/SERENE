@@ -2,6 +2,7 @@ const CategoryModel = require("../models/categoryModel");
 const multer = require('multer');
 const path = require('path');
 const categoryModel = require("../models/categoryModel");
+const offerModel = require('../models/offerModel');
 
 
 const storage = multer.diskStorage({
@@ -18,13 +19,16 @@ const storage = multer.diskStorage({
 
 
 
-  const loadCategoryList = async (req, res) => {
+  const loadCategoryList = async (req, res,next) => {
     try {
-        const catgoryData = await CategoryModel.find();
-        console.log(catgoryData);
-        res.render('category', { catgoryData: catgoryData });
+        const catOfferId = await offerModel.find()
+        // console.log("ll",catOfferId)
+        const catgoryData = await CategoryModel.find().populate('offer');
+
+        console.log("hey offer",catgoryData);
+        res.render('category', { catgoryData: catgoryData ,catOfferId:catOfferId});
     } catch (error) {
-        console.log(error.message);
+        next(error)
     }
 }
 
@@ -94,7 +98,7 @@ const uploadCategory = async(req,res,next)=>{
           return res.render("categoryadd");
         }
 
-
+        
         if(req.files && req.files[0]){
             await CategoryModel.updateOne({_id: categoryId}, {$set: {
                 categoryName: req.body.categoryName,

@@ -1,124 +1,150 @@
 <%- include('../layouts/header.ejs') %>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- BREADCRUMB -->
-    <nav class="py-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+  <!-- BREADCRUMB -->
+  <nav class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
 
-            <!-- Breadcrumb -->
-            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
-              <li class="breadcrumb-item">
-                <a class="text-gray-400" href="/">Home</a>
-              </li>
-              <li class="breadcrumb-item active">
-                Shopping Cart
-              </li>
-            </ol>
+          <!-- Breadcrumb -->
+          <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+            <li class="breadcrumb-item">
+              <a class="text-gray-400" href="/">Home</a>
+            </li>
+            <li class="breadcrumb-item active">
+              Shopping Cart
+            </li>
+          </ol>
 
-          </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <!-- CONTENT -->
-    <section class="pt-7 pb-12">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+  <!-- CONTENT -->
+  <section class="pt-7 pb-12">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
 
-            <!-- Heading -->
-            <h3 class="mb-10 text-center">Shopping Cart</h3>
+          <!-- Heading -->
+          <h3 class="mb-10 text-center">Shopping Cart</h3>
 
-          </div>
         </div>
-        <div class="row">
-          <div class="col-12 col-md-7" >
+      </div>
+      <div class="row">
+        <div class="col-12 col-md-7">
           <div id="refreshDiv">
             <!-- List group -->
             <ul class="list-group list-group-lg list-group-flush-x mb-6">
               <% if (cartData) { %>
-              <% cartData.forEach(products =>{ %>
-                 <li class="list-group-item">
-                <div class="row align-items-center">
-                  <div class="col-3">
+                <% cartData.forEach(products=>{ %>
+                  <li class="list-group-item">
+                    <div class="row align-items-center">
+                      <div class="col-3">
 
-                    <!-- Image -->
-                    <a href="/product/<%= products.productz._id %>">
-                      <img src="<%=products.productz.productImage[0]%>" alt="Product Image" class="img-fluid">
-                    
-                  </a>
+                        <!-- Image -->
+                        <a href="/product/<%= products.productz._id %>">
+                          <img src="<%=products.productz.productImage[0]%>" alt="Product Image" class="img-fluid">
 
-                  </div>
-                  <div class="col">
+                        </a>
 
-                    <!-- Title -->
-                    <div class="d-flex mb-2 fw-bold">
-                      <a class="text-body" href="/product/<%= products.productz._id %>"><%= products.productz.productName %></a> <span class="ms-auto"><%= products.productz.price %></span>
+                      </div>
+                      <div class="col">
+
+                        <!-- Title -->
+                        <div class="d-flex mb-2 fw-bold">
+                          <a class="text-body" href="/product/<%= products.productz._id %>">
+                            <%= products.productz.productName %>
+                          </a>
+
+
+                          <span class="ms-auto">
+                            <% if (products.offerDetails && products.offerDetails.length> 0) { %>
+                              <span style="color: green;">₹<%= products.productz.price - (products.productz.price *
+                                  (products.offerDetails[0].percentage/100)).toFixed(2) %></span><br>
+                              <del><span class="smaller-price">₹<%= products.productz.price %></span></del>
+
+                              <% } else if (products.productz.category && products.productz.category.offerDetails && products.productz.category.offerDetails.length > 0) { %>
+                                <span style="color:green;">₹<%= products.productz.price - (products.productz.price * (products.category.offerDetails[0].percentage / 100)).toFixed(2) %></span>
+                                /<del><span style="color: rgb(59, 56, 56);"></span>₹<%= products.productz.price %></span></del>
+                           
+
+
+
+                                <% } else { %>
+                                  <span style="color: green;">₹<%= products.productz.price %></span>
+                                  <% } %>
+                          </span>
+
+
+                        </div>
+
+                        <!-- Text -->
+                        <p class="mb-7 fs-sm text-muted">
+                          <!-- Size: M <br> -->
+                          <%= products.productz.color %>
+                        </p>
+
+                        <!--Footer -->
+                        <div class="d-flex align-items-center">
+                          <% console.log("duhfusd",products) %>
+                            <!-- Select -->
+                            <div class="d-flex align-items-center">
+                              <!-- Decrease quantity button -->
+                              <button class="custom-btn"
+                                onclick=" newQuantity('<%= products.productz._id %>', -1)">-</button>
+                              <!-- Display current quantity -->
+                              <span class="mx-2 align-middle" id="quantity">Quantity: <%= products.products.quantity %>
+                                  </span>
+                              <!-- Increase quantity button -->
+                              <button class="custom-btn"
+                                onclick=" newQuantity('<%= products.productz._id %>', 1)">+</button>
+                            </div>
+
+
+
+                            <!-- Remove -->
+                            <a class="fs-xs text-gray-400 ms-auto" href="/cart/remove/<%= products.productz._id %>">
+                              <i class="fe fe-x"></i> Remove
+                            </a>
+
+                        </div>
+
+                      </div>
                     </div>
-
-                    <!-- Text -->
-                    <p class="mb-7 fs-sm text-muted">
-                      <!-- Size: M <br> -->
-                      <%= products.productz.color %>
-                    </p>
-
-                    <!--Footer -->
-                    <div class="d-flex align-items-center">
-                      <% console.log("duhfusd",products) %>
-                      <!-- Select -->
-                       <div class="d-flex align-items-center">
-                        <!-- Decrease quantity button -->
-                        <button class="custom-btn" onclick=" newQuantity('<%= products.productz._id %>', -1)">-</button>
-                        <!-- Display current quantity -->
-                        <span class="mx-2 align-middle" id="quantity">Quantity: <%= products.products.quantity %></span>
-                        <!-- Increase quantity button -->
-                        <button class="custom-btn" onclick=" newQuantity('<%= products.productz._id %>', 1)">+</button>
-                    </div>
-                    
+                  </li>
 
 
-                      <!-- Remove -->
-                      <a class="fs-xs text-gray-400 ms-auto" href="/cart/remove/<%= products.productz._id %>">
-                        <i class="fe fe-x"></i> Remove
-                    </a>
-
-                    </div>
-
-                  </div>
-                </div>
-              </li>
+                  <% }); %>
+                    <% } %>
 
 
-             <% }); %>
-             <% } %>
-             
 
-              
             </ul>
           </div>
 
-            <!-- Footer -->
-            <div class="row align-items-end justify-content-between mb-10 mb-md-0">
-              <div class="col-12 col-md-7">
+          <!-- Footer -->
+          <div class="row align-items-end justify-content-between mb-10 mb-md-0">
+            <div class="col-12 col-md-7">
 
-                <!-- Coupon -->
-                <!-- <form class="mb-7 mb-md-0">
+              <!-- Coupon -->
+              <!-- <form class="mb-7 mb-md-0">
                   <label class="form-label fs-sm fw-bold" for="cartCouponCode">
                     Coupon code:
                   </label>
                   <div class="row row gx-5">
                     <div class="col"> -->
 
-                      <!-- Input -->
-                      <!-- <input class="form-control form-control-sm" id="cartCouponCode" type="text" placeholder="Enter coupon code*">
+              <!-- Input -->
+              <!-- <input class="form-control form-control-sm" id="cartCouponCode" type="text" placeholder="Enter coupon code*">
 
                     </div>
                     <div class="col-auto"> -->
 
-                      <!-- Button -->
-                      <!-- <button class="btn btn-sm btn-dark" type="submit">
+              <!-- Button -->
+              <!-- <button class="btn btn-sm btn-dark" type="submit">
                         Apply
                       </button>
 
@@ -126,231 +152,256 @@
                   </div>
                 </form> -->
 
-              </div>
-              <!-- <div class="col-12 col-md-auto"> -->
-
-                <!-- Button -->
-                <!-- <button class="btn btn-sm btn-outline-dark">Update Cart</button> -->
-
-              <!-- </div> -->
             </div>
-
-          </div>
-          <div class="col-12 col-md-5 col-lg-4 offset-lg-1">
-
-            <!-- Total -->
-            <div class="card mb-7 bg-light">
-              <div class="card-body">
-                <ul class="list-group list-group-sm list-group-flush-y list-group-flush-x">
-                  <li class="list-group-item d-flex">
-                    <span>Subtotal</span> <span id="subtotal" class="ms-auto fs-sm">₹<%=cartData.reduce((total,product)=>{
-                      return total+=(product.products.quantity*product.productz.price)
-                    },0)%></span>
-                  
-
-                  </li>
-                  <!-- <li class="list-group-item d-flex">
-                    <span>Tax</span> <span class="ms-auto fs-sm">$00.00</span>
-                  </li> -->
-                  <li class="list-group-item d-flex fs-lg fw-bold">
-                    <span>Total</span> <span id="total" class="ms-auto fs-sm">₹<%=cartData.reduce((total,product)=>{
-                      return total+=(product.products.quantity*product.productz.price)
-                    },0)%></span>
-                  </li>
-                  <li class="list-group-item fs-sm text-center text-gray-500">
-                    Shipping cost calculated at Checkout *
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <!-- <div class="col-12 col-md-auto"> -->
 
             <!-- Button -->
-            <a class="btn w-100 btn-dark mb-2" href="/checkout">Proceed to Checkout</a>
+            <!-- <button class="btn btn-sm btn-outline-dark">Update Cart</button> -->
 
-            <!-- Link -->
-            <a class="btn btn-link btn-sm px-0 text-body" href="/">
-              <i class="fe fe-arrow-left me-2"></i> Continue Shopping
-            </a>
-
+            <!-- </div> -->
           </div>
+
+        </div>
+        <div class="col-12 col-md-5 col-lg-4 offset-lg-1">
+
+          <!-- Total -->
+          <div class="card mb-7 bg-light">
+            <div class="card-body">
+              <ul class="list-group list-group-sm list-group-flush-y list-group-flush-x">
+                <li class="list-group-item d-flex">
+
+                  <span>Subtotal</span> <span id="subtotal" class="ms-auto fs-sm">₹<%= Number(cartData.reduce((total, product) => {
+                    if (product.offerDetails && product.offerDetails.length > 0) {
+                      return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
+                    } else {
+                      return total += product.productz.price * product.products.quantity;
+                    }
+                  }, 0)) %>
+                  </span>
+
+
+                </li>
+                <!-- <li class="list-group-item d-flex">
+                    <span>Tax</span> <span class="ms-auto fs-sm">$00.00</span>
+                  </li> -->
+                <li class="list-group-item d-flex fs-lg fw-bold">
+                  <span>Total</span> <span id="total" class="ms-auto fs-sm">₹<%= Number(cartData.reduce((total, product) => {
+                    if (product.offerDetails && product.offerDetails.length > 0) {
+                      return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
+                    } else {
+                      return total += product.productz.price * product.products.quantity;
+                    }
+                  }, 0)) %>
+                  </span>
+                </li>
+                <li class="list-group-item fs-sm text-center text-gray-500">
+                  Shipping cost calculated at Checkout *
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Button -->
+          <a class="btn w-100 btn-dark mb-2" href="/checkout">Proceed to Checkout</a>
+
+          <!-- Link -->
+          <a class="btn btn-link btn-sm px-0 text-body" href="/">
+            <i class="fe fe-arrow-left me-2"></i> Continue Shopping
+          </a>
+
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- FEATURES -->
-    <section class="bg-light py-9">
-      <div class="container">
-        <div class="row">
-          <div class="col-12 col-md-6 col-lg-3">
+  <!-- FEATURES -->
+  <section class="bg-light py-9">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 col-md-6 col-lg-3">
 
-            <!-- Item -->
-            <div class="d-flex mb-6 mb-lg-0">
+          <!-- Item -->
+          <div class="d-flex mb-6 mb-lg-0">
 
-              <!-- Icon -->
-              <i class="fe fe-truck fs-lg text-primary"></i>
+            <!-- Icon -->
+            <i class="fe fe-truck fs-lg text-primary"></i>
 
-              <!-- Body -->
-              <div class="ms-6">
+            <!-- Body -->
+            <div class="ms-6">
 
-                <!-- Heading -->
-                <h6 class="heading-xxs mb-1">
-                  Free shipping
-                </h6>
+              <!-- Heading -->
+              <h6 class="heading-xxs mb-1">
+                Free shipping
+              </h6>
 
-                <!-- Text -->
-                <p class="mb-0 fs-sm text-muted">
-                  From all orders over $100
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-          <div class="col-12 col-md-6 col-lg-3">
-
-            <!-- Item -->
-            <div class="d-flex mb-6 mb-lg-0">
-
-              <!-- Icon -->
-              <i class="fe fe-repeat fs-lg text-primary"></i>
-
-              <!-- Body -->
-              <div class="ms-6">
-
-                <!-- Heading -->
-                <h6 class="mb-1 heading-xxs">
-                  Free returns
-                </h6>
-
-                <!-- Text -->
-                <p class="mb-0 fs-sm text-muted">
-                  Return money within 30 days
-                </p>
-
-              </div>
+              <!-- Text -->
+              <p class="mb-0 fs-sm text-muted">
+                From all orders over $100
+              </p>
 
             </div>
 
           </div>
-          <div class="col-12 col-md-6 col-lg-3">
 
-            <!-- Item -->
-            <div class="d-flex mb-6 mb-md-0">
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
 
-              <!-- Icon -->
-              <i class="fe fe-lock fs-lg text-primary"></i>
+          <!-- Item -->
+          <div class="d-flex mb-6 mb-lg-0">
 
-              <!-- Body -->
-              <div class="ms-6">
+            <!-- Icon -->
+            <i class="fe fe-repeat fs-lg text-primary"></i>
 
-                <!-- Heading -->
-                <h6 class="mb-1 heading-xxs">
-                  Secure shopping
-                </h6>
+            <!-- Body -->
+            <div class="ms-6">
 
-                <!-- Text -->
-                <p class="mb-0 fs-sm text-muted">
-                  You're in safe hands
-                </p>
+              <!-- Heading -->
+              <h6 class="mb-1 heading-xxs">
+                Free returns
+              </h6>
 
-              </div>
-
-            </div>
-
-          </div>
-          <div class="col-12 col-md-6 col-lg-3">
-
-            <!-- Item -->
-            <div class="d-flex">
-
-              <!-- Icon -->
-              <i class="fe fe-tag fs-lg text-primary"></i>
-
-              <!-- Body -->
-              <div class="ms-6">
-
-                <!-- Heading -->
-                <h6 class="mb-1 heading-xxs">
-                  Over 10,000 Styles
-                </h6>
-
-                <!-- Text -->
-                <p class="mb-0 fs-sm text-muted">
-                  We have everything you need
-                </p>
-
-              </div>
+              <!-- Text -->
+              <p class="mb-0 fs-sm text-muted">
+                Return money within 30 days
+              </p>
 
             </div>
 
           </div>
+
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+
+          <!-- Item -->
+          <div class="d-flex mb-6 mb-md-0">
+
+            <!-- Icon -->
+            <i class="fe fe-lock fs-lg text-primary"></i>
+
+            <!-- Body -->
+            <div class="ms-6">
+
+              <!-- Heading -->
+              <h6 class="mb-1 heading-xxs">
+                Secure shopping
+              </h6>
+
+              <!-- Text -->
+              <p class="mb-0 fs-sm text-muted">
+                You're in safe hands
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+
+          <!-- Item -->
+          <div class="d-flex">
+
+            <!-- Icon -->
+            <i class="fe fe-tag fs-lg text-primary"></i>
+
+            <!-- Body -->
+            <div class="ms-6">
+
+              <!-- Heading -->
+              <h6 class="mb-1 heading-xxs">
+                Over 10,000 Styles
+              </h6>
+
+              <!-- Text -->
+              <p class="mb-0 fs-sm text-muted">
+                We have everything you need
+              </p>
+
+            </div>
+
+          </div>
+
         </div>
       </div>
-    </section>
-
-
- 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    </div>
+  </section>
 
 
 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    <script>
-      function newQuantity(productId, increment) {
-          console.log(productId, "yggwyw");
-          const subtotalElement =document.getElementById('subtotal')
-          const totalElement = document.getElementById('total')
-          fetch('/updateQuantity', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ productId, increment }),
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.err) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: data.error
-                });
-                return
-            }
-              console.log("DATA", data);
-              subtotalElement.innerHTML = `₹${data.Price}`
-              totalElement.innerHTML = `₹${data.Price}`
-              $('#refreshDiv').load('/cart #refreshDiv')
 
-            
-             
-          })
-         
-          .catch(error => console.error('Error:', error));
-          
-      }
+
+
+  <script>
+    function newQuantity(productId, increment) {
+      console.log(productId, "yggwyw");
+      const subtotalElement = document.getElementById('subtotal')
+      const totalElement = document.getElementById('total')
+      fetch('/updateQuantity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, increment }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.err) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: data.error
+            });
+            return
+          }
+          console.log("DATA", data);
+          subtotalElement.innerHTML = `₹${data.Price}`
+          totalElement.innerHTML = `₹${data.Price}`
+          $('#refreshDiv').load('/cart #refreshDiv')
+
+
+
+        })
+
+        .catch(error => console.error('Error:', error));
+
+    }
   </script>
-  
-
-    
 
 
 
 
 
-    <style>.custom-btn {
-      padding: 5px 10px; /* Adjust padding to fit the button content */
-      font-size: 14px; /* Adjust font size as needed */
-      background-color: #f0f0f0; /* Button background color */
-      border: 1px solid #ccc; /* Button border */
-      border-radius: 4px; /* Button border radius */
-      cursor: pointer; /* Cursor style on hover */
-  }
-  
-  .custom-btn:hover {
-      background-color: #e0e0e0; /* Button background color on hover */
-  }
+
+
+
+  <style>
+    .custom-btn {
+      padding: 5px 10px;
+      /* Adjust padding to fit the button content */
+      font-size: 14px;
+      /* Adjust font size as needed */
+      background-color: #f0f0f0;
+      /* Button background color */
+      border: 1px solid #ccc;
+      /* Button border */
+      border-radius: 4px;
+      /* Button border radius */
+      cursor: pointer;
+      /* Cursor style on hover */
+    }
+
+    .custom-btn:hover {
+      background-color: #e0e0e0;
+      /* Button background color on hover */
+    }
+
+    .smaller-price {
+      font-size: 0.8em;
+      /* Adjust the font size as needed */
+      color: rgb(59, 56, 56);
+    }
   </style>
 
 
@@ -358,5 +409,5 @@
 
 
 
-    
-    <%- include('../layouts/footer.ejs') %>
+
+  <%- include('../layouts/footer.ejs') %>

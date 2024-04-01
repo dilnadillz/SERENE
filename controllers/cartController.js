@@ -32,7 +32,15 @@ const loadCart = async (req, res,next) => {
         },
         {
             $unwind: "$productz"
-        }
+        },
+        {
+            $lookup: {
+                from: 'offers',
+                localField: 'productz.offer',
+                foreignField: '_id',
+                as: 'offerDetails'
+            }
+        }   
         ]);
 
 
@@ -69,8 +77,8 @@ const cartAdd = async (req, res,next) => {
 
         } else {
             // console.log("here");
-            const cart = await cartModel.updateOne({ userId },
-                { $push: { products: { productId: new mongoose.Types.ObjectId(productId) } } },
+            const cart = await cartModel.updateOne({ userId },    // "$each "operator is used to specify the array of elements to push
+                { $push: { products:{ $each: [{ productId: new mongoose.Types.ObjectId(productId) }], $position: 0 } } },  //"$position:0" to insert new product at the beginning of the array
                 { upsert: true });
             // console.log("oool",cart);
             res.status(200).redirect('/cart');
@@ -79,7 +87,7 @@ const cartAdd = async (req, res,next) => {
     } catch (error) {
         next(error);
     }
-}
+}   
 
 const removeCart = async (req, res,next) => {
     try {
@@ -144,41 +152,46 @@ const updateQuantity = async(req,res,next) => {
        
        
 
-        const price = await cartModel.aggregate([
-            {
-                $match:{userId:userId}
-            },
-            {
-                $unwind:"$products"
-            },
-            {
-                $lookup:{   
-                    from:'products',
-                    localField:'products.productId',
-                    foreignField:'_id',
-                    as:'productzz'
-                }
-            },
-            {
-                $unwind:"$productzz"
-            },
-            {
-                $addFields: {
-                    totalPrice: { $multiply: ["$products.quantity", "$productzz.price"] }
-                }
-            },
-            {
-                $group:{
-                    _id:null,
-                    subtotal:{$sum:"$totalPrice"}
-                }
+        const cartData = await cartModel.aggregate([{
+            // filter
+            $match: { userId: userId }
+        },
+        {
+            // deconstructing the product array
+            $unwind: "$products"
+        },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'products.productId',
+                foreignField: '_id',
+                as: 'productz'
             }
-        ])
+        },
+        {
+            $unwind: "$productz"
+        },
+        {
+            $lookup: {
+                from: 'offers',
+                localField: 'productz.offer',
+                foreignField: '_id',
+                as: 'offerDetails'
+            }
+        }   
+        ]);
 
-        const Price = price[0].subtotal
-       
+        const Price = Number(cartData.reduce((total, product) => {
+            if (product.offerDetails && product.offerDetails.length > 0) {
+              return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
+            } else {
+              return total += product.productz.price * product.products.quantity;
+            }
+          }, 0))
+        
 
-
+          console.log("price",Price)
+        
         await updateCart.save();
 
 
