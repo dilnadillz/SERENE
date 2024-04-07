@@ -22,6 +22,8 @@ order_route.get('/orderview',checkBlockUser,orderController.viewOrder);
 
 order_route.post('/razorpay-payment',orderController.razorpayPayment);
 
+order_route.post('/order-return',orderController.orderReturn);
+
 
 
 module.exports = order_route

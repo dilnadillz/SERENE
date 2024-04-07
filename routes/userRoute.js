@@ -48,7 +48,7 @@ user_route.post('/account-address',usercontroller.addingAddress);
 
 user_route.get('/account-address-edit/:addressId',checkBlockUser,usercontroller.loadEditAddress);
 
-user_route.post('/account-address/:addressId',usercontroller.editingAddress);
+user_route.post('/account-address/:addressId',checkBlockUser,usercontroller.editingAddress);
 
 user_route.get('/account-address-delete/:addressId',usercontroller.removeAddress);
 
@@ -59,6 +59,12 @@ user_route.get('/order-sucess',checkBlockUser,usercontroller.loadOrderThankyou);
 
 
 user_route.get('/404',checkBlockUser,usercontroller.load404);
+
+user_route.get('/wallet',checkBlockUser,usercontroller.walletLoad);
+
+user_route.post('/add-wallet',usercontroller.walletAdd);
+
+user_route.get('razorpay-wallet',usercontroller.razorpayWalletPayment);
 
 
 

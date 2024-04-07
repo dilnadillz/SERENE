@@ -31,6 +31,7 @@ admin_route.get('/order-details',requireAdminAuth,admincontroller.loadUserOrderD
 
 admin_route.post('/orders/update-status',admincontroller.updateOrderStatus);
 
+admin_route.post('/order-approve-reject',admincontroller.orderApproveOrReject);
 
 module.exports = admin_route
 

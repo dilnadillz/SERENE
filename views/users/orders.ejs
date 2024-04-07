@@ -50,8 +50,8 @@
                 <a class="list-group-item list-group-item-action dropend-toggle " href="/account-address">
                   Addresses
                 </a>
-                <a class="list-group-item list-group-item-action dropend-toggle " href="account-payment.html">
-                  Payment Methods
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/wallet">
+                  Wallet
                 </a>
                 <a class="list-group-item list-group-item-action dropend-toggle" href="#!">
                   Logout
@@ -117,7 +117,7 @@
                           <!-- Heading -->
                           <h6 class="heading-xxxs text-muted">Status:</h6>
                           <!-- Text -->
-                          <p class="mb-0 fs-sm fw-bold" id="cancel">
+                          <p class="mb-0 fs-sm fw-bold" id="cancel" >
                               <%= order.details[0].status %>
                           </p>
                       </div>
@@ -175,13 +175,16 @@
                       </div>
                       <div class="col-6">
 
-                        <!-- Button -->
                         <% if (order.details[0].status === 'Delivered') { %>
+                          <% if (order.details[0].returnStatus === 'Returned') { %>
+                            <p class="text-success">Returned</p>
+                          <% } else { %>
                           <!-- Return Button -->
                           <a class="btn btn-sm w-100 btn-outline-dark" href="#" onclick="showReturnReasonPrompt('<%= order._id %>', '<%= order.details[0].productId %>')">
                             Return
-                         </a>
-                        <% } else { %>
+                          </a>
+                          <% } %>
+                          <% } else if (order.details[0].status === 'Pending' || order.details[0].status === 'Shipped') { %>
                           <!-- Cancel Button -->
                           <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order.details[0].productId %>">
                             Cancel order
@@ -268,61 +271,81 @@
     });  
 
     async function cancelOrder(orderId, productId) {
-        try {
+    try {
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to cancel this order?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        });
+
+        if (confirmation.isConfirmed) {
             const response = await fetch(`/cancel-order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ orderId: orderId,productId: productId })
+                body: JSON.stringify({ orderId: orderId, productId: productId })
             });
-            if (response.ok) {
-              const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
-              console.log("coming in")
-             
-              
-              console.log("coming in he")
-              
-             
-                window.location.href = '/orders';
 
-                // button.style.display = 'none';
-              
-             
+            if (response.ok) {
+                const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
+
+                // Show success message
+                Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
+                    // Redirect to orders page
+                    window.location.href = '/orders';
+                });
             } else {
                 console.error('Failed to cancel order:', response.statusText);
             }
-        } catch (error) {
-            console.error('Failed to cancel order:', error.message);
         }
+    } catch (error) {
+        console.error('Failed to cancel order:', error.message);
     }
+}
+
 });
 
 
-      function showReturnReasonPrompt(orderId, productId) {
-          Swal.fire({
-            title: 'Return Reason',
-            input: 'text',
-            inputPlaceholder: 'Enter your return reason here',
-            showCancelButton: true,
-            confirmButtonText: 'Submit',
-            cancelButtonText: 'Cancel',
-            inputValidator: (value) => {
-              if (!value) {
-                return 'You need to write something!'
-              }
+function showReturnReasonPrompt(orderId, productId) {
+    Swal.fire({
+        title: 'Return Reason',
+        input: 'text',
+        inputPlaceholder: 'Enter your return reason here',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to write something!';
             }
-          }).then((result) => {
-            if (result.isConfirmed) {
-              // Handle the return reason submission here
-              console.log('Return reason:', result.value);
-              // You can now send the return reason to your server for processing
-              document.getElementById('cancel').textContent = 'Return request sent';
-              
-              
-            }
-          });
-      }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const returnReason = result.value;
+            // Send the return reason along with order and product IDs to the server
+            fetch('/order-return', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ orderId: orderId, productId: productId, returnReason: returnReason })
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire('Return Request Sent', 'Your return request has been sent.', 'success');
+                } else {
+                    Swal.fire('Error', 'Failed to send return request.', 'error');
+                }
+            }).catch(error => {
+                console.error('Failed to send return request:', error.message);
+            
+            });
+        }
+    });
+}
 
     </script>
      

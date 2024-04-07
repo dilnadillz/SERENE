@@ -75,6 +75,7 @@ const addToWishlist = async(req,res,next) => {
         console.log("..",wishlist)
 
         res.status(200).json({wishlist,message:'product added to the wishlist'});
+        
 
     }catch(error){
         next(error);

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const productModel = require('../models/productModel');
 const multer = require('multer');
+const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const categoryModel = require('../models/categoryModel');
@@ -100,7 +101,7 @@ const editProducts = async(req,res,next)=>{
 
 };
 
-const uploadProducts = async (req, res,next) => {
+const uploadProducts = async (req, res,next) => {  //here am editing image
     try {
         const {productId} = req.params;
         const product = await productModel.findById(productId);
@@ -145,14 +146,24 @@ const removeSingleImage = async(req,res,next) => {
         if(!existingProduct){
             return res.send('product not find');
         }
+        //get the imge path
+        const imagePath = path.join(__dirname, `../uploads/productUploads`, existingProduct.productImage[imageIndex])
 
-       
-        //removing the image path from the products image array
+        //unlink or delete the image feom the server folder
+        fs.unlink(imagePath,(err)=>{
+            if(err){
+                console.error("error deleting image",err);
+            }
+        })
+
         existingProduct.productImage.splice(imageIndex,1)
 
         await existingProduct.save();
 
+        console.log("imagepath",imagePath);
+        console.log("existingProduct",existingProduct);
         res.json({sucess:true,message:'image delete sucessfully'})
+        
     }catch(error){
         next(error);
     }           

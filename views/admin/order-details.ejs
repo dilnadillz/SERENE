@@ -1,6 +1,7 @@
 <%- include('../adminlayouts/header.ejs') %>
 
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-oS3vJWv+ZLkzQDznMzTK5Gw0rJ/iWTda9QPKwFuS7IHlv1ADjQFF8tZxmPvYF5HR" crossorigin="anonymous">
 
 
 
@@ -11,37 +12,33 @@
             <h3 class="page-title">Order Details</h3>
             <nav aria-label="breadcrumb"></nav>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <!-- <h4 class="card-title">Order List</h4> -->
-                <div class="table-responsive">
-                    <table class="table table-borderless table-spaced">
-                        <thead>
-                            <tr>
-                                <th>Customer Info</th>
-                                <th>Order Info</th>
-                               
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            <tr>
-                                <td><%= order.userz.name%><br><%= order.userz.email%><br><%= order.userz.mobile%></td>
-                                <td><%= order.payment%></td>
-                                <td></td>
-                            </tr>
-                          
-                        </tbody>
-                    </table>
-                </div>
+        
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="card-title">Customer Info</h5>
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="fas fa-user"></i> <strong>Name:</strong> <%= order.userz.name %></li>
+                    <li class="list-group-item"><i class="fas fa-envelope"></i> <strong>Email:</strong> <%= order.userz.email %></li>
+                    <li class="list-group-item"><i class="fas fa-phone"></i> <strong>Mobile:</strong> <%= order.userz.mobile %></li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6">
+                <h5 class="card-title">Order Info</h5>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Payment:</strong> <%= order.payment %></li>
+                    <!-- Add more order info here -->
+                </ul>
             </div>
         </div>
     </div>
-  </div>
+</div>
 
 
-  <div class="main-panel">
-    <div class="content-wrapper">
+
+
         <div class="page-header">
             <h3 class="page-title">Product Details</h3>
             <nav aria-label="breadcrumb"></nav>
@@ -58,6 +55,7 @@
                                 <th>Quantity </th>
                                 <th>Status </th>
                                 <th>Action </th>
+                                <th>Return </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,7 +67,7 @@
                                 <td><%= order.details.status%></td>
                                 
                                 <td>
-                                    <div class="custom-select">
+                                    <div class="">
                                     <form action="" id="updateStatusForm">
                                         <select name="orderStatus" id="">
                                             <option value="Pending" <%= order.details.status === 'Pending' ? 'selected' : '' %>>Pending</option>
@@ -77,10 +75,23 @@
                                             <option value="Delivered" <%= order.details.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
                                             <option value="Cancelled" <%= order.details.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
                                         </select>
-                                        <button type="button" onclick="updateOrderStatus('<%= order._id %>','<%= order.details.productId %>')">Update</button>
+                                        <button type="button"  class="btn btn-outline-success" onclick="updateOrderStatus('<%= order._id %>','<%= order.details.productId %>')">Update</button>
                                     </form>
                                 </div>
                                 </td>
+                                <td>
+                                    <span style="color: rgb(44, 15, 151);"><%= order.details.returnStatus %></span>
+                                    <% if (order.details.returnStatus === 'return') { %>
+                                        <form id="approvalForm">
+                                            <input type="hidden" name="orderId" value="<%= order._id %>">
+                                            <input type="hidden" name="productId" value="<%= order.details.productId %>">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" onclick="updateStatus('accepted')">Approve</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="updateStatus('rejected')">Reject</button>
+                                        </form>
+                                    <% } %>
+                                </td>
+                                
+
                             </tr>
                           
                         </tbody>
@@ -88,8 +99,12 @@
                 </div>
             </div>
         </div>
+        
     </div>
   </div>
+
+
+  
   
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -111,61 +126,79 @@
     
         });
     }
+
+    function updateStatus(decision){
+        const orderId = document.querySelector('input[name="orderId"]').value;
+        const productId = document.querySelector('input[name="productId"]').value;
+
+        axios.post('/admin/order-approve-reject',{orderId,productId,decision})
+        .then(response => {
+            // Show success message
+            alert('Return request ' + decision + 'ed successfully');
+                // Reload the page or update the UI as needed
+                location.reload();
+        })
+        .catch(error=> {
+            console.error('Failed to update return request status:', error);
+        })
+    }
+
+
+
   </script>
 
 
 
   
-<style>
- .order-details, .product-details {
-    margin-bottom: 20px; /* Add space between the sections */
+
+
+      <style>
+        
+        
+
+        .list-group-item {
+                border: none; /* Remove border for list items */
+            }
+
+            .card-body {
+                padding: 0; /* Remove padding from the card body */
+            }
+
+            .card-body .row > div {
+                padding: 10px; /* Add padding to each column */
+            }
+
+
+            /* Remove default arrow */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Styling */
+  padding: 8px 30px 8px 16px; /* Adjust padding to make room for arrow */
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-image: linear-gradient(45deg, transparent 50%, #495057 50%), linear-gradient(135deg, #495057 50%, transparent 50%);
+  background-position: calc(100% - 15px) 50%, calc(100% - 20px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  /* Transition */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.order-details {
-    background-color: #f8f9fa; /* Light background for order details */
+/* On hover, focus, and active */
+select:hover, select:focus, select:active {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.product-details {
-    background-color: #e9ecef; /* Slightly darker background for product details */
-}
-
-.content-wrapper {
-    padding: 20px; /* Add padding inside the content wrapper */
-}
-
-.page-header {
-    margin-bottom: 20px; /* Add space below the header */
-}
-
-.card {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.card-body {
-    padding: 20px;
-}
-
-.table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 10px; /* Adjust spacing between table rows */
-}
-
-.table th,
-.table td {
-    padding: 8px;
-}
-
-.table th {
-    background-color: #f8f9fa;
-}
-
-
-</style>
-
-               
+            
+      </style>         
       
    
       <!-- partial -->

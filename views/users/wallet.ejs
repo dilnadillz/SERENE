@@ -1,0 +1,167 @@
+<%- include('../layouts/header.ejs') %>
+
+    <!-- BREADCRUMB -->
+    <nav class="py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb mb-0 fs-xs text-gray-400">
+              <li class="breadcrumb-item">
+                <a class="text-gray-400" href="/">Home</a>
+              </li>
+              <li class="breadcrumb-item active">
+                My Account
+              </li>
+            </ol>
+
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <section class="pt-7 pb-12">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+
+            <!-- Heading -->
+            <h3 class="mb-10">My Account</h3>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-3">
+
+            <!-- Nav -->
+            <nav class="mb-10 mb-md-0">
+              <div class="list-group list-group-sm list-group-strong list-group-flush-x">
+                <a class="list-group-item list-group-item-action dropend-toggle active" href="/orders">
+                  Orders
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/wishlist">
+                  Wishlist
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/account-personal-info">
+                  Personal Info
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/account-address">
+                  Addresses
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle " href="/wallet">
+                  Wallet
+                </a>
+                <a class="list-group-item list-group-item-action dropend-toggle" href="#!">
+                  Logout
+                </a>
+              </div>
+            </nav>
+
+          </div>
+          <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
+
+           
+            <div class="wallet-box">
+              <h2>My Wallet</h2>
+              <p>Current Balance: <%#= wallet.balance %></p>
+              <div class="wallet-content">
+                 <p>Transaction History:</p>
+                 <ul>
+                  <li>date</li>
+                  <li>amount</li>
+                 </ul>
+              </div>
+              <button class="add-funds-btn">Redeme Fund</button>
+             </div>
+
+
+            
+            <!-- Pagination -->
+            <nav class="d-flex justify-content-center justify-content-md-end">
+              <ul class="pagination pagination-sm text-gray-400">
+                <li class="page-item">
+                  <a class="page-link page-link-arrow" href="#">
+                    <i class="fa fa-caret-left"></i>
+                  </a>
+                </li>
+                <li class="page-item active">
+                  <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">4</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">5</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="#">6</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link page-link-arrow" href="#">
+                    <i class="fa fa-caret-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+
+
+
+
+
+
+
+
+    <style>
+   .wallet-box {
+ display: flex;
+ flex-direction: column;
+ align-items: center; /* Center content horizontally */
+ justify-content: center; /* Center content vertically */
+ background-color: #f3f4f6;
+ border-radius: 10px;
+ padding: 20px;
+ margin: 20px auto;
+ max-width: 600px;
+ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+.button-container {
+ display: flex;
+ justify-content: flex-end; /* Align button to the right */
+ width: 100%; /* Ensure the container takes the full width */
+}
+
+.add-funds-btn {
+ background-color: #48bb78;
+ color: white;
+ border: none;
+ border-radius: 5px;
+ padding: 10px 20px;
+ cursor: pointer;
+}
+
+.add-funds-btn:hover {
+ background-color: #38a169;
+}
+
+    </style>
+
+    <%- include('../layouts/footer.ejs') %>

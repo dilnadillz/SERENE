@@ -14,6 +14,7 @@ const addressModel = require('../models/addressModel');
 const cartModel = require('../models/cartModel');
 const categoryModel = require('../models/categoryModel');
 const { default: mongoose } = require('mongoose');
+const walletModel = require('../models/walletModel');
 
 
 
@@ -191,6 +192,17 @@ const verifyOtp = async (req, res,next) => {
                 maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
                 httpOnly: true,
             });
+
+            //create a wallet for the user
+            const wallet = new walletModel({
+                userId: userData._id,
+                balance: 0,
+                walletHistory: []
+            });
+
+            console.log("wallet coming",wallet);
+            await wallet.save();
+
             res.redirect("/");
         } else {
             res.render("otp", { errorText: "Wrong OTP. Please try again." });
@@ -546,6 +558,60 @@ const load404 = async(req,res,next) => {
     }
 }
 
+const walletLoad = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+        console.log("user",userId)
+        const wallet = await walletModel.findOne({userId:userId})
+       
+        res.render('wallet',{wallet});
+    }catch(error){
+        next(error);
+    }
+}
+
+const walletAdd = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+        const {amount} =req.body;
+        console.log("user",userId)  
+        console.log("amount",amount)
+
+        const wallet = await walletModel.findOne({userId:userId});
+        if(!wallet){
+            res.status(404).json({message:"wallet not found"});
+        }
+        console.log("wallet",wallet)
+
+        wallet.balance +=parseFloat(amount);
+        wallet.walletHistory.push({date: new Date(), amount: parseFloat(amount), status: "Added"});
+
+        await wallet.save();
+
+        res.status(200).json({sucess:true, message: "amount added"})
+    }catch(error){
+        next(error);
+    }
+}
+
+const razorpayWalletPayment = async(req,res,next) => {
+    try{
+        const {amount} = req.body;
+
+        const razor = {
+            amount: totalAmount *100, //Convert the total amount to paisa (multiply by 100)
+            currency: "INR",
+            receipt: "orderId",
+        }
+
+        const order = await instance.orders.create(razor);
+
+        res.json(order);
+    }catch(error){
+        next(error);
+    }
+}
+
 module.exports = {
     welcome,
     loadRegister,
@@ -567,6 +633,9 @@ module.exports = {
     loadCheckout,
     loadProductlist,
     loadOrderThankyou,
-    load404
+    load404,
+    walletLoad,
+    walletAdd,
+    razorpayWalletPayment
 
 }

@@ -188,7 +188,7 @@
                         <form action="" id="addToWishlistForm" method="POST">
                           <input type="hidden" name="productId" value="<%= product._id %>">
                           <button class="btn btn-outline-dark w-100 mb-2" data-toggle="button" type="button" onclick="addToWishlist()">
-                            Wishlist <i class="fe fe-heart ms-2"></i>
+                            Wishlist <i  id="heartIcon" class="fe fe-heart ms-2"></i>
                           </button>
                         </form>
                         
@@ -282,6 +282,13 @@
           const response = await axios.post('/wishlist-add',{productId})
           console.log(response.data.message);
 
+          
+        // Get the heart icon element
+        var heartIcon = document.getElementById('heartIcon');
+
+        // Toggle the red-heart class on the heart icon
+        heartIcon.classList.toggle('red-heart');
+
           Swal.fire({
             icon: 'success',
             title: 'Product added to wishlist',
@@ -305,6 +312,11 @@
    
     
     <style>
+    .red-heart {
+    color: red;
+}
+
+
       .image-container {
           overflow: hidden;
           display: inline-block; /* Ensure images are displayed in a block */

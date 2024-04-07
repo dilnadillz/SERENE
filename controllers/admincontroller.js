@@ -207,6 +207,26 @@ const updateOrderStatus = async(req,res,next)  => {
     }
 }
 
+const orderApproveOrReject =async(req,res,next) => {
+    try{
+        const {orderId,productId,decision} = req.body;
+        console.log("ord",orderId);
+        console.log("prd",productId);
+        
+        //updating return status based on the decision
+        const orderStatus = await orderModel.findOneAndUpdate(
+            {_id:orderId, "details.productId":productId},
+            {$set:{"details.$.returnStatus":decision}},
+            {new: true}
+        );
+        console.log("orderstatus",orderStatus);
+
+        res.status(200).json({orderStatus})
+
+    }catch(error){
+        next(error);    
+    }
+}
 
 module.exports = {
     adminlogin,
@@ -218,7 +238,8 @@ module.exports = {
     adminLogout,
     loadUserOrder,
     loadUserOrderDetails,
-    updateOrderStatus
+    updateOrderStatus,
+    orderApproveOrReject
 
   
 }

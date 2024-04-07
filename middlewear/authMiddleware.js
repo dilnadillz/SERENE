@@ -42,7 +42,7 @@ const requireAuth = (req, res, next) => {
           } else { 
             
             let user = await UserModel.findById(decodedToken.userId)
-            res.locals.user = user._id
+            res.locals.user = user?._id
             
             
            

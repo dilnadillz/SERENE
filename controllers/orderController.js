@@ -6,6 +6,7 @@ const cartModel = require('../models/cartModel');
 const addressModel = require('../models/addressModel');
 const orderModel = require('../models/orderModel');
 const Razorpay = require('razorpay');
+const walletModel = require('../models/walletModel');
 
 const instance = new Razorpay({
     key_id: process.env.key_id,
@@ -87,28 +88,36 @@ const orderCancel = async(req,res,next) => {
        const { productId } = req.body;
         
     
-        // const order = await orderModel.findOne({_id:orderId});
-        // if(!order){
-        //     res.status(404).json({message:'order not found'});
-        // }
-
-
-        // const productIndex = order.details.findIndex((item)=>item.productId==productId);
-        // console.log("working",productIndex)
-        
-        // if(productIndex===-1){
-        //     res.status(404).json({order,message:'product not found in the cart'});
-        // }
-
-
-        // order.details[productIndex].status = 'Cancelled';  
-        // await order.save();
         const order = await orderModel.findOneAndUpdate({_id:orderId , 'details.productId':productId},{$set: {'details.$.status':"Cancelled"}},{new:true});
         if(!order){
             return res.status(404).json({message:'not found'})
         }
        
-      
+        //calculating the total refund amt for the cancld product
+      const productIndex = order.details.findIndex(item => item.productId == productId);
+      const {price,quantity,payment} = order.details[productIndex];
+      const totalRefund = price*quantity;
+
+    if (order.payment !== 'Cash on Delivery') {
+      const wallet = await walletModel.findOne({userId : order.userId});
+
+      if(!wallet){
+        return res.status(404).json({message:"wallet not found"});
+      }
+
+      wallet.balance += totalRefund;
+
+      //update wallet with refund amount
+      wallet.walletHistory.push({
+        date: new Date(),
+        amount: totalRefund,
+        status: 'Credited (cancelled Product)'
+      })
+
+      await wallet.save();
+    }
+      console.log("wallw",wallet)
+
 
         return res.status(200).json({ message: 'Product cancelled successfully' });
     }catch(error){
@@ -208,12 +217,29 @@ const razorpayPayment = async(req,res,next) => {
     }
 }   
 
+const orderReturn = async(req,res,next) => {
+    try{
+        const {orderId,productId,returnReason} = req.body;
+        console.log("o",orderId)
+        console.log("p",productId)
+        console.log("r",returnReason)
+
+        const order = await orderModel.findOneAndUpdate({_id:orderId, 'details.productId':productId},{$set:{'details.$.returnStatus': 'return'}},{new:true})
+
+        console.log('kll',order)
+        res.status(200).json(order);    
+
+    }catch(error){
+        next(error);    
+    }
+}
 
 module.exports = {
     orderPlace,
     loadOrder,
     orderCancel,
     viewOrder,
-    razorpayPayment
+    razorpayPayment,
+    orderReturn
    
 }

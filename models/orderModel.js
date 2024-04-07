@@ -41,6 +41,11 @@ const orderSchema = new mongoose.Schema({
                 type: String,
                 // default: 'Pending',
                 required: true
+            },
+            returnStatus: {
+                type: String,
+                enum: ['return', 'accepted', 'rejected'],
+                // default: 'return' // Default status for a new return request
             }
             
         }
