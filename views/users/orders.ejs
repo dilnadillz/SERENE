@@ -101,8 +101,13 @@
                           <!-- Heading -->
                           <h6 class="heading-xxxs text-muted">Quantity:</h6>
                           <!-- Text -->
+                          
                           <p class="mb-0 fs-sm fw-bold">
-                              <%= order.details[0].quantity %>
+                            <% let totalQuantity = 0; %>
+                            <% order.details.forEach(detail => { %>
+                              <% totalQuantity += detail.quantity; %>
+                            <% }); %>
+                            <%= totalQuantity %>
                           </p>
                       </div>
                       <div class="col-6 col-lg-2">

@@ -283,19 +283,23 @@
               <div class="card-body">
                 <ul class="list-group list-group-sm list-group-flush-y list-group-flush-x">
                   <li class="list-group-item d-flex">
-                    <span>Subtotal</span> <span class="ms-auto fs-sm">₹<%= Number(cartData.reduce((total, product) => {
-                      if (product.offerDetails && product.offerDetails.length > 0) {
-                        return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
-                      } else {
-                        return total += product.productz.price * product.products.quantity;
-                      }
-                    }, 0)) %></span>
-                  </li>
-                  <!-- <li class="list-group-item d-flex">
-                    <span>Tax</span> <span class="ms-auto fs-sm">$00.00</span>
-                  </li> -->
+                    <span>Price</span> <span class="ms-auto fs-sm">₹<%= Number(cartData.reduce((total, product) => {
+                      return total += product.productz.price * product.products.quantity;
+                    }, 0).toFixed(2)) %></span>
+                    </li>
+                    <!-- Discount -->
+                    <li class="list-group-item d-flex">
+                      <span>Discount</span> <span class="ms-auto fs-sm text-success">--- ₹<%= Number(cartData.reduce((total, product) => {
+                        if (product.offerDetails && product.offerDetails.length > 0) {
+                          const discountAmount = (product.productz.price * product.products.quantity) * (product.offerDetails[0].percentage / 100);
+                          return total += discountAmount;
+                        } else {
+                          return total += 0; // No discount for this product
+                        }
+                      }, 0).toFixed(2)) %></span>
+                    </li>
                   <li class="list-group-item d-flex">
-                    <span>Shipping</span> <span class="ms-auto fs-sm">FREE</span>
+                    <span>Shipping</span> <span class="ms-auto fs-sm text-success">FREE</span>
                   </li>
                   <li class="list-group-item d-flex fs-lg fw-bold">
                     <span>Total</span> <span class="ms-auto">₹<%= Number(cartData.reduce((total, product) => {
@@ -594,5 +598,12 @@ placeOrderBtn.addEventListener('click', async () => {
 });
 
     </script>
+
+    <style>
+      .text-success {
+        color: green;
+      }
+
+    </style>
     
     <%- include('../layouts/footer.ejs') %>

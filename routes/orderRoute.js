@@ -9,20 +9,22 @@ const orderController = require('../controllers/orderController');
 
 const {checkBlockUser} = require('../middlewear/checkBlockUser');
 
+const {requireAuth,checkUser,isUser} = require('../middlewear/authMiddleware');
+order_route.use(checkUser)
 
 
 
-order_route.post('/place-order',orderController.orderPlace);
+order_route.post('/place-order',requireAuth,orderController.orderPlace);
 
-order_route.get('/orders',checkBlockUser,orderController.loadOrder);
+order_route.get('/orders',requireAuth,checkBlockUser,orderController.loadOrder);
 
-order_route.post('/cancel-order',orderController.orderCancel);
+order_route.post('/cancel-order',requireAuth,orderController.orderCancel);
 
-order_route.get('/orderview',checkBlockUser,orderController.viewOrder);
+order_route.get('/orderview',requireAuth,checkBlockUser,orderController.viewOrder);
 
-order_route.post('/razorpay-payment',orderController.razorpayPayment);
+order_route.post('/razorpay-payment',requireAuth,orderController.razorpayPayment);
 
-order_route.post('/order-return',orderController.orderReturn);
+order_route.post('/order-return',requireAuth,orderController.orderReturn);
 
 
 

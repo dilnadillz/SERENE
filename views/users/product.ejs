@@ -174,11 +174,15 @@
                       <div class="col-12 col-lg-auto">
 
                         <!-- Submit -->
-                        <a href="/addToCart/<%= product._id %>">
-                          <button type="button" class="btn w-100 btn-dark mb-2 add-to-cart-button">
-                            Add to Cart <i class="fe fe-shopping-cart ms-2"></i>
+                        <a href="#" id="addToCartButton">
+                          <button type="button" class="btn w-100 btn-dark mb-2 add-to-cart-button" <% if (!isStockAvailable) { %>disabled<% } %>>
+                              <% if (isStockAvailable) { %>
+                                  Add to Cart <i class="fe fe-shopping-cart ms-2"></i>
+                              <% } else { %>
+                                  Out of Stock
+                              <% } %>
                           </button>
-                        </a>
+                      </a>
                         
 
                       </div>
@@ -308,6 +312,20 @@
     </script>
 
 
+<script>//to show out of stock after the stock limit reach to 0
+  document.getElementById('addToCartButton').addEventListener('click', function(event) {
+    if (event.target.matches('.add-to-cart-button') && !event.target.disabled) {
+        const productId = '<%= product._id %>';
+        window.location.href = "/addToCart/" + productId;
+    }else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'This product is out of stock!',
+        });
+    }
+});
+  </script>
 
    
     

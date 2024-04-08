@@ -10,18 +10,20 @@ const cartController = require('../controllers/cartController')
 
 const {checkBlockUser} = require('../middlewear/checkBlockUser');
 
+const {requireAuth,checkUser,isUser} = require('../middlewear/authMiddleware');
+cart_route.use(checkUser)
 
 
-cart_route.get('/cart',checkBlockUser,cartController.loadCart);
+cart_route.get('/cart',requireAuth,checkBlockUser,cartController.loadCart);
 
-cart_route.get('/addToCart/:productId',cartController.cartAdd);
+cart_route.get('/addToCart/:productId',requireAuth,cartController.cartAdd);
 
-cart_route.get('/cart/remove/:productId',cartController.removeCart);
+cart_route.get('/cart/remove/:productId',requireAuth,cartController.removeCart);
 
-cart_route.post('/updateQuantity',cartController.updateQuantity);
+cart_route.post('/updateQuantity',requireAuth,cartController.updateQuantity);
 
 
-
+        
 
 
 

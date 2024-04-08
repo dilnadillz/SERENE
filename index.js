@@ -40,6 +40,9 @@ app.use('/admin',product_route);
 const offer_route = require('./routes/offerRoute');
 app.use('/admin',offer_route);
 
+const referral_route = require('./routes/referralRoute');
+app.use('/admin',referral_route);
+
 const cart_route = require('./routes/cartRoute');
 app.use('/',cart_route);
 

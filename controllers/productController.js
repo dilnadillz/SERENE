@@ -146,15 +146,15 @@ const removeSingleImage = async(req,res,next) => {
         if(!existingProduct){
             return res.send('product not find');
         }
-        //get the imge path
-        const imagePath = path.join(__dirname, `../uploads/productUploads`, existingProduct.productImage[imageIndex])
+        // //get the imge path
+        // const imagePath = path.join(__dirname, `../uploads/productUploads`, existingProduct.productImage[imageIndex])
 
-        //unlink or delete the image feom the server folder
-        fs.unlink(imagePath,(err)=>{
-            if(err){
-                console.error("error deleting image",err);
-            }
-        })
+        // //unlink or delete the image feom the server folder
+        // fs.unlink(imagePath,(err)=>{
+        //     if(err){
+        //         console.error("error deleting image",err);
+        //     }
+        // })
 
         existingProduct.productImage.splice(imageIndex,1)
 

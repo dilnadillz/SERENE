@@ -200,19 +200,27 @@
                         </button>
                       </span> -->
                       <span class="card-action">
-                        <a href="/addToCart/<%= product._id %>">
-                          <button class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
-                            <i class="fe fe-shopping-cart"></i>
-                          </button>
+                        <a href="/addToCart/<%= product._id %>" class="addToCartLink">
+                            <button type="button" class="btn btn-xs btn-circle btn-white-primary addToCartButton" data-stock="<%= product.stock %>">
+                                <i class="fe fe-shopping-cart"></i>
+                            </button>
                         </a>
-                      </span>
-                      <span class="card-action">
-                        <a href="/wishlist-add/<%= product._id %>">
-                        <button class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
-                          <i class="fe fe-heart"></i>
-                        </button>
-                      </a>
-                      </span>
+                    </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    <span class="card-action">
+                      <form action="/wishlist-add" method="post">
+                          <input type="hidden" name="productId" value="<%= product._id %>">
+                          <button type="submit" class="btn btn-xs btn-circle btn-white-primary" data-toggle="button">
+                              <i class="fe fe-heart"></i>
+                          </button>
+                      </form>
+                  </span>
+                  
                     </div>
 
                   </div>
@@ -441,6 +449,30 @@
     }
 
     document.addEventListener('DOMContentLoaded', clearAllFilters);
+
+
+
+    //to do not add product in cart whn the stock limit is 0
+    document.querySelectorAll('.addToCartButton').forEach(button => {
+    const stock = parseInt(button.getAttribute('data-stock'));
+    if (stock <= 0) {
+        button.disabled = true;
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default action
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'This product is out of stock!',
+            });
+        });
+    }
+});
+
+
+
+
+
+
   </script>
 
 

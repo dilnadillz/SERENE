@@ -65,12 +65,14 @@
            
             <div class="wallet-box">
               <h2>My Wallet</h2>
-              <p>Current Balance: <%#= wallet.balance %></p>
-              <div class="wallet-content">
-                 <p>Transaction History:</p>
+              <p>Current Balance: ₹ <%= wallet.balance %></p>
+              <div class="wallet-content" >
+                
                  <ul>
-                  <li>date</li>
-                  <li>amount</li>
+                  <p></p>
+                  <% wallet.walletHistory.forEach(transaction => { %>
+                    Transaction History: Date: <%= transaction.date.toLocaleDateString() %>, Amount: ₹ <%= transaction.amount %>,  status: <%= transaction.status %>
+                  <% }); %>
                  </ul>
               </div>
               <button class="add-funds-btn">Redeme Fund</button>

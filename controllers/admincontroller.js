@@ -228,6 +228,33 @@ const orderApproveOrReject =async(req,res,next) => {
     }
 }
 
+const loadSalesReport = async(req,res,next) => {
+    try{
+        const salesData = await orderModel.find({}).populate('details.productId')
+        .exec();
+        console.log("sales",salesData)
+        res.render('salesReport',{salesData});
+    }catch(error){
+        next(error);
+    }
+}
+
+const generateSalesReport = async(req,res) => {
+    try {
+      const {startDate,endDate} = req.query;
+      const fromDate = new Date(startDate);
+      const toDate = new Date(endDate);
+      toDate.setHours(23, 59, 59, 999);
+      const salesData = await Order.find({
+        date: { $gte: fromDate, $lte: toDate },
+      });
+      res.render("salesReport", { salesData });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
+
 module.exports = {
     adminlogin,
     verifyLogin,
@@ -239,7 +266,9 @@ module.exports = {
     loadUserOrder,
     loadUserOrderDetails,
     updateOrderStatus,
-    orderApproveOrReject
+    orderApproveOrReject,
+    loadSalesReport,
+    generateSalesReport
 
   
 }

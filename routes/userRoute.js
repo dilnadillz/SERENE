@@ -30,41 +30,38 @@ user_route.get('/login',isUser,usercontroller.loadLogin)
 
 user_route.post('/login',usercontroller.verifyLogin);
 
-user_route.get('/logout',usercontroller.logout);
+user_route.get('/logout',requireAuth,usercontroller.logout);
 
 user_route.get('/productlist',checkBlockUser,usercontroller.loadProductlist);
 
 user_route.get('/product/:productId',checkBlockUser,usercontroller.loadUserProduct);
   
-user_route.get('/account-personal-info',checkBlockUser,usercontroller.LoadPersonalInfo);
+user_route.get('/account-personal-info',requireAuth,checkBlockUser,usercontroller.LoadPersonalInfo);
 
-user_route.post('/account-personal-info',checkBlockUser,usercontroller.editPersonalInfo);
+user_route.post('/account-personal-info',requireAuth,checkBlockUser,usercontroller.editPersonalInfo);
 
-user_route.get('/account-address',checkBlockUser,usercontroller.loadAddress);
+user_route.get('/account-address',requireAuth,checkBlockUser,usercontroller.loadAddress);
 
-user_route.get('/account-address-add',checkBlockUser,usercontroller.loadAddAddress);
+user_route.get('/account-address-add',requireAuth,checkBlockUser,usercontroller.loadAddAddress);
 
-user_route.post('/account-address',usercontroller.addingAddress);
+user_route.post('/account-address',requireAuth,usercontroller.addingAddress);
 
-user_route.get('/account-address-edit/:addressId',checkBlockUser,usercontroller.loadEditAddress);
+user_route.get('/account-address-edit/:addressId',requireAuth,checkBlockUser,usercontroller.loadEditAddress);
 
-user_route.post('/account-address/:addressId',checkBlockUser,usercontroller.editingAddress);
+user_route.post('/account-address/:addressId',requireAuth,checkBlockUser,usercontroller.editingAddress);
 
-user_route.get('/account-address-delete/:addressId',usercontroller.removeAddress);
+user_route.get('/account-address-delete/:addressId',requireAuth,usercontroller.removeAddress);
 
-user_route.get('/checkout',checkBlockUser,usercontroller.loadCheckout);
+user_route.get('/checkout',requireAuth,checkBlockUser,usercontroller.loadCheckout);
 
-user_route.get('/order-sucess',checkBlockUser,usercontroller.loadOrderThankyou);
+user_route.get('/order-sucess',requireAuth,checkBlockUser,usercontroller.loadOrderThankyou);
 
 
 
 user_route.get('/404',checkBlockUser,usercontroller.load404);
 
-user_route.get('/wallet',checkBlockUser,usercontroller.walletLoad);
+user_route.get('/wallet',requireAuth,checkBlockUser,usercontroller.walletLoad);
 
-user_route.post('/add-wallet',usercontroller.walletAdd);
-
-user_route.get('razorpay-wallet',usercontroller.razorpayWalletPayment);
 
 
 

@@ -68,7 +68,7 @@
 
                               <% } else if (products.productz.category && products.productz.category.offerDetails && products.productz.category.offerDetails.length > 0) { %>
                                 <span style="color:green;">₹<%= products.productz.price - (products.productz.price * (products.category.offerDetails[0].percentage / 100)).toFixed(2) %></span>
-                                /<del><span style="color: rgb(59, 56, 56);"></span>₹<%= products.productz.price %></span></del>
+                                <del><span style="color: rgb(59, 56, 56);"></span>₹<%= products.productz.price %></span></del>
                            
 
 

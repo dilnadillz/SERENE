@@ -284,7 +284,7 @@ const loadUserProduct = async (req, res,next) => {
         const { productId } = req.params;
         const product = await productModel.findOne({ _id: productId }).populate('offer').populate({path: "category", populate:{path:"offer"}})
         console.log("offer coming",product)
-        res.render('product', { product });
+        res.render('product', { product, isStockAvailable: product.stock>0});
     } catch (error) {
         next(error);
     }
@@ -570,48 +570,6 @@ const walletLoad = async(req,res,next) => {
     }
 }
 
-const walletAdd = async(req,res,next) => {
-    try{
-        const userId = res.locals.user;
-        const {amount} =req.body;
-        console.log("user",userId)  
-        console.log("amount",amount)
-
-        const wallet = await walletModel.findOne({userId:userId});
-        if(!wallet){
-            res.status(404).json({message:"wallet not found"});
-        }
-        console.log("wallet",wallet)
-
-        wallet.balance +=parseFloat(amount);
-        wallet.walletHistory.push({date: new Date(), amount: parseFloat(amount), status: "Added"});
-
-        await wallet.save();
-
-        res.status(200).json({sucess:true, message: "amount added"})
-    }catch(error){
-        next(error);
-    }
-}
-
-const razorpayWalletPayment = async(req,res,next) => {
-    try{
-        const {amount} = req.body;
-
-        const razor = {
-            amount: totalAmount *100, //Convert the total amount to paisa (multiply by 100)
-            currency: "INR",
-            receipt: "orderId",
-        }
-
-        const order = await instance.orders.create(razor);
-
-        res.json(order);
-    }catch(error){
-        next(error);
-    }
-}
-
 module.exports = {
     welcome,
     loadRegister,
@@ -635,7 +593,6 @@ module.exports = {
     loadOrderThankyou,
     load404,
     walletLoad,
-    walletAdd,
-    razorpayWalletPayment
+
 
 }

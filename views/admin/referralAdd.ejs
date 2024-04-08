@@ -3,7 +3,7 @@
 <div class="main-panel">
   <div class="content-wrapper">
     <div class="page-header">
-      <h3 class="page-title"> Add Offer </h3>
+      <h3 class="page-title"> Add Referral Offer </h3>
       <nav aria-label="breadcrumb">
       </nav>
     </div>
@@ -11,34 +11,33 @@
       <div class="col-md-6 grid-margin stretch-card">
         <div class="card">
           <div class="card-body">
-            <form action="/admin/offersadd" method="post" onsubmit="return validateForm()">
-              <!-- Existing form fields for adding products -->
+            <!-- <form action="/admin/offersadd" method="post" onsubmit="return validateForm()"> -->
+              <form  action="/admin/referralAdd" method="POST"  >
 
-              <!-- New form fields for adding offers -->
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
-              </div>
+                <div class="mb-4">
+                    <label for="couponCode" class="form-label">Referrer Reward</label>
+                    <input type="text" placeholder="Referrer Reward" name="referrerReward" class="form-control" id="couponCode" oninput="validateCouponCode()" />
+                    <small id="couponCodeError" class="text-danger"></small>
+                </div>
+                <div class="mb-4">
+                    <label for="couponCode" class="form-label">Referree Bonus</label>
+                    <input type="text" placeholder="Referree Bonus" name="referreeBonus" class="form-control" id="couponCode" oninput="validateCouponCode()" />
+                    <small id="couponCodeError" class="text-danger"></small>
+                </div>
 
-              <div class="form-group">
-                <label for="startingDate">Starting Date</label>
-                <input type="date" class="form-control" id="startingDate" name="startingDate" min="<%= new Date().toISOString().split('T')[0] %>" required>
+               
+              
+                  <div>
+                    <button type="submit" class="btn btn-lg btn-gradient-primary mt-2">Add Referral Offer</button>
+                  </div>
+              
+              </form>
+              
             </div>
-            
-            <div class="form-group">
-                <label for="expiryDate">Expiry Date</label>
-                <input type="date" class="form-control" id="expiryDate" name="expiryDate" min="<%= new Date().toISOString().split('T')[0] %>" required>
-            </div>
-            
+        </div>
+    </div>
+</div>
 
-              <div class="form-group">
-                <label for="percentage">Percentage</label>
-                <input type="number" class="form-control" id="percentage" name="percentage" placeholder="percentage" required>
-              </div>
-
-
-              <button type="submit" class="btn btn-lg btn-gradient-primary mt-2">Add Offer</button>
-            </form>
           </div>
         </div>
       </div>

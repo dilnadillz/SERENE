@@ -28,22 +28,28 @@ const requireAuth = (req, res, next) => {
     
     const checkUser = (req, res, next) => {
         // const token = req.cookies.jwt;
-       
+     
         const token = req.cookies['access-token'];
-        
+     
       //check json web token exists and is verified
       if (token) { 
+      
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, decodedToken) => {
           if (err) {
             
-            console.log(err.message);
+          
             res.locals.user = null;  
             next();
           } else { 
             
             let user = await UserModel.findById(decodedToken.userId)
-            res.locals.user = user?._id
             
+            if(!user){
+              res.cookie("access-token", "", { maxAge: 1 });
+              
+            }else{
+              res.locals.user = user._id
+            }
             
            
             next();
