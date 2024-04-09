@@ -1,0 +1,126 @@
+<%- include('../adminlayouts/header.ejs') %>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title"> Add Coupon </h3>
+      <nav aria-label="breadcrumb">
+      </nav>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+       
+          <div class="card-body">
+
+            <form action="/admin/addCoupon" method="POST" onsubmit="return validateForm()">
+
+                  <div class="mb-4">
+                      <label for="couponCode" class="form-label">Coupon Code</label>
+                      <input type="text" placeholder="" name="couponCode" class="form-control" id="couponCode" oninput="validateCouponCode()" />
+                      <small id="couponCodeError" class="text-danger"></small>
+                  </div>
+
+                  <div class="mb-4">
+                      <label class="form-label">Description</label>
+                      <textarea placeholder="" name="couponDescription" class="form-control" rows="4" required></textarea>
+                  </div>
+
+                  <div class="row">
+
+                    <div class="col-lg-4">
+                      <div class="mb-4">
+                           <label class="form-label">Minimum Amount</label>
+                           <input placeholder="" type="number" name="minimumAmount" class="form-control" required oninput="validateFlatDiscount()" />
+                           <small id="minimumAmountError" class="text-danger"></small>
+                      </div>
+                     </div>
+                     
+                     <div class="col-lg-4">
+                      <div class="mb-4">
+                           <label class="form-label">Discount</label>
+                           <input placeholder="" type="text" name="discount" class="form-control" required oninput="validateFlatDiscount()" />
+                           <small id="discountError" class="text-danger"></small>
+                      </div>
+                     </div>
+
+                
+                      <div class="col-lg-4">
+                          <div class="mb-4">
+                              <label class="form-label">Starting Date</label>
+                              <input type="date" name="startingDate" class="form-control" id="startingDate" required oninput="validateStartingDate()" min="<%= new Date().toISOString().split('T')[0] %>" />
+                              <small id="startingDateError" class="text-danger"></small>
+                          </div>
+                      </div>
+                      
+
+                      <div class="col-lg-4">
+                          <div class="mb-4">
+                              <label class="form-label">Expiry Date</label>
+                              <input type="date" name="expiryDate" class="form-control" id="expiryDate" required oninput="validateExpiryDate()" min="<%= new Date().toISOString().split('T')[0] %>" />
+                              <small id="expiryDateError" class="text-danger"></small>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-lg-3">
+                      <div>
+                          <button class="btn btn-lg btn-gradient-primary mt-2" type="submit">Add</button>
+                      </div>
+                  </div>
+
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  function validateForm() {
+      // Validate coupon code
+      var couponCode = document.getElementById('couponCode').value;
+      if (couponCode.trim() === '') {
+          alert('Coupon Code cannot be empty');
+          return false;
+      }
+
+      // Validate minimum amount
+      var minimumAmount = document.getElementsByName('minimumAmount')[0].value;
+      if (minimumAmount <= 0) {
+          alert('Minimum Amount must be greater than 0');
+          return false;
+      }
+
+      // Validate discount
+      var discount = document.getElementsByName('discount')[0].value;
+      if (discount <= 0) {
+          alert('Discount must be greater than 0');
+          return false;
+      }
+
+      // Validate starting date
+      var startingDate = document.getElementsByName('startingDate')[0].value;
+      if (startingDate === '') {
+          alert('Starting Date cannot be empty');
+          return false;
+      }
+
+      // Validate expiry date
+      var expiryDate = document.getElementsByName('expiryDate')[0].value;
+      if (expiryDate === '') {
+          alert('Expiry Date cannot be empty');
+          return false;
+      }
+
+      return true;
+  }
+</script>
+
+
+<%- include('../adminlayouts/footer.ejs') %>

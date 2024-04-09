@@ -122,10 +122,11 @@
                           <!-- Heading -->
                           <h6 class="heading-xxxs text-muted">Status:</h6>
                           <!-- Text -->
-                          <p class="mb-0 fs-sm fw-bold" id="cancel" >
-                              <%= order.details[0].status %>
-                          </p>
+                          <p class="mb-0 fs-sm fw-bold" id="cancel-<%= order._id %>">
+                            <%= order.details[0].status %>
+                        </p>
                       </div>
+                      
                   </div>
                   
                   </div>
@@ -197,6 +198,8 @@
                         <% } %>
                         
                       
+
+                        
                          <!-- <butto  class="btn btn-sm w-100 btn-outline-dark cancel-order-btn">Cancel order</button> -->
                         
 
@@ -298,7 +301,7 @@
             if (response.ok) {
                 const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
 
-                // Show success message
+            
                 Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
                     // Redirect to orders page
                     window.location.href = '/orders';
@@ -331,7 +334,7 @@ function showReturnReasonPrompt(orderId, productId) {
     }).then((result) => {
         if (result.isConfirmed) {
             const returnReason = result.value;
-            // Send the return reason along with order and product IDs to the server
+
             fetch('/order-return', {
                 method: 'POST',
                 headers: {
@@ -340,13 +343,17 @@ function showReturnReasonPrompt(orderId, productId) {
                 body: JSON.stringify({ orderId: orderId, productId: productId, returnReason: returnReason })
             }).then(response => {
                 if (response.ok) {
+                    // Update the status on the page
+                    const statusElement = document.querySelector(`#cancel-${orderId}`);
+                    statusElement.textContent = 'Returned';
+                    statusElement.classList.add('text-success'); 
+
                     Swal.fire('Return Request Sent', 'Your return request has been sent.', 'success');
                 } else {
                     Swal.fire('Error', 'Failed to send return request.', 'error');
                 }
             }).catch(error => {
                 console.error('Failed to send return request:', error.message);
-            
             });
         }
     });

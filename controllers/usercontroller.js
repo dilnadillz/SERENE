@@ -15,6 +15,7 @@ const cartModel = require('../models/cartModel');
 const categoryModel = require('../models/categoryModel');
 const { default: mongoose } = require('mongoose');
 const walletModel = require('../models/walletModel');
+const couponModel = require('../models/couponModel');
 
 
 
@@ -456,6 +457,8 @@ const removeAddress = async (req, res,next) => {
 const loadCheckout = async (req, res,next) => {
     try {
         const userId = res.locals.user;
+
+        const coupon = await couponModel.find({})
         const ckeckOutAddress = await addressModel.findOne({ userId: userId });
 
         const cartData = await cartModel.aggregate([{
@@ -487,7 +490,7 @@ const loadCheckout = async (req, res,next) => {
         } 
         ]);
 
-        res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData, razorpayKey:process.env.key_id})
+        res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData, razorpayKey:process.env.key_id,coupon})
         // console.log("helllllllllllooooooooo",ckeckOutAddress)
     } catch (error) {
         next(error);

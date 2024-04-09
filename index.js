@@ -43,6 +43,9 @@ app.use('/admin',offer_route);
 const referral_route = require('./routes/referralRoute');
 app.use('/admin',referral_route);
 
+const coupon_route = require('./routes/couponRoute');
+app.use('/admin',coupon_route);
+
 const cart_route = require('./routes/cartRoute');
 app.use('/',cart_route);
 

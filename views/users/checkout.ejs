@@ -313,6 +313,56 @@
                 </ul>
               </div>
             </div>
+            <div>
+              <!-- Display coupons -->
+              <!-- <h6 class="mb-7">Available Coupons</h6>
+              <ul>
+                  <%# coupon.forEach(coupon => { %>
+                      <li>
+                          <strong>Coupon Code:</strong> <%#= coupon.couponCode %><br>
+                          <strong>Description:</strong> <%#= coupon.couponDescription %><br>
+                          <strong>Discount:</strong> <%#= coupon.discount %><br>
+                           Add more coupon details as needed -->
+                      <!-- </li> -->
+                  <%# }); %>
+              <!-- </ul> -->
+
+            </div>
+             
+            <div class="col-md-6">
+              <h6 class="border-left mb-20">Coupons</h6>
+              <div class="payment-details pl-10 mb-50" style="border: 1px solid #f8f8f8; border-radius: 5px; width: 200%;box-shadow: 0 0 5px rgba(122, 116, 116, 0.1);">
+                  <ul class="list-unstyled">
+                      <% for (let i = 0; i < coupon.length; i++) { %>
+                          <li>
+                              <span style="color: rgb(224, 221, 16);"><%= coupon[i].couponCode %></span>  <%= coupon[i].couponDescription %>
+                          </li>
+                      <% } %>
+                  </ul>
+              </div>
+          </div>
+          
+        
+          <div class="row" id="inputCoupon">
+            <div class="col-sm-8">
+                <input type="text" id="couponCode" name="couponCode" class="form-control" placeholder="Enter Coupon Code">
+            </div>
+            <div class="col-sm-4">
+                <button type="button" id="apply" class="btn btn-secondary" style="border-radius: 3px; height: 100%;">Apply</button>
+            </div>
+        </div>
+        <p class="mt-2" id="error" style="color: red;"></p>
+
+        
+        <div class="row d-none" id="afterApplied">
+          <div class="col-sm-8">
+              <p style="color: green;">Coupon applied successfully!</p>
+          </div>
+          <div class="col-sm-4">
+              <button type="button" id="remove" class="btn btn-danger">Remove</button>
+          </div>
+      </div>
+      
 
             <!-- Disclaimer -->
             <p class="mb-7 fs-xs text-gray-500">
@@ -605,5 +655,64 @@ placeOrderBtn.addEventListener('click', async () => {
       }
 
     </style>
+
+
+
+
+
+
+
+<script>
+  //coupon
+
+  document.getElementById('apply').addEventListener('click', async () => {
+    try {
+        const couponCode = document.getElementById('couponCode').value;
+        const response = await fetch('/apply-coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ couponCode }),
+        });
+
+        if (response.ok) {
+            const couponDetails = await response.json();
+            const discountAmount = couponDetails.discountAmount;
+
+            // Update the total price display
+            const totalPriceElement = document.getElementById('totalPrice');
+            const currentTotalPrice = parseFloat(totalPriceElement.innerText);
+            const updatedTotalPrice = currentTotalPrice - discountAmount;
+            totalPriceElement.innerText = updatedTotalPrice.toFixed(2);
+
+            // Show success message
+            Swal.fire({
+                title: 'Coupon Applied!',
+                text: `Discount of ₹${discountAmount.toFixed(2)} applied.`,
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
+        } else {
+            const errorMessage = await response.json();
+            Swal.fire({
+                title: 'Error!',
+                text: errorMessage.message || 'Failed to apply coupon',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred. Please try again later.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+        });
+    }
+});
+
+</script>
     
     <%- include('../layouts/footer.ejs') %>

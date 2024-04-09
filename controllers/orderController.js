@@ -139,44 +139,31 @@ const viewOrder = async(req,res,next) => {
               $match: { _id: new mongoose.Types.ObjectId(orderId) }
             },
             {
-              $unwind: '$details'
-            },
-            {
-              $match: { 'details.productId': new mongoose.Types.ObjectId(productId) }
-            },
-            {
                 $lookup: {
                     from: "products",
                     localField: "details.productId",
                     foreignField: "_id",
                     as: "productDetls"
                 }
-            },
-            {
-                $unwind: "$productDetls"
             }
             
           ]);
+
+        // Save productDetls in a separate variable
+        const productDetls = order[0].productDetls;
+
         const addressId =  orderDetails.delivery_address
         // console.log("ID", addressId)
 
-        const userAddress = await addressModel.aggregate([
-            {
-              $match: { userId: userId }
-            },
-            {
-              $unwind: '$address'   
-            },
-            {
-              $match: { 'address._id': new mongoose.Types.ObjectId(addressId) }
-            }
-           
-          ]);
+        const userAddress = await addressModel.findOne({
+            userId: userId,
+            'address._id': addressId
+        });
 
         console.log("order", order);
-        console.log("address", userAddress[0]);  
+        console.log("address", userAddress);  
         
-        res.render('order-view',{order:order[0],address:userAddress[0]});
+        res.render('order-view',{order:order[0],address:userAddress,productDetls: productDetls});
     }catch(error){
         next(error);
     }

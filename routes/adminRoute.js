@@ -33,9 +33,9 @@ admin_route.post('/orders/update-status',admincontroller.updateOrderStatus);
 
 admin_route.post('/order-approve-reject',admincontroller.orderApproveOrReject);
 
-admin_route.get('/salesReport',admincontroller.loadSalesReport);
+admin_route.get('/salesReport',requireAdminAuth,admincontroller.loadSalesReport);
 
-admin_route.get('/salesReportFilter',admincontroller.generateSalesReport);
+admin_route.get('/salesReportFilter',admincontroller.filterSalesReport);
 
 module.exports = admin_route
 

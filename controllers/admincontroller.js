@@ -126,6 +126,9 @@ const loadUserOrder = async(req,res,next) => {
             },
             {
                 $unwind: "$userz"
+            },
+            {
+                $sort:{date: -1}
             }
         ])
        
@@ -220,6 +223,7 @@ const orderApproveOrReject =async(req,res,next) => {
             {new: true}
         );
         console.log("orderstatus",orderStatus);
+        
 
         res.status(200).json({orderStatus})
 
@@ -230,7 +234,7 @@ const orderApproveOrReject =async(req,res,next) => {
 
 const loadSalesReport = async(req,res,next) => {
     try{
-        const salesData = await orderModel.find({}).populate('details.productId')
+        const salesData = await orderModel.find({"details.status":"Delivered"}).populate('details.productId')
         .exec();
         console.log("sales",salesData)
         res.render('salesReport',{salesData});
@@ -238,15 +242,16 @@ const loadSalesReport = async(req,res,next) => {
         next(error);
     }
 }
-
-const generateSalesReport = async(req,res) => {
+    
+const filterSalesReport = async(req,res) => {
     try {
       const {startDate,endDate} = req.query;
       const fromDate = new Date(startDate);
       const toDate = new Date(endDate);
       toDate.setHours(23, 59, 59, 999);
-      const salesData = await Order.find({
+      const salesData = await orderModel.find({
         date: { $gte: fromDate, $lte: toDate },
+        "details.status": "Delivered",
       });
       res.render("salesReport", { salesData });
     } catch (error) {
@@ -268,7 +273,7 @@ module.exports = {
     updateOrderStatus,
     orderApproveOrReject,
     loadSalesReport,
-    generateSalesReport
+    filterSalesReport
 
   
 }
