@@ -1,5 +1,9 @@
 <%- include('../adminlayouts/header.ejs') %>
 
+<head>
+  <title>Order Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
 
 
@@ -54,28 +58,26 @@
               </div>
             </div>
           </div>
+          
           <div class="row">
-            <div class="col-md-7 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <div class="clearfix">
-                    <h4 class="card-title float-left">Visit And Sales Statistics</h4>
-                    <div id="visit-sale-chart-legend" class="rounded-legend legend-horizontal legend-top-right float-right"></div>
-                  </div>
-                  <canvas id="visit-sale-chart" class="mt-4"></canvas>
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="clearfix">
+                            <div class="col-md-12">
+                                <label for="chartFilter">Select Chart Filter:</label>
+                                <select id="chartFilter" class="form-control">
+                                    <option value="daily">Daily</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <canvas id="order-chart" class="mt-4"></canvas>
+                    </div>
                 </div>
-              </div>
             </div>
-            <div class="col-md-5 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Traffic Sources</h4>
-                  <canvas id="traffic-chart"></canvas>
-                  <div id="traffic-chart-legend" class="rounded-legend legend-vertical legend-bottom-left pt-4"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+        
           <div class="row">
             <div class="col-12 grid-margin">
               <div class="card">
@@ -144,7 +146,7 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
@@ -324,11 +326,68 @@
             </div>
           </div>
         </div>
+       -->
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          const dailyDetls = <%- JSON.stringify(dailyDetls) %>;
+          const dailyOrder = <%- JSON.stringify(dailyOrder) %>;
+          const monthlyDetls = <%- JSON.stringify(monthlyDetls) %>;
+          const monthlyOrder = <%- JSON.stringify(monthlyOrder) %>;
+  
+          document.addEventListener("DOMContentLoaded", function() {
+              const ctx = document.getElementById('order-chart').getContext('2d');
+              let myChart = new Chart(ctx, {
+                  type: 'bar',
+                  data: {
+                      labels: [], // Fill with actual data labels
+                      datasets: [{
+                          label: 'Orders',
+                          data: [], // Fill with actual data values
+                          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                          borderColor: 'rgba(54, 162, 235, 1)',
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      scales: {
+                          y: {
+                              beginAtZero: true
+                          }
+                      }
+                  }
+              });
+  
+              function updateChart(filter) {
+                  let labels = [];
+                  let data = [];
+  
+                  if (filter === 'monthly') {
+                      labels = monthlyDetls;
+                      data = monthlyOrder;
+                  } else {
+                      labels = dailyDetls;
+                      data = dailyOrder;
+                  }
+  
+                  myChart.data.labels = labels;
+                  myChart.data.datasets[0].data = data;
+                  myChart.update();
+              }
+  
+              document.getElementById('chartFilter').addEventListener('change', function() {
+                  updateChart(this.value);
+              });
+  
+              // Initial chart update
+              updateChart('daily');
+          });
+      </script>
+        
+        
       
-
-
-
-
 
       <!-- partial -->
     </div>

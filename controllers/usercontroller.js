@@ -16,6 +16,7 @@ const categoryModel = require('../models/categoryModel');
 const { default: mongoose } = require('mongoose');
 const walletModel = require('../models/walletModel');
 const couponModel = require('../models/couponModel');
+const referralModel = require('../models/referralModel');
 
 
 
@@ -459,6 +460,7 @@ const loadCheckout = async (req, res,next) => {
         const userId = res.locals.user;
 
         const coupon = await couponModel.find({})
+        console.log("cpoupon",coupon);  
         const ckeckOutAddress = await addressModel.findOne({ userId: userId });
 
         const cartData = await cartModel.aggregate([{
@@ -489,8 +491,14 @@ const loadCheckout = async (req, res,next) => {
             }
         } 
         ]);
+         // Calculate totalAmount here
+         let totalAmount = 0;
+         cartData.forEach((item) => {
+             totalAmount += item.products.quantity * item.productz.price;
+         });
 
-        res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData, razorpayKey:process.env.key_id,coupon})
+        console.log("cartdata",cartData)
+        res.render('checkout', { ckeckOutAddress: ckeckOutAddress,cartData:cartData, razorpayKey:process.env.key_id,coupon,totalAmount: totalAmount})
         // console.log("helllllllllllooooooooo",ckeckOutAddress)
     } catch (error) {
         next(error);
@@ -573,6 +581,61 @@ const walletLoad = async(req,res,next) => {
     }
 }
 
+const loadWalletHistory = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+        const wallet = await walletModel.findOne({userId:userId})
+
+        res.render('walletHistory',{wallet});
+    }catch(error){
+        next(error);
+    }
+}
+
+const applyCoupon = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+        const {couponCode} = req.body;
+
+        const cart =  await cartModel.findOne({userId,userId}).populate("products.productId");
+        if(!cart){
+            return res.status(401).json({message:"cart not found for user"});
+        }
+        console.log("cart",cart);
+
+        const totalBeforeDiscount = Number(cart.products.reduce((total, product) => {
+            return total + (product.productId.price * product.quantity);
+        }, 0).toFixed(2));
+        
+        console.log("totals", totalBeforeDiscount);
+        
+        
+        const coupon = await couponModel.findOne({couponCode:couponCode});
+      
+        if(!coupon){
+            return res.status(401).json({message:"invalid coupon code"});
+        }
+        console.log("couponzz",coupon);
+        if(new Date() < coupon.startingDate || new Date() > coupon.expiryDate){
+            return res.status(401).json({message:"coupon is not valid on this date"});
+        }
+       
+        if(totalBeforeDiscount < coupon.minimumAmount){
+            return res.status(401).json({message:`coupon is valid above ${coupon.minimumAmount}`});
+        }
+        console.log("coupon",coupon);
+
+        const totalDiscount = Math.min(coupon.discount, totalBeforeDiscount);
+        const totalAfterDiscount = totalBeforeDiscount - totalDiscount;
+        console.log("finaltotal",totalAfterDiscount)
+
+        res.status(200).json({success: true, message: "coupon applied", totals:totalAfterDiscount, discount:coupon.discount});
+
+    }catch(error){
+        next(error);
+    }
+}
+
 module.exports = {
     welcome,
     loadRegister,
@@ -596,6 +659,8 @@ module.exports = {
     loadOrderThankyou,
     load404,
     walletLoad,
+    loadWalletHistory,
+    applyCoupon
 
 
 }

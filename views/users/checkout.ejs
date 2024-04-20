@@ -289,7 +289,7 @@
                     </li>
                     <!-- Discount -->
                     <li class="list-group-item d-flex">
-                      <span>Discount</span> <span class="ms-auto fs-sm text-success">--- ₹<%= Number(cartData.reduce((total, product) => {
+                      <span id="discount">Discount</span> <span class="ms-auto fs-sm text-success">--- ₹<%= Number(cartData.reduce((total, product) => {
                         if (product.offerDetails && product.offerDetails.length > 0) {
                           const discountAmount = (product.productz.price * product.products.quantity) * (product.offerDetails[0].percentage / 100);
                           return total += discountAmount;
@@ -310,6 +310,53 @@
                       }
                     }, 0)) %></span>
                   </li>
+                  
+
+
+                          <!-- Your EJS file for checkout package -->
+
+                          <!-- Assuming you have access to the cartdata and coupon variables -->
+                          <%
+                          function calculateTotalPrice(cartData, coupon) {
+                            let totalPrice = 0;
+                            cartData.forEach(item => {
+                              totalPrice += item.productz.price * item.products.quantity;
+                            });
+
+                            if (coupon && coupon.length > 0) {
+                              const couponDiscount = parseFloat(coupon[0].discount);
+                              totalPrice -= couponDiscount;
+                            }
+
+                            return totalPrice;
+                          }
+                          %>
+
+                          <!-- Display the total price -->
+                          Total Price: <%= calculateTotalPrice(cartData, coupon) %>
+
+                  
+
+
+                  <%# let totalAmount = 0; %>
+                  <%# cartData.forEach((item) => { %>
+                      <%# totalAmount += item.products.quantity * item.productz.price; %>
+                  <%# }); %>
+                  
+                  <%# let couponPrice = 0; %>
+                  <%# if (coupon.length > 0) { %>
+                      <%# couponPrice = Number(coupon[0].discount); %>
+                  <%# } %>
+                  
+                  <%# let discountedAmount = totalAmount - couponPrice; %>
+<!--                   
+                  <p>Total Amount: <%#= totalAmount %></p>
+                  <%# if (coupon.length > 0) { %>
+                      <p>Coupon Discount: <%#= couponPrice %></p>
+                  <%# } %>
+                  <p>Discounted Amount: <%#= discountedAmount %></p>
+                   -->
+
                 </ul>
               </div>
             </div>
@@ -341,7 +388,7 @@
                   </ul>
               </div>
           </div>
-          
+          <br>
         
           <div class="row" id="inputCoupon">
             <div class="col-sm-8">
@@ -353,15 +400,15 @@
         </div>
         <p class="mt-2" id="error" style="color: red;"></p>
 
-        
         <div class="row d-none" id="afterApplied">
           <div class="col-sm-8">
-              <p style="color: green;">Coupon applied successfully!</p>
+            <p style="color: green;">Coupon applied successfully!</p>
           </div>
           <div class="col-sm-4">
-              <button type="button" id="remove" class="btn btn-danger">Remove</button>
+            <button type="button" id="remove" class="btn btn-danger">Remove</button>
           </div>
-      </div>
+        </div>
+        
       
 
             <!-- Disclaimer -->
@@ -372,7 +419,7 @@
             </p>
 
             <!-- Button -->
-            <button id="place-order-btn" class="btn w-100 btn-dark" onclick="razorpayment()">
+            <button id="place-order-btn" class="btn w-100 btn-dark"  onclick="razorpayment()">
               Place Order
             </button>
             
@@ -493,6 +540,7 @@
         </div>
       </div>
     </section>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -544,6 +592,10 @@
         };
       
         var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+    // Handle payment failure
+    paymentFailed(order.id);
+});
         rzp.open();
         }) 
       }
@@ -585,6 +637,19 @@
               });
           }
           }
+
+          function paymentFailed(orderId) {
+    Swal.fire({
+        title: 'Payment Failed!',
+        text: 'Your payment has failed. Please choose another payment method.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+    }).then(() => {
+        // Redirect to the order page with status=failed query parameter
+        window.location.href = `/orders?status=failed&orderId=${orderId}`;
+    });
+}
+    
     </script>
 
 
@@ -596,56 +661,54 @@
 
    
     <script>
-      // Frontend code
+// Frontend code
 const placeOrderBtn = document.getElementById('place-order-btn');
 
 placeOrderBtn.addEventListener('click', async () => {
   try {
     const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-    console.log(selectedAddress)
-    console.log(paymentMethod)
+    console.log(selectedAddress);
+    console.log(paymentMethod);
 
-    const response = await fetch('/place-order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ selectedAddress, paymentMethod }),
-    });
-
-    if (response.ok) {
-    
-      Swal.fire({
-        title: 'Order Placed!',
-        text: 'Your order has been placed successfully.',
-        icon: 'success',
-        confirmButtonText: 'OK',
-      }).then(() => {
-        window.location.href = '/order-sucess' //to redirect to the sucesss page
-      })
- 
-    } else {
-   
-      const errorMessage = await response.json();
-      Swal.fire({
-        title: 'Error!',
-        text: errorMessage.message || 'Failed to place order',
-        icon: 'error',
-        confirmButtonText: 'OK',
+    if (paymentMethod === 'COD') {
+         
+      // Make the fetch request to place the COD order
+      const response = await fetch('/place-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ selectedAddress, paymentMethod }),
       });
-    }
+
+      if (response.ok) {
+        Swal.fire({
+          title: 'Order Placed!',
+          text: 'Your order has been placed successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          window.location.href = '/order-sucess'; //to redirect to the success page
+        });
+      } else {
+        const errorMessage = await response.json();
+        Swal.fire({
+          title: 'Error!',
+          text: errorMessage.message || 'Failed to place order',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      }
+    } 
+
   } catch (error) {
     console.error(error);
 
-    // Swal.fire({
-    //   title: 'Error!',
-    //   text: 'An unexpected error occurred. Please try again later.',
-    //   icon: 'error',
-    //   confirmButtonText: 'OK',
-    // });
+   
   }
 });
+
 
     </script>
 
@@ -665,54 +728,50 @@ placeOrderBtn.addEventListener('click', async () => {
 <script>
   //coupon
 
-  document.getElementById('apply').addEventListener('click', async () => {
-    try {
-        const couponCode = document.getElementById('couponCode').value;
-        const response = await fetch('/apply-coupon', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ couponCode }),
-        });
+  document.getElementById('apply').addEventListener('click', async function() {
+    const couponCode = document.getElementById('couponCode').value;
+    const response = await fetch('/applyCoupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ couponCode })
+    });
+    const data = await response.json();
+    if (data.success) {
+      console.log("data",data)
+      document.getElementById('discount').innerText = `--- ₹${data.discount.toFixed(2)}`;
+        document.getElementById('totalAmount').innerText = `₹${data.totals.toFixed(2)}`;
+        document.getElementById('priceBreakup').style.display = 'block';
 
-        if (response.ok) {
-            const couponDetails = await response.json();
-            const discountAmount = couponDetails.discountAmount;
+        
+        const offerAmount = total - data.totalAfterDiscount;
+        document.getElementById('offer').innerText = `--- ₹${offerAmount.toFixed(2)}`;
+        document.getElementById('offerAmount').style.display = 'block';
 
-            // Update the total price display
-            const totalPriceElement = document.getElementById('totalPrice');
-            const currentTotalPrice = parseFloat(totalPriceElement.innerText);
-            const updatedTotalPrice = currentTotalPrice - discountAmount;
-            totalPriceElement.innerText = updatedTotalPrice.toFixed(2);
+         // Calculate and display the total price after applying the coupon
+         const totalAfterCoupon = calculateTotalPrice(cartData, data);
+        document.getElementById('totalPriceAfterCoupon').innerText = `Total Price After Coupon: ₹${totalAfterCoupon.toFixed(2)}`;
+        document.getElementById('totalPriceAfterCoupon').style.display = 'block';
+        console.log("totalAfterCoupon",totalAfterCoupon)
 
-            // Show success message
-            Swal.fire({
-                title: 'Coupon Applied!',
-                text: `Discount of ₹${discountAmount.toFixed(2)} applied.`,
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-        } else {
-            const errorMessage = await response.json();
-            Swal.fire({
-                title: 'Error!',
-                text: errorMessage.message || 'Failed to apply coupon',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
-    } catch (error) {
-        console.error(error);
+      } else {
+        // Show SweetAlert with error message
         Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred. Please try again later.',
             icon: 'error',
-            confirmButtonText: 'OK',
+            title: 'Oops...',
+            text: data.message,
         });
     }
 });
 
+
+
+
+
 </script>
+
+
+
     
     <%- include('../layouts/footer.ejs') %>

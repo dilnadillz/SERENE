@@ -62,6 +62,9 @@ user_route.get('/404',checkBlockUser,usercontroller.load404);
 
 user_route.get('/wallet',requireAuth,checkBlockUser,usercontroller.walletLoad);
 
+user_route.get('/wallet/walletHistory',requireAuth,checkBlockUser,usercontroller.loadWalletHistory);
+
+user_route.post('/applyCoupon',usercontroller.applyCoupon);
 
 
 

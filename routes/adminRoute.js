@@ -37,6 +37,10 @@ admin_route.get('/salesReport',requireAdminAuth,admincontroller.loadSalesReport)
 
 admin_route.get('/salesReportFilter',admincontroller.filterSalesReport);
 
+admin_route.get('/salesPdf',requireAdminAuth,admincontroller.salesPdf);
+
+
+
 module.exports = admin_route
 
 

@@ -62,13 +62,30 @@
                   </tbody>
               </table>
               </div>
-              <!-- <button class="btn btn-dark btn-download">Download Report (PDF)</button> -->
+              <button type="button" id="downloadBtn" class="btn btn-light btn-download">Download Report (PDF)</button>
+
           </div>
       </div>
   </div>
 </div>
 
-
+<script>
+    document.getElementById('downloadBtn').addEventListener('click', async () => {
+      try {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const response = await fetch(`/admin/salesPdf?startDate=${startDate}&endDate=${endDate}`);
+        if (response.ok) {
+          window.location.href = '/admin/salesPdf';
+        } else {
+          console.error('Failed to fetch sales report data');
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    });
+  </script>
+  
 
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">

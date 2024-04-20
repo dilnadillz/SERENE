@@ -6,6 +6,12 @@ const UserModel = require('../models/userModel');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const orderModel = require('../models/orderModel')
+const puppeteer = require('puppeteer');
+const path = require('path');
+const ejs = require('ejs');
+const fs = require('fs');
+const moment = require('moment');
+
 
 const adminlogin = async (req, res) => {
     try {
@@ -54,7 +60,58 @@ const verifyLogin = async (req, res,next) => {
 
 const adminWelcome = async (req, res,next) => {
     try {
-        res.render('dashboard');
+        //data fetchig in chart
+        const dailyOrderData = await orderModel.aggregate([
+            {
+                $match: { date: { $gte: new Date(moment().subtract(30, "days").startOf("day")) } }//based on date field it filters orders on last 30 days
+            },
+            {
+                $group: {_id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },//group oders by date
+                  orderCount: { $sum: 1 },//calculating number of orders on each date
+                },
+              },
+              {
+                $sort: { _id: 1 },//sorting it in asnding order
+              },
+          
+        ])
+        // console.log("dailyOrderData",dailyOrderData);
+
+        const dailyDetls = dailyOrderData.map((item)=> item._id);
+        const dailyOrder = dailyOrderData.map((item)=> item.orderCount);
+        // console.log("dailyDetls",dailyDetls);
+        // console.log("dailyOrder",dailyOrder);
+
+
+        const monthlyOrderData = await orderModel.aggregate([
+            {
+                $group: {_id: { $dateToString: { format: "%Y-%m", date: "$date" } },
+                  orderCount: { $sum: 1 },
+                },
+              },
+              {
+                $sort: { _id: 1 },
+              },
+        ])
+        // console.log("monthlyOrderData",monthlyOrderData);
+
+        const monthlyDetls = monthlyOrderData.map((item)=> item._id);
+        const monthlyOrder = monthlyOrderData.map((item)=> item.orderCount);
+        // console.log("monthlyDetls",monthlyDetls);
+        // console.log("monthlyOrder",monthlyOrder);
+
+        //best selling product
+        const bestProducts = await orderModel.aggregate([
+            {
+                $unwind: "$details"
+            },
+            {
+                $group:{_id:"$details.productId", productName:{$first:"$details.productId.productName"},brand:{$first:"$details.brand"},category:{$first:"$details.category"}}
+            }
+        ])
+
+        console.log("bestProducts",bestProducts);
+        res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder});
     } catch (error) {
         next(error);
     }
@@ -234,7 +291,7 @@ const orderApproveOrReject =async(req,res,next) => {
 
 const loadSalesReport = async(req,res,next) => {
     try{
-        const salesData = await orderModel.find({"details.status":"Delivered"}).populate('details.productId')
+        const salesData = await orderModel.find({"details.status":"Delivered"}).populate('details.productId').sort({date:-1})
         .exec();
         console.log("sales",salesData)
         res.render('salesReport',{salesData});
@@ -243,21 +300,51 @@ const loadSalesReport = async(req,res,next) => {
     }
 }
     
-const filterSalesReport = async(req,res) => {
+const filterSalesReport = async(req,res,next) => {
     try {
       const {startDate,endDate} = req.query;
       const fromDate = new Date(startDate);
       const toDate = new Date(endDate);
-      toDate.setHours(23, 59, 59, 999);
+      toDate.setHours(23, 59, 59, 999); 
       const salesData = await orderModel.find({
         date: { $gte: fromDate, $lte: toDate },
         "details.status": "Delivered",
       });
       res.render("salesReport", { salesData });
     } catch (error) {
-      console.log(error.message);
+      next(error);
     }
-  };
+};
+
+const salesPdf = async(req,res,next) => {
+    try{
+     
+    const salesData = await orderModel.find({"details.status":"Delivered"}).populate('details.productId');
+
+    const data = {
+        salesData: salesData
+    }
+
+     //render ejs template
+     const salesPdfPath = path.join(__dirname,'../views/admin/salesPdf.ejs');
+     const invoiceHtml = ejs.render(fs.readFileSync(salesPdfPath, 'utf8'), data);
+
+     //generate pdf invoice
+     const browser = await puppeteer.launch({ headless: 'new'});
+     const page = await browser.newPage();
+     await page.setContent(invoiceHtml);
+     const pdfBuffer = await page.pdf({format: 'A4'});
+     await browser.close();
+
+     //send the pdf as dwnld
+     res.setHeader('Content-Type', 'application/pdf');
+     res.setHeader('Content-Disposition', 'attachment; filename="salesReport.pdf"');
+     res.send(pdfBuffer);
+
+    }catch(error){
+        next(error);
+    }
+}
   
 
 module.exports = {
@@ -273,7 +360,8 @@ module.exports = {
     updateOrderStatus,
     orderApproveOrReject,
     loadSalesReport,
-    filterSalesReport
+    filterSalesReport,
+    salesPdf
 
   
 }

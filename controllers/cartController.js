@@ -149,7 +149,7 @@ const updateQuantity = async(req,res,next) => {
         );
             
 
-       
+        
        
 
         const cartData = await cartModel.aggregate([{

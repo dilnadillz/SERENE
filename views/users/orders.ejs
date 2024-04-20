@@ -60,6 +60,7 @@
             </nav>
 
           </div>
+          
           <divid="refreshDiv" class="col-12 col-md-9 col-lg-8 offset-lg-1">
             <% orderData.forEach(order => { %>
             <!-- Order -->
@@ -122,11 +123,25 @@
                           <!-- Heading -->
                           <h6 class="heading-xxxs text-muted">Status:</h6>
                           <!-- Text -->
-                          <p class="mb-0 fs-sm fw-bold" id="cancel-<%= order._id %>">
-                            <%= order.details[0].status %>
-                        </p>
+                          <p class="mb-0 fs-sm fw-bold" id="cancel" >
+                              <%= order.details[0].status %>
+                          </p>
+
+
+
+
+
+                          <% if (order.details[0].returnStatus === 'return'|| order.details[0].returnStatus === 'Delivered') { %>
+                            <p style="color: rgb(218, 162, 8); ">Return request send</p>
+                        <% } else if (order.details[0].returnStatus === 'accepted' ) { %>
+                            <p style="color: rgb(58, 146, 37);"> Return Accepted</p>
+                        <% } else if (order.details[0].returnStatus === 'rejected' ) { %>
+                            <p style="color: red;">Return Rejected</p>
+                        <% } %> 
+
+
+              
                       </div>
-                      
                   </div>
                   
                   </div>
@@ -182,15 +197,16 @@
                       <div class="col-6">
 
                         <% if (order.details[0].status === 'Delivered') { %>
-                          <% if (order.details[0].returnStatus === 'Returned') { %>
-                            <p class="text-success">Returned</p>
-                          <% } else { %>
-                          <!-- Return Button -->
-                          <a class="btn btn-sm w-100 btn-outline-dark" href="#" onclick="showReturnReasonPrompt('<%= order._id %>', '<%= order.details[0].productId %>')">
+                           <!-- Return Button -->
+                           <a class="btn btn-sm w-100 btn-outline-dark"  href="#" onclick="showReturnReasonPrompt('<%= order._id %>', '<%= order.details[0].productId %>')">
                             Return
                           </a>
+                                 
+                    
                           <% } %>
-                          <% } else if (order.details[0].status === 'Pending' || order.details[0].status === 'Shipped') { %>
+
+                       
+                          <%  if (order.details[0].status === 'Pending' || order.details[0].status === 'Shipped') { %>
                           <!-- Cancel Button -->
                           <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order.details[0].productId %>">
                             Cancel order
@@ -198,8 +214,6 @@
                         <% } %>
                         
                       
-
-                        
                          <!-- <butto  class="btn btn-sm w-100 btn-outline-dark cancel-order-btn">Cancel order</button> -->
                         
 
@@ -217,39 +231,37 @@
             <% }); %>
 
 
-             <!-- Pagination -->
-             <nav class="d-flex justify-content-center justify-content-md-end mt-10">
-              <ul class="pagination pagination-sm text-gray-400">
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-left"></i>
-                  </a>
-                </li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">4</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">5</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">6</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-right"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
+            <%# const itemsPerPage = 5; %>
+<%# const totalPages = Math.ceil(items.length / itemsPerPage); %>
+<%# const currentPage = parseInt(req.query.page, 10) || 1; %>
+<%# const startIndex = (currentPage - 1) * itemsPerPage; %>
+<%# const endIndex = Math.min(startIndex + itemsPerPage, items.length); %>
+
+<!-- Display your items here -->
+
+<nav class="d-flex justify-content-center justify-content-md-end">
+  <ul class="pagination pagination-sm text-gray-400">
+      <% if (currentPage > 1) { %>
+          <li class="page-item">
+              <a class="page-link page-link-arrow" href="?page=<%= currentPage - 1 %>">
+                  <i class="fa fa-caret-left"></i>
+              </a>
+          </li>
+      <% } %>
+      <% for (let page = 1; page <= totalPages; page++) { %>
+          <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+              <a class="page-link" href="?page=<%= page %>"><%= page %></a>
+          </li>
+      <% } %>
+      <% if (currentPage < totalPages) { %>
+          <li class="page-item">
+              <a class="page-link page-link-arrow" href="?page=<%= currentPage + 1 %>">
+                  <i class="fa fa-caret-right"></i>
+              </a>
+          </li>
+      <% } %>
+  </ul>
+</nav>
 
 
           </div>
@@ -301,7 +313,7 @@
             if (response.ok) {
                 const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
 
-            
+                // Show success message
                 Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
                     // Redirect to orders page
                     window.location.href = '/orders';
@@ -334,7 +346,7 @@ function showReturnReasonPrompt(orderId, productId) {
     }).then((result) => {
         if (result.isConfirmed) {
             const returnReason = result.value;
-
+           
             fetch('/order-return', {
                 method: 'POST',
                 headers: {
@@ -343,21 +355,21 @@ function showReturnReasonPrompt(orderId, productId) {
                 body: JSON.stringify({ orderId: orderId, productId: productId, returnReason: returnReason })
             }).then(response => {
                 if (response.ok) {
-                    // Update the status on the page
-                    const statusElement = document.querySelector(`#cancel-${orderId}`);
-                    statusElement.textContent = 'Returned';
-                    statusElement.classList.add('text-success'); 
-
                     Swal.fire('Return Request Sent', 'Your return request has been sent.', 'success');
                 } else {
                     Swal.fire('Error', 'Failed to send return request.', 'error');
                 }
             }).catch(error => {
                 console.error('Failed to send return request:', error.message);
+            
             });
         }
     });
 }
+
+
+
+
 
     </script>
      

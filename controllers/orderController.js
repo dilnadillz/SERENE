@@ -1,5 +1,10 @@
 const mongoose = require('mongoose')
 
+const path = require('path');
+const ejs = require('ejs');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+
 const productModel = require('../models/productModel');
 const UserModel = require('../models/userModel');
 const cartModel = require('../models/cartModel');
@@ -15,7 +20,7 @@ const instance = new Razorpay({
 
 const orderPlace = async(req,res,next) => {
     try{
-        
+            
         const userId = res.locals.user;
         const {productId} = req.body;
         const {selectedAddress,paymentMethod} = req.body;
@@ -71,11 +76,22 @@ const orderPlace = async(req,res,next) => {
 
 const loadOrder = async (req, res,next) => {
     try {
-        const userId = res.locals.user
-        const orderData = await orderModel.find({userId:userId}).sort({date:-1});
-        console.log(orderData)
-        
-        res.render('orders',{orderData:orderData});
+        const userId = res.locals.user;
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 5; // Number of orders per page
+
+        const totalOrders = await orderModel.countDocuments({ userId: userId });
+        const totalPages = Math.ceil(totalOrders / pageSize);
+
+        const orderData = await orderModel.find({ userId: userId })
+            .sort({ date: -1 })
+            .skip((page - 1) * pageSize)
+            .limit(pageSize);
+
+        console.log(orderData);
+
+        res.render('orders', { orderData: orderData, totalPages: totalPages, currentPage: page });
+  
     } catch (error) {
         next(error);
     }
@@ -221,12 +237,50 @@ const orderReturn = async(req,res,next) => {
     }
 }
 
+const orderInvoiceGenerate = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+        const {orderId} = req.query;
+
+        const user = await UserModel.findById(userId);
+        console.log("user",user)
+        const order = await orderModel.findOne({_id:orderId}).populate('details.productId');
+        console.log(order);
+
+        const data = {
+            user : user,
+            order: order
+        }
+
+        //render ejs template
+        const invoiceTemplatePath = path.join(__dirname,'../views/users/invoice.ejs');
+        const invoiceHtml = ejs.render(fs.readFileSync(invoiceTemplatePath, 'utf8'), data);
+
+        //generate pdf invoice
+        const browser = await puppeteer.launch({ headless: 'new'});
+        const page = await browser.newPage();
+        await page.setContent(invoiceHtml);
+        const pdfBuffer = await page.pdf({format: 'A4'});
+        await browser.close();
+
+        //send the pdf as dwnld
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+        res.send(pdfBuffer);
+
+       
+    }catch(error){
+        next(error);
+    }   
+}
+
 module.exports = {
     orderPlace,
     loadOrder,
     orderCancel,
     viewOrder,
     razorpayPayment,
-    orderReturn
+    orderReturn,
+    orderInvoiceGenerate
    
 }

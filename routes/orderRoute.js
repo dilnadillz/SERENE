@@ -26,6 +26,8 @@ order_route.post('/razorpay-payment',requireAuth,orderController.razorpayPayment
 
 order_route.post('/order-return',requireAuth,orderController.orderReturn);
 
+order_route.get('/download-invoice',requireAuth,orderController.orderInvoiceGenerate);
+
 
 
 module.exports = order_route
