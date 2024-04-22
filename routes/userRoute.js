@@ -66,6 +66,8 @@ user_route.get('/wallet/walletHistory',requireAuth,checkBlockUser,usercontroller
 
 user_route.post('/applyCoupon',usercontroller.applyCoupon);
 
+user_route.post('/removeCoupon',usercontroller.removeCoupon);
+
 
 
 

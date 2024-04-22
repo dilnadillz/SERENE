@@ -90,7 +90,9 @@ const loadOrder = async (req, res,next) => {
 
         console.log(orderData);
 
-        res.render('orders', { orderData: orderData, totalPages: totalPages, currentPage: page });
+        const razorpayKey = process.env.key_id
+
+        res.render('orders', { orderData: orderData, totalPages: totalPages, currentPage: page ,razorpayKey:razorpayKey});
   
     } catch (error) {
         next(error);
@@ -119,7 +121,7 @@ const orderCancel = async(req,res,next) => {
 
       if(!wallet){
         return res.status(404).json({message:"wallet not found"});
-      }
+      }    
 
       wallet.balance += totalRefund;
 
@@ -244,13 +246,41 @@ const orderInvoiceGenerate = async(req,res,next) => {
 
         const user = await UserModel.findById(userId);
         console.log("user",user)
-        const order = await orderModel.findOne({_id:orderId}).populate('details.productId');
-        console.log(order);
+        // const order = await orderModel.findOne({_id:orderId,userId: userId}).populate('details.productId');
+        const order = await orderModel.aggregate([
+            {
+                $match: { _id: new mongoose.Types.ObjectId(orderId) }
+              },
+              {
+                  $lookup: {
+                      from: "products",
+                      localField: "details.productId",
+                      foreignField: "_id",
+                      as: "productz"
+                  }
+              },
+              {
+                $unwind:"$productz"
+              }
+              
+        ])
+        console.log("order",order);
 
+        const addressId =  order[0].delivery_address
+       
+
+        const userAddress = await addressModel.findOne({
+            userId: userId,
+            'address._id': addressId
+        });
+
+         console.log("userAddress", userAddress)
+        
         const data = {
             user : user,
-            order: order
-        }
+            order: order,
+            address:userAddress
+        }           
 
         //render ejs template
         const invoiceTemplatePath = path.join(__dirname,'../views/users/invoice.ejs');
@@ -272,6 +302,49 @@ const orderInvoiceGenerate = async(req,res,next) => {
     }catch(error){
         next(error);
     }   
+}       
+
+const pendingPayment = async(req,res,next) => {
+    try{
+        const {orderId} = req.body;
+        //retrving order detls from db
+        const order = await orderModel.findById(orderId);
+        if(!order){
+            return res.status(404).json({message:"order not found"})
+        }
+        console.log("sdfsdf","order")
+         // Calculated total amount by iterating over the products and summing up their prices
+         let totalAmount = 0;
+         cart.products.forEach(product => {
+             totalAmount += product.productId.price * product.quantity;
+         });
+
+        //check order statusis pending
+        if(order.details[0].status !== "Pending"){
+            return res.json({message:"order not pending"})
+        }
+
+        const paymentOptions = {
+            amount: order.totalAmount * 100, 
+            currency: 'INR',
+            receipt: `orderId`, 
+        };
+
+         // Create a new Razorpay order
+         instance.orders.create(paymentOptions, async (err, orderData) => {
+            if (err) {
+                return res.status(500).json({ message: 'Failed to create Razorpay order', error: err });
+            }
+
+            // Update the existing order with the new Razorpay order ID
+            order.razorpay_order_id = orderData.id;
+            await order.save();
+
+            return res.status(200).json({ message: 'Razorpay order created successfully', order });
+        });
+    }catch(error){
+        next(error);
+    }
 }
 
 module.exports = {
@@ -281,6 +354,7 @@ module.exports = {
     viewOrder,
     razorpayPayment,
     orderReturn,
-    orderInvoiceGenerate
+    orderInvoiceGenerate,
+    pendingPayment
    
 }

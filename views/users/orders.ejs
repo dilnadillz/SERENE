@@ -127,8 +127,7 @@
                               <%= order.details[0].status %>
                           </p>
 
-
-
+                      
 
 
                           <% if (order.details[0].returnStatus === 'return'|| order.details[0].returnStatus === 'Delivered') { %>
@@ -142,6 +141,13 @@
 
               
                       </div>
+                      <div class="col-12 col-lg-12 text-lg-end">
+                        <% if (order.details[0].status === 'Pending') { %>
+                          <!-- Button to retry payment -->
+                          <button onclick="retryPayment()">Retry Payment</button>
+                      <% } %>
+                    </div>
+                   
                   </div>
                   
                   </div>
@@ -186,6 +192,8 @@
                   </div>
                   <div class="col-12 col-lg-6">
                     <div class="row gx-5">
+                    
+                
                       <div class="col-6">
 
                         <!-- Button -->
@@ -218,6 +226,8 @@
                         
 
                       </div>
+
+                      
                     </div>
 
                   </div>
@@ -372,6 +382,41 @@ function showReturnReasonPrompt(orderId, productId) {
 
 
     </script>
+
+
+
+
+
+<script>
+  function retryPayment() {
+    fetch('/pendingPay', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(order => {
+        var options = {
+            key: '<%= razorpayKey %>',
+            amount: order.amount,
+            currency: order.currency,
+            order_id: order.id,
+            // Other options...
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (response) {
+            // Handle payment failure
+            console.log('Payment failed:', response.error.code, response.error.description);
+        });
+        rzp.open();
+    })
+    .catch(error => {
+        console.error('Failed to create Razorpay order:', error);
+    });
+}
+</script>
      
 
     <%- include('../layouts/footer.ejs') %>

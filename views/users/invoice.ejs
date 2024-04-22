@@ -73,12 +73,12 @@
                 <p>Name: <%= user.name %></p>
                 <p>Email: <%= user.email %></p>
             </div>
-            <div style="float: right; width: 50%; text-align: right;">
-                <p>Address: <%= order.delivery_address %></p>
-                <!-- <p>Street: 123 Main St</p>
-                <p>City: Anytown</p>
-                <p>Zip Code: 12345</p> -->
-            </div>
+            <!-- <div style="float: right; width: 50%; text-align: right;">
+                <p>Address: <%#= address.address %></p>
+                <p>City: <%#= address.city %></p>
+                <p>State: <%#= address.state %></p>
+                <p>Pin Code: <%#= address.pincode %></p>
+            </div> -->
         </div>
         <table class="invoice-items">
             <thead>
@@ -89,17 +89,17 @@
                 </tr>
             </thead>
             <tbody>
-                <% order.details.forEach(detail => { %>
+                <% order.forEach(detail => { %>
                     <tr>
-                        <td><%= detail.productId.name %></td>
-                        <td><%= detail.productId.description %></td>
-                        <td>$<%= detail.price %></td>
+                        <td><%= detail.productz.productName %></td>
+                        <td><%= detail.productz.productDescription %></td>
+                        <td>₹<%= detail.productz.price %></td>
                     </tr>
                     <% }); %>
             </tbody>
         </table>
         <div class="invoice-total">
-            <p><strong>Total: <%= order.totalAmount %></strong></p>
+            <p><strong>Total: ₹<%= order[0].total_amount %></strong></p>
         </div>
     </div>
 </body>

@@ -101,17 +101,82 @@ const adminWelcome = async (req, res,next) => {
         // console.log("monthlyOrder",monthlyOrder);
 
         //best selling product
-        const bestProducts = await orderModel.aggregate([
+        const bestSellingProducts = await orderModel.aggregate([
             {
-                $unwind: "$details"
+                $unwind:"$details"
             },
             {
-                $group:{_id:"$details.productId", productName:{$first:"$details.productId.productName"},brand:{$first:"$details.brand"},category:{$first:"$details.category"}}
+                $limit:10
+            },
+            {
+                $lookup: {
+                    from:"products",
+                    localField:"details.productId",
+                    foreignField:"_id",
+                    as:"products"
+                }
+            },
+            {
+                $unwind:"$products"
+            },
+            {
+                $project: {_id:1,productName:"$products.productName"}
+            },
+            {
+                $group:{_id:"$productName"}
+            }
+            
+        ]);
+
+        // console.log("bestProducts",bestSellingProducts);
+
+        //best selling category
+        const bestSellingCategory = await orderModel.aggregate([
+            {
+                $unwind:"$details"
+            },
+            {
+                $limit:10
+            },
+            {
+                $lookup: {
+                    from:"products",
+                    localField:"details.productId",
+                    foreignField:"_id",
+                    as:"products"
+                }
+            },
+            {
+                $unwind:"$products"
+            },
+            {
+                $lookup: {
+                    from:"categories",
+                    localField:"products.category",
+                    foreignField:"_id",
+                    as:"category"
+                }
+            },
+            {
+                $unwind:"$category"
+            },
+            {
+                $project: {_id:1,categoryName:"$category.categoryName"}
+            },
+            {
+                $group:{_id:"$categoryName", totalSales :{ $sum:"$details.quantity"}}
+            },
+            {
+                $sort:{totalSalesQuantity: -1 } 
+            },
+            {
+                $limit:1
             }
         ])
 
-        console.log("bestProducts",bestProducts);
-        res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder});
+        console.log("bestSellingCategory",bestSellingCategory);
+
+        res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder,bestSellingProducts,bestSellingCategory});
     } catch (error) {
         next(error);
     }

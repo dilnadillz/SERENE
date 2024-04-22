@@ -597,7 +597,7 @@ const applyCoupon = async(req,res,next) => {
         const userId = res.locals.user;
         const {couponCode} = req.body;
 
-        const cart =  await cartModel.findOne({userId,userId}).populate("products.productId");
+        const cart =  await cartModel.findOne({userId:userId}).populate("products.productId");
         if(!cart){
             return res.status(401).json({message:"cart not found for user"});
         }
@@ -636,6 +636,39 @@ const applyCoupon = async(req,res,next) => {
     }
 }
 
+const removeCoupon = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+
+        const cart = await cartModel.findOne({userId:userId}).populate("products.productId");
+        if(!cart){
+            return res.status(401).json({message:"cart not found for user"});
+        }
+       
+        //checking if coupon applied before
+        if(!cart.couponApplied){
+            return res.status(401).json({message:"coupon not applied"})
+        }
+
+        //remove coupon from cart
+        cart.couponApplied = null;
+
+       
+        
+        const totalBeforeDiscount = Number(cart.products.reduce((total, product) => {
+            return total + (product.productId.price * product.quantity);
+        }, 0).toFixed(2));
+        console.log("dffg",totalBeforeDiscount)
+        await cart.save()
+        res.status(200).json({sucess:true, message:"coupon removed",totalAmount: totalBeforeDiscount})
+
+    }catch(error){
+        next(error);
+    }
+}
+
+
+
 module.exports = {
     welcome,
     loadRegister,
@@ -660,7 +693,8 @@ module.exports = {
     load404,
     walletLoad,
     loadWalletHistory,
-    applyCoupon
+    applyCoupon,
+    removeCoupon
 
 
 }
