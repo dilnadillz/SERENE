@@ -325,23 +325,20 @@ const pendingPayment = async(req,res,next) => {
         }
 
         const paymentOptions = {
-            amount: order.totalAmount * 100, 
+            amount: totalAmount * 100, 
             currency: 'INR',
             receipt: `orderId`, 
         };
 
          // Create a new Razorpay order
-         instance.orders.create(paymentOptions, async (err, orderData) => {
-            if (err) {
-                return res.status(500).json({ message: 'Failed to create Razorpay order', error: err });
-            }
+         const razorpayOrder = await instance.orders.create(paymentOptions)
 
-            // Update the existing order with the new Razorpay order ID
-            order.razorpay_order_id = orderData.id;
+           
+            
             await order.save();
 
-            return res.status(200).json({ message: 'Razorpay order created successfully', order });
-        });
+            return res.status(200).json({ message: 'Razorpay order created successfully', razorpayOrder });
+    
     }catch(error){
         next(error);
     }

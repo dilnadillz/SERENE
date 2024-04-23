@@ -66,65 +66,29 @@
           <div class="col-12 col-md-9 col-lg-8 offset-lg-1">
 
            
-            <div class="wallet-box">
-              <h2>My Wallet</h2>
-              <p>Current Balance: ₹ <%= wallet.balance %></p>
-              <!-- <div class="wallet-content" >
-                
-                 <ul>
-                  <p></p>
-                  <%# wallet.walletHistory.forEach(transaction => { %>
-                    Transaction History: Date: <%#= transaction.date.toLocaleDateString() %>, Amount: ₹ <%#= transaction.amount %>,  status: <%#= transaction.status %>
-                  <%# }); %>
-                 </ul>
-              </div> -->
-            
-            
-           
-              <button class="add-funds-btn">Redeme Fund</button>
-              <br>
-                
-              <div class="col-2 col-lg-2 col-md-2 ">
-                <a href="/wallet/walletHistory" style="color: rgb(23, 119, 23); white-space: nowrap;">All Transactions</a>                           
+            <div class="row">
+                <div class="col-10 col-lg-10 col-md-10">
+                    <h4 class="mb-4">Referral Link</h4>
+
+                    <!-- Display the referral link here -->
+                    <div class="mb-3">
+                        <label for="referralLink" class="form-label">Your Referral Link:</label>
+                        <div class="input-group">
+
+                            <input type="text" class="form-control" id="referralLink" value="localhost:3001/register?referralId=<%=encodeURIComponent(referralCode) %>" readonly>
+
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyReferralLink()">Copy</button>
+                        </div>
+                    </div>
+                </div>
+        
             </div>
-             </div>
 
+                                                      
+                                            
 
             
-            <!-- Pagination -->
-            <nav class="d-flex justify-content-center justify-content-md-end">
-              <ul class="pagination pagination-sm text-gray-400">
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-left"></i>
-                  </a>
-                </li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">4</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">5</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">6</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-right"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-
+         
           </div>
         </div>
       </div>
@@ -133,7 +97,19 @@
   
 
 
+            <script>
+                function copyReferralLink(){
+                    //get  input elmnt
+                    var inputReferral = document.getElementById("referralLink")
 
+                    inputReferral.select();//to select the text
+                    document.execCommand("copy");//opy selected text to clipboard
+
+                    inputReferral.setSelectionRange(0 ,0);//to deselect
+
+                    alert("Copied the referraal link to clipboard:" +inputReferral.value);
+                }
+            </script>
 
 
 

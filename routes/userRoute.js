@@ -68,6 +68,8 @@ user_route.post('/applyCoupon',usercontroller.applyCoupon);
 
 user_route.post('/removeCoupon',usercontroller.removeCoupon);
 
+user_route.get('/userReferral',usercontroller.loadUserReferral);
+
 
 
 

@@ -17,6 +17,7 @@ const { default: mongoose } = require('mongoose');
 const walletModel = require('../models/walletModel');
 const couponModel = require('../models/couponModel');
 const referralModel = require('../models/referralModel');
+const shortid = require('shortid');
 
 
 
@@ -173,7 +174,8 @@ const verifyOtp = async (req, res,next) => {
                 name: gname,
                 email: gemail,
                 password: gpassword,
-                mobile: gmobile
+                mobile: gmobile,
+                referralCode: shortid.generate()
             });
 
             console.log('user', user);
@@ -667,6 +669,18 @@ const removeCoupon = async(req,res,next) => {
     }
 }
 
+const loadUserReferral = async(req,res,next) => {
+    try{
+        const userId = res.locals.user;
+
+        const user = await UserModel.findById(userId);
+        const referralCode = user.referralCode
+        console.log("user",referralCode);
+        res.render('userReferral',{referralCode});
+    }catch(error){
+        next(error);
+    }
+}
 
 
 module.exports = {
@@ -694,7 +708,8 @@ module.exports = {
     walletLoad,
     loadWalletHistory,
     applyCoupon,
-    removeCoupon
+    removeCoupon,
+    loadUserReferral
 
 
 }
