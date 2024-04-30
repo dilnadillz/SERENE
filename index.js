@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require('express-session');
 const path = require('path');
 const dotenv = require('dotenv').config({ path: path.resolve(__dirname, 'config', '.env') });
 const {errorHandler} = require('./middlewear/errorMiddlewear')
@@ -10,6 +11,12 @@ require('dotenv').config({path: './config/.env'});
 console.log(process.env.ACCESS_TOKEN_SECRET)
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+
+app.use(session({
+    secret: process.env.SESSIONSECRET,
+    resave: true,
+    saveUninitialized: true
+  }));
 
 app.use(cookieParser())
 app.use(express.static('public'));

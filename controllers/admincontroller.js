@@ -172,8 +172,8 @@ const adminWelcome = async (req, res,next) => {
             {
                 $limit:1
             }
-        ])
-
+        ])  
+        
         console.log("bestSellingCategory",bestSellingCategory);
 
         res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder,bestSellingProducts,bestSellingCategory});
@@ -356,7 +356,7 @@ const orderApproveOrReject =async(req,res,next) => {
 
 const loadSalesReport = async(req,res,next) => {
     try{
-        const salesData = await orderModel.find({"details.status":"Delivered"}).populate('details.productId').sort({date:-1})
+        const salesData = await orderModel.find({"details.status":"Delivered"}).populate("details.productId").sort({date:-1})
         .exec();
         console.log("sales",salesData)
         res.render('salesReport',{salesData});
@@ -374,11 +374,11 @@ const filterSalesReport = async(req,res,next) => {
       const salesData = await orderModel.find({
         date: { $gte: fromDate, $lte: toDate },
         "details.status": "Delivered",
-      });
+      }).populate({ path: "details.productId" });;
       res.render("salesReport", { salesData });
     } catch (error) {
       next(error);
-    }
+    }   
 };
 
 const salesPdf = async(req,res,next) => {
@@ -410,7 +410,7 @@ const salesPdf = async(req,res,next) => {
         next(error);
     }
 }
-  
+    
 
 module.exports = {
     adminlogin,

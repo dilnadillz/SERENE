@@ -18,6 +18,7 @@ const walletModel = require('../models/walletModel');
 const couponModel = require('../models/couponModel');
 const referralModel = require('../models/referralModel');
 const shortid = require('shortid');
+const Razorpay = require('razorpay');
 
 
 
@@ -27,7 +28,7 @@ const welcome = async (req, res,next) => {
     try {
         console.log(res.locals.user);
         const products = await Productdb.find();
-        console.log(products);
+        // console.log(products);
         res.render("index-asymmetric", { products });
 
     } catch (error) {
@@ -37,7 +38,14 @@ const welcome = async (req, res,next) => {
 
 const loadRegister = async (req, res,next) => {
     try {
-        res.render('registration');
+        if(req.cookies['access-token']){
+            res.redirect("/");
+        }else{
+            let referralId = req.query.referralId;
+            console.log("referralid",referralId)
+            res.render('registration',{referralId});
+        }
+       
     } catch (error) {
         next(error);
     }
@@ -60,12 +68,22 @@ const signUp = async (req, res,next) => {
     try {
 
         const { name, email, password, mobile } = req.body;
+        
+        console.log("Referralid in qury", req.query.referralId)
+
+        if (req.query && req.query.referralId) {
+            req.session.referralId = req.query.referralId;
+        }
+        
+        console.log("Register session: ", req.session.referralId)
+        
+      
         gname = name;
         gemail = email;
         gpassword = password;
         gmobile = mobile;
 
-
+  
         const existingUser = await UserModel.findOne({ email: gemail });
 
         if (existingUser) {
@@ -182,7 +200,7 @@ const verifyOtp = async (req, res,next) => {
 
             userData = await user.save();
         }
-        console.log(userData, 'userdata');
+        // console.log(userData, 'userdata');
         if (userData) {
             function createTokens(userId) {
                 const secretKey = process.env.ACCESS_TOKEN_SECRET;
@@ -206,6 +224,54 @@ const verifyOtp = async (req, res,next) => {
 
             console.log("wallet coming",wallet);
             await wallet.save();
+            //chking referral id in session
+            if(req.session.referralId){
+                const referralId = req.session.referralId;
+                // console.log("refreeeeee", referralId);
+                const referralUser = await UserModel.findOne({referralCode:referralId});//data of referal user
+                const signedUser = await UserModel.findById(userData._id);//data of signed user
+                // console.log("referralUser",referralUser);
+                console.log("signedUser",signedUser);
+
+                //chking referral user is there
+                if(referralUser){
+                    const referralOffer = await referralModel.findOne();//finding the referral offer
+                    console.log("referralOffer",referralOffer);
+
+                    //chking referral offer exist
+                    if(referralOffer){
+                        const referralUserWallet = await walletModel.findOne({userId:referralUser._id});//retrving the wallet of referraluser
+                        console.log("referralUserWallet",referralUserWallet);
+                        const signedUserWallet = await walletModel.findOne({userId:userData._id});//retrvng the wallet of signed user
+                        console.log("signedUserWallet",signedUserWallet);
+    
+                        if(referralUserWallet){//if wallet exist adding referral reward in reffered user wallet
+                            referralUserWallet.balance += referralOffer.referrerReward,
+                            referralUserWallet.walletHistory.push({
+                                date: new Date(),
+                                amount: referralOffer.referrerReward,
+                                status: 'Credited (Referral Reward)'
+                            })
+
+                            await referralUserWallet.save();
+
+                            if(signedUserWallet){//if signed user wallet exist here ading refreebonus to the wallet
+                                signedUserWallet.balance += referralOffer.referreeBonus,
+                                signedUserWallet.walletHistory.push({
+                                    date: new Date(),
+                                    amount: referralOffer.referreeBonus,
+                                    status: 'Credited (Signup Reward)'
+                                })
+                                await signedUserWallet.save();
+                            }
+                        }
+                    }
+                
+                }
+            }
+            
+
+       
 
             res.redirect("/");
         } else {
@@ -575,9 +641,70 @@ const walletLoad = async(req,res,next) => {
     try{
         const userId = res.locals.user;
         console.log("user",userId)
+        const razorpayKey = process.env.key_id
         const wallet = await walletModel.findOne({userId:userId})
        
-        res.render('wallet',{wallet});
+        res.render('wallet',{wallet,razorpayKey:razorpayKey});
+    }catch(error){
+        next(error);
+    }
+}
+const instance = new Razorpay({
+    key_id: process.env.key_id,
+    key_secret: process.env.key_secret,
+});
+const addAmountWallet = async(req,res,next) => {
+    try{
+        const {amount} = req.body;
+        console.log("amount",amount)
+
+        const options = {
+            amount: amount * 100,
+            currency: 'INR',
+            receipt: 'orderId'
+        };
+        
+        console.log("options",options)
+
+        const response = await instance.orders.create(options);
+        console.log("response",response)
+        res.json(response)
+
+    }catch(error){
+        next(error);
+    }
+} 
+const addAmount = async(req,res,next) =>{
+    try{
+        const userId = res.locals.user;
+        const {amount} = req.body;
+        console.log("amountz",amount)
+        console.log("userId",userId)
+
+        if(!userId) {
+            return res.status(400).json({sucess: false,message: "user not found"});
+        }
+
+        const wallet = await walletModel.findOne({userId:userId});
+        console.log("wallet",wallet);
+
+        wallet.balance += parseInt(amount);
+        console.log("wallet.balance",wallet.balance)
+
+        const transcations = {
+            date: new Date(),
+            amount: amount,
+            status: 'Credited (From Bank)'
+        }
+        //here pusing transcations object to the wallethistory array
+        wallet.walletHistory.push(transcations);
+
+        await wallet.save();
+
+       
+        res.json({sucess:true});
+       
+            
     }catch(error){
         next(error);
     }
@@ -587,7 +714,7 @@ const loadWalletHistory = async(req,res,next) => {
     try{
         const userId = res.locals.user;
         const wallet = await walletModel.findOne({userId:userId})
-
+        wallet.walletHistory.sort((a, b) => b.date - a.date);
         res.render('walletHistory',{wallet});
     }catch(error){
         next(error);
@@ -706,6 +833,8 @@ module.exports = {
     loadOrderThankyou,
     load404,
     walletLoad,
+    addAmountWallet,
+    addAmount,
     loadWalletHistory,
     applyCoupon,
     removeCoupon,

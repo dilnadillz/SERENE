@@ -581,10 +581,13 @@
         };
       
         var rzp = new Razorpay(options);
+        rzp.on('payment.success', function (response) {
+            createOrder(order.id, 'Placed'); // Set status to 'Placed' for successful payment
+        });
+
         rzp.on('payment.failed', function (response) {
-    // Handle payment failure
-    paymentFailed(order.id);
-});
+            createOrder(order.id, 'Pending'); // Set status to 'Pending' for failed payment
+        });
         rzp.open();
         }) 
       }

@@ -3,7 +3,15 @@
 <div class="container">
     <h1>User Registration Form</h1>
 
-    <form action="/register" method="post" onsubmit="return validateForm()">
+    <form  method="post" onsubmit="return validateForm()"
+
+        <% if(typeof referralId !== 'undefined') {%>
+            action='/register?referralId=<%= referralId %>'
+        <% } else { %>
+            action="/register"
+        <% } %>
+        >
+
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" placeholder="Enter Name" >
         <p class="error"></p>

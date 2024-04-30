@@ -28,6 +28,6 @@ order_route.post('/order-return',requireAuth,orderController.orderReturn);
 
 order_route.get('/download-invoice',requireAuth,orderController.orderInvoiceGenerate);
 
-order_route.post('/pendingPay',requireAuth,orderController.pendingPayment);
+order_route.post('/pendingPay/:orderId',requireAuth,orderController.pendingRazorpayment);
 
-module.exports = order_route
+module.exports = order_route            

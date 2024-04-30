@@ -18,12 +18,12 @@ const instance = new Razorpay({
     key_secret: process.env.key_secret,
 });
 
-const orderPlace = async(req,res,next) => {
+const orderPlace = async(req,res,next) => {   
     try{
             
         const userId = res.locals.user;
         const {productId} = req.body;
-        const {selectedAddress,paymentMethod} = req.body;
+        const {selectedAddress,paymentMethod,status} = req.body;
         // console.log("owwowowowoww",selectedAddress,paymentMethod)
         // retrving the list of products that the user has added to their shopping cart
         const cart = await cartModel.findOne({userId:userId,productId:productId}).populate('products.productId');
@@ -47,7 +47,7 @@ const orderPlace = async(req,res,next) => {
                 productId:item.productId,
                 quantity:item.quantity,
                 price:item.productId.price,
-                status:'Pending'
+                status: status
             }))
                 
         })
@@ -88,7 +88,7 @@ const loadOrder = async (req, res,next) => {
             .skip((page - 1) * pageSize)
             .limit(pageSize);
 
-        console.log(orderData);
+        // console.log(orderData);
 
         const razorpayKey = process.env.key_id
 
@@ -302,43 +302,46 @@ const orderInvoiceGenerate = async(req,res,next) => {
     }catch(error){
         next(error);
     }   
-}       
+}           
 
-const pendingPayment = async(req,res,next) => {
-    try{
-        const {orderId} = req.body;
-        //retrving order detls from db
+const pendingRazorpayment = async (req, res, next) => {
+    try {
+        const orderId = req.params.orderId;
+        console.log("orderId",orderId)
+      
         const order = await orderModel.findById(orderId);
-        if(!order){
-            return res.status(404).json({message:"order not found"})
-        }
-        console.log("sdfsdf","order")
-         // Calculated total amount by iterating over the products and summing up their prices
-         let totalAmount = 0;
-         cart.products.forEach(product => {
-             totalAmount += product.productId.price * product.quantity;
-         });
+        console.log("order",order);
 
-        //check order statusis pending
-        if(order.details[0].status !== "Pending"){
-            return res.json({message:"order not pending"})
-        }
-
-        const paymentOptions = {
-            amount: totalAmount * 100, 
+        const options ={
+            amount: order.total_amount * 100,
             currency: 'INR',
-            receipt: `orderId`, 
-        };
+            receipt: 'orderId'
+        }
+        console.log("options",options);
 
-         // Create a new Razorpay order
-         const razorpayOrder = await instance.orders.create(paymentOptions)
+        const response = await instance.orders.create(options);
 
-           
-            
-            await order.save();
+        console.log("response",response);
 
-            return res.status(200).json({ message: 'Razorpay order created successfully', razorpayOrder });
-    
+        res.json(response)
+     
+       
+    }catch(error){
+        next(error);
+    }
+}
+
+const pendingOrder = async(req,res,next) => {
+    try{
+        const orderId = req.params.orderId;
+        const newStatus = req.body.status;
+        console.log("orderId",orderId);
+        console.log("newStatus",newStatus);
+
+        const updateOrder = await orderModel.findByIdAndUpdate(orderId,{status:newStatus},{new:true});
+        console.log("updateOrder",updateOrder);
+        res.join(updateOrder);
+
     }catch(error){
         next(error);
     }
@@ -352,6 +355,7 @@ module.exports = {
     razorpayPayment,
     orderReturn,
     orderInvoiceGenerate,
-    pendingPayment
+    pendingRazorpayment,
+    pendingOrder
    
 }

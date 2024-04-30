@@ -24,6 +24,7 @@
     <thead>
       <tr>
         <th>Order Id</th>
+        <th>Product Name</th>
         <th>Date</th>
         <th>Payment</th>
         <!-- Add more columns if needed -->
@@ -33,6 +34,7 @@
       <% salesData.forEach(sales => { %>
         <tr>
           <td><%= sales._id.toString().slice(-6) %></td>
+          <td><%= sales.details[0].productId.productName %></td>
           <td><%= sales.date.toLocaleDateString() %></td>
           <td><%= sales.payment %></td>
           <!-- Add more columns if needed -->

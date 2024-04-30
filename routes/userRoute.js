@@ -8,6 +8,7 @@ user_route.set('view engine','ejs');
 user_route.set('views','./views/users');
 const bodyParser = require('body-parser');
 
+
 const {requireAuth,checkUser,isUser} = require('../middlewear/authMiddleware');
 user_route.use(checkUser)
 
@@ -61,6 +62,10 @@ user_route.get('/order-sucess',requireAuth,checkBlockUser,usercontroller.loadOrd
 user_route.get('/404',checkBlockUser,usercontroller.load404);
 
 user_route.get('/wallet',requireAuth,checkBlockUser,usercontroller.walletLoad);
+
+user_route.post('/addAmountRazorpay',usercontroller.addAmountWallet);
+
+user_route.post('/addAmount',usercontroller.addAmount);
 
 user_route.get('/wallet/walletHistory',requireAuth,checkBlockUser,usercontroller.loadWalletHistory);
 

@@ -39,6 +39,7 @@
                   <thead>
                       <tr>
                         <th>Order Id</th>
+                        <th>Product Name</th>
                         <th>Date</th>
                         <!-- <th>Quantity</th> -->
                         <!-- <th>Price</th> -->
@@ -51,6 +52,7 @@
                           <tr>
                             
                               <td><%= sales._id.toString().slice(-6) %></td>
+                              <td><%= sales.details[0].productId.productName %></td>
                               <td><%= sales.date.toLocaleDateString() %></td>
                               <!-- <td><%#= sales.quantity %></td> -->
                               <!-- <td><%#= sales.price %></td> -->

@@ -40,7 +40,7 @@ const loadAddCategory = async (req, res,next) => {
     } catch (error) {
         next(error);
     }
-}
+}   
 
 
 const catgoryAdding =async(req,res,next) =>{

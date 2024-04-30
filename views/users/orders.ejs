@@ -147,7 +147,7 @@
                       <div class="col-12 col-lg-12 text-lg-end">
                         <% if (order.details[0].status === 'Pending') { %>
                           <!-- Button to retry payment -->
-                          <button onclick="retryPayment()">Retry Payment</button>
+                          <button onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
                       <% } %>
                     </div>
                    
@@ -388,11 +388,11 @@ function showReturnReasonPrompt(orderId, productId) {
 
 
 
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-  function retryPayment() {
-    fetch('/pendingPay', {
+  function retryPayment(orderId) {
+    fetch(`/pendingPay/${orderId}`, { // Corrected fetch URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -400,25 +400,58 @@ function showReturnReasonPrompt(orderId, productId) {
     })
     .then(response => response.json())
     .then(order => {
-        var options = {
-            key: '<%= razorpayKey %>',
-            amount: order.amount,
-            currency: order.currency,
-            order_id: order.id,
-            // Other options...
+      var options = {
+          key: '<%= razorpayKey %>',
+          amount: order.amount,
+          currency: order.currency,
+          order_id: order.id,
+          name: 'SERENE',
+          description: 'Order Payment',
+          handler: function (response) {
+     
+          createOrder(order.id);
+          },
+          prefill: {
+          name: 'User Name',
+          email: 'user@example.com',
+          contact: '1234567890',
+          },
+          notes: {
+          address: 'User Address',
+          },
+          theme: {
+          color: '#012652', 
+          },
         };
 
         var rzp = new Razorpay(options);
-        rzp.on('payment.failed', function (response) {
-            // Handle payment failure
-            console.log('Payment failed:', response.error.code, response.error.description);
+        rzp.on('payment.success', function (response) {
+       
+
+// Send an AJAX request to your server to update the order status
+fetch(`/placingPayment/${orderId}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ orderId  }),
+})
+.then(response => {
+    if (response.ok) {
+        console.log('Order status updated successfully');
+    } else {
+        console.error('Failed to update order status:', response.statusText);
+    }
+})
+.catch(error => {
+    console.error('Failed to update order status:', error.message);
+});
+
         });
         rzp.open();
     })
-    .catch(error => {
-        console.error('Failed to create Razorpay order:', error);
-    });
 }
+
 </script>
      
 

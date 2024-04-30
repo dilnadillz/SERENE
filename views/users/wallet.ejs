@@ -81,7 +81,7 @@
             
             
            
-              <button class="add-funds-btn">Redeme Fund</button>
+              <button class="add-funds-btn">Add Fund</button>
               <br>
                 
               <div class="col-2 col-lg-2 col-md-2 ">
@@ -90,40 +90,7 @@
              </div>
 
 
-            
-            <!-- Pagination -->
-            <nav class="d-flex justify-content-center justify-content-md-end">
-              <ul class="pagination pagination-sm text-gray-400">
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-left"></i>
-                  </a>
-                </li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">4</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">5</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">6</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link page-link-arrow" href="#">
-                    <i class="fa fa-caret-right"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
+         
 
           </div>
         </div>
@@ -176,5 +143,92 @@
 }
 
     </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.querySelector('.add-funds-btn').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Add Fund',
+            input: 'text',
+            inputLabel: 'Enter the amount to add:',
+            inputPlaceholder: 'Amount',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter the amount to add';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+              var amount = result.value; 
+                console.log('Amount to add:', amount);
+                
+                fetch('/addAmountRazorpay',{
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({amount:amount})
+                })
+                .then(response => response.json())
+	  
+    .then(data => {
+    var options = {
+      key: '<%= razorpayKey %>',
+      amount: data.amount,
+      currency: data.currency,
+      order_id: data.id,
+      name: 'SERENE',
+      description: 'Wallet Payment',
+      handler: function (response) {
+        console.log('Payment success:', response);
 
+         //sending reqst to server to update wallet balance
+    fetch('/addAmount', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ amount: amount })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Wallet updated:', data);
+        const walletAmountElement = document.getElementById('wallet-amount');
+        walletAmountElement.textContent = data.walletAmount;
+    })
+    .catch(error => {
+        console.error('Error updating wallet:', error);
+      
+    });
+
+      },
+      prefill: {
+      name: 'User Name',
+      email: 'user@example.com',
+      contact: '1234567890',
+      },
+      notes: {
+      address: 'User Address',
+      },
+      theme: {
+      color: '#012652', 
+      },
+    };
+  
+    var rzp = new Razorpay(options);
+    rzp.open();
+    }) 
+    
+
+    .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+</script>
     <%- include('../layouts/footer.ejs') %>
+
+   

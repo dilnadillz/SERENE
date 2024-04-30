@@ -92,17 +92,23 @@
 
       // Validate minimum amount
       var minimumAmount = document.getElementsByName('minimumAmount')[0].value;
-      if (minimumAmount <= 0) {
-          alert('Minimum Amount must be greater than 0');
+      if (minimumAmount < 1000) {
+          alert('Minimum Amount must be 1000 and above');
           return false;
       }
 
-      // Validate discount
-      var discount = document.getElementsByName('discount')[0].value;
-      if (discount <= 0) {
-          alert('Discount must be greater than 0');
-          return false;
-      }
+     // Validate discount
+    var discount = document.getElementsByName('discount')[0].value;
+    if (discount <= 0) {
+        alert('Discount must be greater than 0');
+        return false;
+    }
+
+    // // Check if discount is greater than minimum amount
+    // if (discount > minimumAmount) {
+    //     alert('Discount cannot exceed the Minimum Amount');
+    //     return false;
+    // }
 
       // Validate starting date
       var startingDate = document.getElementsByName('startingDate')[0].value;
