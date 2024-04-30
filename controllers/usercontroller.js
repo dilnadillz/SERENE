@@ -7,6 +7,7 @@ const OtpModel = require('../models/otpModel');
 const Productdb = require('../models/productModel');
 const AddressModel = require('../models/addressModel');
 const jwt = require('jsonwebtoken');
+const bcrypt = require("bcryptjs");
 const productModel = require('../models/productModel');
 const { findByIdAndUpdate } = require('../models/categoryModel');
 const bodyParser = require('body-parser');
@@ -573,52 +574,42 @@ const loadCheckout = async (req, res,next) => {
     }
 }
 
-const loadProductlist = async (req, res,next) => {
+const loadProductlist = async (req, res, next) => {
     try {
-        const productOffer = await productModel.find({}).populate('offer').populate({path: "category" , populate: {path: "offer"}})
-        console.log("offer coming",productOffer)
+        const productOffer = await productModel.find({}).populate('offer').populate({ path: "category", populate: { path: "offer" } })
+        console.log("offer coming", productOffer)
 
         const category = req.query.category;
-        const price = req.query.price;
+
         const filterObject = {}
-        // console.log("category",category);
-        // console.log("price",price);
 
-            if(price){
-                const prices = price.split('-');
-                const minPrice = Number(prices[0].trim().substring(1));
-                const maxPrice = Number(prices[1].trim().substring(1));
+        if (category) {
+            let categoryIds
+            if (Array.isArray(category)) {
+                categoryIds = category.map(id => new mongoose.Types.ObjectId(id));
+            } else {
+                categoryIds = [new mongoose.Types.ObjectId(category)];
+            }
+            console.log("categoryIds", categoryIds)
 
-                filterObject.$and= [{price: {$gte: minPrice}},{price: {$lte: maxPrice}} ]
+            if (categoryIds.length > 0) {
+                filterObject.$or = []
+                categoryIds.forEach(catId => {
+                    const expersion = { category: catId };
+                    filterObject.$or.push(expersion);
+                })
             }
-            //filtering product baesd on category
-            if(category){
-                let categoryIds
-                if(Array.isArray(category)) {
-                    categoryIds = category.map(id => new mongoose.Types.ObjectId(id));
-                } else {
-                    categoryIds = [new mongoose.Types.ObjectId(category)];
-                }
-                console.log("categoryIds",categoryIds)  
-                
-                if(categoryIds.length>0){
-                    filterObject.$or=[]
-                    categoryIds.forEach(catId => {
-                        const expersion = {category: catId};
-                        filterObject.$or.push(expersion);
-                    })
-                }
-    
-            }
+
+        }
 
         const products = await Productdb.find(filterObject).populate('category');
         const cat = await categoryModel.find();
-        
-        res.render('productlist', { products: products,cat:cat ,productOffer});
+
+        res.render('productlist', { products: products, cat: cat, productOffer });
     } catch (error) {
         next(error);
     }
-} 
+}
 
 const loadOrderThankyou = async(req,res,next) =>{
     try{
@@ -809,6 +800,75 @@ const loadUserReferral = async(req,res,next) => {
     }
 }
 
+const loadForgotPassword = async(req,res,next) => {
+    try{
+        res.render("forgotPassword");
+    }catch(error){
+        next(error);
+    }
+}
+
+const forgotPasswordOtp = async (req,res,next) => {
+    try{
+        globalEmail =req.body.email;
+        console.log("globalEmail",globalEmail)
+        const userData = await UserModel.findOne({email:globalEmail});
+        console.log("userdata",userData);
+        if(userData){
+            otp = otpGenerator();
+            console.log(otp) 
+            sendOtp(globalEmail, otp);
+
+            res.render("forgotPasswordOtp")
+        }else{
+            res.render("forgotPassword",{message: "no user found"});
+        }
+    }catch(error){
+        next(error);
+    }
+}
+
+const verifyForgotPassword = async(req,res,next) => {
+    try{
+        const {otp} = req.body;
+        console.log(otp)
+        if(otp === String(otp)){
+            res.render("setNewPassword")
+        }else {
+            res.render("forgotPasswordOtp",{message:"wrong otp"});
+        }
+    }catch(error){
+        next(error);
+    }
+}
+
+const newPassword = async(req,res,next) => {
+    try{
+        const {newPassword} = req.body;
+        const {confirmPassword} = req.body;
+        console.log("newPassword",newPassword);
+        console.log("conformPassword",confirmPassword);
+
+        //hash the new password before storing
+        const passwordHash = await bcrypt.hash(newPassword, 10);
+        console.log("passwordHash",passwordHash);
+        
+        //comparing plaintext newpasssword with hashedconfrm pswd
+        const matchingPassword = await bcrypt.compare(newPassword,passwordHash);
+        console.log("matchingPassword",matchingPassword);
+
+        if(matchingPassword){
+            await UserModel.findOneAndUpdate({email: globalEmail},{$set:{password:passwordHash}})
+            res.redirect("/login")
+        }else{
+            res.render("newPassword",{message:"password not matching"});
+        }
+
+       
+    }catch(error){
+        next(error);
+    }
+}
 
 module.exports = {
     welcome,
@@ -838,7 +898,11 @@ module.exports = {
     loadWalletHistory,
     applyCoupon,
     removeCoupon,
-    loadUserReferral
+    loadUserReferral,
+    loadForgotPassword,
+    forgotPasswordOtp,
+    verifyForgotPassword,
+    newPassword
 
 
 }

@@ -8,12 +8,12 @@ body {
 
 .container {
     height: fit-content;
-    max-width: 500px;
+    max-width: 900px;
     margin: auto;
     background-color: #ffffff;
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(201, 190, 190, 0.1);
     margin-top: 50px;
     margin-bottom: 50px;
 }
@@ -24,19 +24,23 @@ h1 {
 }
 
 form {
+    width: 100%;
+    max-width: 400px; /* Adjust the max-width as needed */
+    margin: 0 auto; /* Center the form horizontally */
+    padding: 10px 20px;
     text-align: left;
 }
 
 label {
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 2px;
     color: #4a4a4a;
 }
 
 input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
     box-sizing: border-box;
@@ -54,6 +58,8 @@ input[type="button"] {
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    width: 100%; /* Full width */
+    margin-bottom: 10px;
 }
 
 input[type="submit"]:hover,
@@ -63,7 +69,7 @@ input[type="button"]:hover {
 
 .login-button-container {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 p.message {

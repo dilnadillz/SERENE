@@ -75,7 +75,13 @@ user_route.post('/removeCoupon',usercontroller.removeCoupon);
 
 user_route.get('/userReferral',usercontroller.loadUserReferral);
 
+user_route.get('/forgotPassword',usercontroller.loadForgotPassword);
 
+user_route.post('/forgotPasswordOtp',usercontroller.forgotPasswordOtp);
+
+user_route.post("/setNewPassword",usercontroller.verifyForgotPassword);
+
+user_route.post("/newPassword",usercontroller.newPassword);
 
 
 
