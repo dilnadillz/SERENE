@@ -30,4 +30,7 @@ order_route.get('/download-invoice',requireAuth,orderController.orderInvoiceGene
 
 order_route.post('/pendingPay/:orderId',requireAuth,orderController.pendingRazorpayment);
 
+order_route.post('/placingPayment/:orderId',requireAuth,orderController.pendingOrder);
+
+
 module.exports = order_route            

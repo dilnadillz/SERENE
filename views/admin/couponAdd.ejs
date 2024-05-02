@@ -98,18 +98,18 @@
       }
 
      // Validate discount
-    var discount = document.getElementsByName('discount')[0].value;
-    if (discount <= 0) {
-        alert('Discount must be greater than 0');
-        return false;
-    }
+     var discount = document.getElementsByName('discount')[0].value;
+var minimumAmount = document.getElementsByName('minimumAmount')[0].value;
 
-    // // Check if discount is greater than minimum amount
-    // if (discount > minimumAmount) {
-    //     alert('Discount cannot exceed the Minimum Amount');
-    //     return false;
-    // }
+if (discount <= 0) {
+    alert('Discount must be greater than 0');
+    return false;
+}
 
+if (parseInt(discount) >= parseInt(minimumAmount)) {
+    alert('Discount must be less than the Minimum Amount');
+    return false;
+}
       // Validate starting date
       var startingDate = document.getElementsByName('startingDate')[0].value;
       if (startingDate === '') {

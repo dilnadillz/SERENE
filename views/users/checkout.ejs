@@ -321,47 +321,23 @@
                   </li>
                   
 
+                  <div>Coupon Discount: <span id="total">&#8377; Amount</span></div>
 
-                  <div id="total">Coupon Discount</div>
+                  <% if (typeof totalDiscount !== 'undefined') { %>
+  <li class="list-group-item d-flex">
+    <span id="discount">Discount</span> <span class="ms-auto fs-sm text-success">--- ₹<%= totalDiscount %></span>
+  </li>
+<% } %>
 
-                  
 
 
-                  <%# let totalAmount = 0; %>
-                  <%# cartData.forEach((item) => { %>
-                      <%# totalAmount += item.products.quantity * item.productz.price; %>
-                  <%# }); %>
-                  
-                  <%# let couponPrice = 0; %>
-                  <%# if (coupon.length > 0) { %>
-                      <%# couponPrice = Number(coupon[0].discount); %>
-                  <%# } %>
-                  
-                  <%# let discountedAmount = totalAmount - couponPrice; %>
-<!--                   
-                  <p>Total Amount: <%#= totalAmount %></p>
-                  <%# if (coupon.length > 0) { %>
-                      <p>Coupon Discount: <%#= couponPrice %></p>
-                  <%# } %>
-                  <p>Discounted Amount: <%#= discountedAmount %></p>
-                   -->
+              
 
                 </ul>
               </div>
             </div>
             <div>
-              <!-- Display coupons -->
-              <!-- <h6 class="mb-7">Available Coupons</h6>
-              <ul>
-                  <%# coupon.forEach(coupon => { %>
-                      <li>
-                          <strong>Coupon Code:</strong> <%#= coupon.couponCode %><br>
-                          <strong>Description:</strong> <%#= coupon.couponDescription %><br>
-                          <strong>Discount:</strong> <%#= coupon.discount %><br>
-                           Add more coupon details as needed -->
-                      <!-- </li> -->
-                  <%# }); %>
-              <!-- </ul> -->
+             
 
             </div>
              
@@ -675,7 +651,7 @@ placeOrderBtn.addEventListener('click', async () => {
           icon: 'success',
           confirmButtonText: 'OK',
         }).then(() => {
-          window.location.href = '/order-sucess'; //to redirect to the success page
+          window.location.href = '/order-sucess'; 
         });
       } else {
         const errorMessage = await response.json();
@@ -729,11 +705,16 @@ placeOrderBtn.addEventListener('click', async () => {
     
       document.getElementById('total').innerText = data.totals;
 
+      
+// Display the discount amount
+document.getElementById('discount').innerText = `--- ₹${data.discountAmount}`;
+
+
        // Hide the inputCoupon section and show the afterApplied section
        document.getElementById('inputCoupon').classList.add('d-none');
         document.getElementById('afterApplied').classList.remove('d-none');
       } else {
-        // Show SweetAlert with error message
+       
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -742,6 +723,8 @@ placeOrderBtn.addEventListener('click', async () => {
     }
 });
 
+
+
 //remove coupon
 document.getElementById('remove').addEventListener('click', async function() {
     const response = await fetch('/removeCoupon', {
@@ -749,7 +732,7 @@ document.getElementById('remove').addEventListener('click', async function() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ /* Include any necessary data for removing the coupon */ })
+        body: JSON.stringify({ couponCode})
     });
     const data = await response.json();
     console.log("serverrespnse",data);
@@ -760,7 +743,7 @@ document.getElementById('remove').addEventListener('click', async function() {
         document.getElementById('afterApplied').classList.add('d-none');
         document.getElementById('inputCoupon').classList.remove('d-none');
    } else {
-        // Show SweetAlert with error message
+       
         Swal.fire({
             icon: 'error',
             title: 'Oops...',

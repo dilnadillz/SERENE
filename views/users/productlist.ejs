@@ -257,12 +257,12 @@
     }
 
     button[type="submit"] {
-    background-color: #ffffff; /* Light background color */
-    border: 1px solid #dddddd; /* Light gray border */
-    color: #333333; /* Text color */
-    padding: 8px 16px; /* Padding around text */
-    cursor: pointer; /* Cursor style */
-    border-radius: 4px; /* Rounded corners */
+    background-color: #ffffff; 
+    border: 1px solid #dddddd; 
+    color: #333333; 
+    padding: 8px 16px; 
+    cursor: pointer; 
+    border-radius: 4px; 
 }
 
   </style>
@@ -400,7 +400,7 @@
     if (stock <= 0) {
         button.disabled = true;
         button.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent the default action
+            event.preventDefault(); 
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',

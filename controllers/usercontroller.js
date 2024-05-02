@@ -7,7 +7,6 @@ const OtpModel = require('../models/otpModel');
 const Productdb = require('../models/productModel');
 const AddressModel = require('../models/addressModel');
 const jwt = require('jsonwebtoken');
-const bcrypt = require("bcryptjs");
 const productModel = require('../models/productModel');
 const { findByIdAndUpdate } = require('../models/categoryModel');
 const bodyParser = require('body-parser');
@@ -21,7 +20,7 @@ const referralModel = require('../models/referralModel');
 const shortid = require('shortid');
 const Razorpay = require('razorpay');
 
-
+    
 
 
 const welcome = async (req, res,next) => {
@@ -772,15 +771,16 @@ const removeCoupon = async(req,res,next) => {
 
         //remove coupon from cart
         cart.couponApplied = null;
-
+        await cart.save();
        
         
-        const totalBeforeDiscount = Number(cart.products.reduce((total, product) => {
+        // Calculate the total amount after removing the coupon
+        const totalAfterRemoval = Number(cart.products.reduce((total, product) => {
             return total + (product.productId.price * product.quantity);
         }, 0).toFixed(2));
-        console.log("dffg",totalBeforeDiscount)
-        await cart.save()
-        res.status(200).json({sucess:true, message:"coupon removed",totalAmount: totalBeforeDiscount})
+        console.log("dffg",totalAfterRemoval)
+      
+        res.status(200).json({sucess:true, message:"coupon removed",totalAmount: totalAfterRemoval})
 
     }catch(error){
         next(error);

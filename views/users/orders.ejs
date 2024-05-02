@@ -244,13 +244,7 @@
             <% }); %>
 
 
-            <%# const itemsPerPage = 5; %>
-<%# const totalPages = Math.ceil(items.length / itemsPerPage); %>
-<%# const currentPage = parseInt(req.query.page, 10) || 1; %>
-<%# const startIndex = (currentPage - 1) * itemsPerPage; %>
-<%# const endIndex = Math.min(startIndex + itemsPerPage, items.length); %>
 
-<!-- Display your items here -->
 
 <nav class="d-flex justify-content-center justify-content-md-end">
   <ul class="pagination pagination-sm text-gray-400">
@@ -326,9 +320,9 @@
             if (response.ok) {
                 const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
 
-                // Show success message
+              
                 Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
-                    // Redirect to orders page
+                 
                     window.location.href = '/orders';
                 });
             } else {
@@ -392,7 +386,7 @@ function showReturnReasonPrompt(orderId, productId) {
 
 <script>
   function retryPayment(orderId) {
-    fetch(`/pendingPay/${orderId}`, { // Corrected fetch URL
+    fetch(`/pendingPay/${orderId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -409,7 +403,24 @@ function showReturnReasonPrompt(orderId, productId) {
           description: 'Order Payment',
           handler: function (response) {
      
-          createOrder(order.id);
+            const orderId = response.order.id;
+            fetch(`/placingPayment/${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ orderId }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Order status updated successfully');
+                    } else {
+                        console.error('Failed to update order status:', response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to update order status:', error.message);
+                });
           },
           prefill: {
           name: 'User Name',
@@ -425,31 +436,12 @@ function showReturnReasonPrompt(orderId, productId) {
         };
 
         var rzp = new Razorpay(options);
-        rzp.on('payment.success', function (response) {
        
-
-// Send an AJAX request to your server to update the order status
-fetch(`/placingPayment/${orderId}`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ orderId  }),
-})
-.then(response => {
-    if (response.ok) {
-        console.log('Order status updated successfully');
-    } else {
-        console.error('Failed to update order status:', response.statusText);
-    }
-})
-.catch(error => {
-    console.error('Failed to update order status:', error.message);
-});
-
-        });
         rzp.open();
     })
+    .catch(error => {
+        console.error('Failed to fetch order details:', error.message);
+    });
 }
 
 </script>

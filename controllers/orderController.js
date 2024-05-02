@@ -306,7 +306,7 @@ const orderInvoiceGenerate = async(req,res,next) => {
 
 const pendingRazorpayment = async (req, res, next) => {
     try {
-        const orderId = req.params.orderId;
+        const {orderId} = req.params;
         console.log("orderId",orderId)
       
         const order = await orderModel.findById(orderId);
@@ -328,13 +328,13 @@ const pendingRazorpayment = async (req, res, next) => {
        
     }catch(error){
         next(error);
-    }
+    }   
 }
 
 const pendingOrder = async(req,res,next) => {
     try{
-        const orderId = req.params.orderId;
-        const newStatus = req.body.status;
+        const {orderId} = req.params;
+        const newStatus = 'Placed';
         console.log("orderId",orderId);
         console.log("newStatus",newStatus);
 
