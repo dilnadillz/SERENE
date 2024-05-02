@@ -403,7 +403,8 @@ function showReturnReasonPrompt(orderId, productId) {
           description: 'Order Payment',
           handler: function (response) {
      
-            const orderId = response.order.id;
+            
+            console.log("orderId",orderId)
             fetch(`/placingPayment/${orderId}`, {
                     method: 'POST',
                     headers: {
@@ -412,7 +413,9 @@ function showReturnReasonPrompt(orderId, productId) {
                     body: JSON.stringify({ orderId }),
                 })
                 .then(response => {
+                  console.log("response",response)
                     if (response.ok) {
+                      location.reload();
                         console.log('Order status updated successfully');
                     } else {
                         console.error('Failed to update order status:', response.statusText);

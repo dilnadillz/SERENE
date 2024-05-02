@@ -296,9 +296,10 @@
                       return total += product.productz.price * product.products.quantity;
                     }, 0).toFixed(2)) %></span>
                     </li>
+
                     <!-- Discount -->
                     <li class="list-group-item d-flex">
-                      <span id="discount">Discount</span> <span class="ms-auto fs-sm text-success">--- ₹<%= Number(cartData.reduce((total, product) => {
+                      <span id="discount">Discount</span> <span class="ms-auto fs-sm text-success" id="dis">--- ₹<%= Number(cartData.reduce((total, product) => {
                         if (product.offerDetails && product.offerDetails.length > 0) {
                           const discountAmount = (product.productz.price * product.products.quantity) * (product.offerDetails[0].percentage / 100);
                           return total += discountAmount;
@@ -307,11 +308,12 @@
                         }
                       }, 0).toFixed(2)) %></span>
                     </li>
+
                   <li class="list-group-item d-flex">
                     <span>Shipping</span> <span class="ms-auto fs-sm text-success">FREE</span>
                   </li>
                   <li class="list-group-item d-flex fs-lg fw-bold">
-                    <span>Total</span> <span class="ms-auto">₹<%= Number(cartData.reduce((total, product) => {
+                    <span>Total</span> <span class="ms-auto" id="tot">₹<%= Number(cartData.reduce((total, product) => {
                       if (product.offerDetails && product.offerDetails.length > 0) {
                         return total += ((product.productz.price * product.products.quantity) - (product.productz.price * product.products.quantity * (product.offerDetails[0].percentage / 100))).toFixed(2);
                       } else {
@@ -321,13 +323,8 @@
                   </li>
                   
 
-                  <div>Coupon Discount: <span id="total">&#8377; Amount</span></div>
+                  
 
-                  <% if (typeof totalDiscount !== 'undefined') { %>
-  <li class="list-group-item d-flex">
-    <span id="discount">Discount</span> <span class="ms-auto fs-sm text-success">--- ₹<%= totalDiscount %></span>
-  </li>
-<% } %>
 
 
 
@@ -703,11 +700,11 @@ placeOrderBtn.addEventListener('click', async () => {
     if (data.success) {
       console.log("data",data)
     
-      document.getElementById('total').innerText = data.totals;
+      document.getElementById('tot').innerText = `₹${data.totals}`;
 
       
 // Display the discount amount
-document.getElementById('discount').innerText = `--- ₹${data.discountAmount}`;
+document.getElementById('dis').innerText = `--- ₹${data.discount}`;
 
 
        // Hide the inputCoupon section and show the afterApplied section
@@ -736,9 +733,10 @@ document.getElementById('remove').addEventListener('click', async function() {
     });
     const data = await response.json();
     console.log("serverrespnse",data);
-    if (data.success) {
+    if (data.sucess) {
       // Update the total element in the HTML
-      document.getElementById('total').innerText = data.totalAmount;
+      document.getElementById('tot').innerText = data.totalAmount;
+      document.getElementById('dis').innerText = `--- ₹${0}`;
         // Hide the afterApplied section and show the inputCoupon section
         document.getElementById('afterApplied').classList.add('d-none');
         document.getElementById('inputCoupon').classList.remove('d-none');

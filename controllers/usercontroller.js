@@ -748,6 +748,9 @@ const applyCoupon = async(req,res,next) => {
         const totalAfterDiscount = totalBeforeDiscount - totalDiscount;
         console.log("finaltotal",totalAfterDiscount)
 
+        cart.couponApplied = couponCode;
+        await cart.save();
+
         res.status(200).json({success: true, message: "coupon applied", totals:totalAfterDiscount, discount:coupon.discount});
 
     }catch(error){
@@ -763,7 +766,7 @@ const removeCoupon = async(req,res,next) => {
         if(!cart){
             return res.status(401).json({message:"cart not found for user"});
         }
-       
+       console.log("cart",cart);
         //checking if coupon applied before
         if(!cart.couponApplied){
             return res.status(401).json({message:"coupon not applied"})
@@ -771,6 +774,7 @@ const removeCoupon = async(req,res,next) => {
 
         //remove coupon from cart
         cart.couponApplied = null;
+
         await cart.save();
        
         

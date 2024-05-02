@@ -338,9 +338,16 @@ const pendingOrder = async(req,res,next) => {
         console.log("orderId",orderId);
         console.log("newStatus",newStatus);
 
-        const updateOrder = await orderModel.findByIdAndUpdate(orderId,{status:newStatus},{new:true});
-        console.log("updateOrder",updateOrder);
-        res.join(updateOrder);
+        const order = await orderModel.findById(orderId);
+
+        order.details.forEach((product)=>{//changing the status of each product
+            product.status = newStatus
+        })
+
+        await order.save()
+        
+      
+        res.json({updateOrder:order});
 
     }catch(error){
         next(error);

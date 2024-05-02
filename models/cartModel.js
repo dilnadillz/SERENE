@@ -17,8 +17,12 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         default: 1
       }
-    }
-  ]
+    },
+    
+  ],
+  couponApplied :{
+    type: String
+  }
 
 });
 
