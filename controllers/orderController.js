@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const path = require('path');
 const ejs = require('ejs');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 
 const productModel = require('../models/productModel');
@@ -287,7 +287,7 @@ const orderInvoiceGenerate = async(req,res,next) => {
         const invoiceHtml = ejs.render(fs.readFileSync(invoiceTemplatePath, 'utf8'), data);
 
         //generate pdf invoice
-        const browser = await puppeteer.launch({ headless: 'new'});
+        const browser = await puppeteer.launch({ headless: "new", executablePath: '/snap/bin/chromium'});
         const page = await browser.newPage();
         await page.setContent(invoiceHtml);
         const pdfBuffer = await page.pdf({format: 'A4'});

@@ -6,7 +6,7 @@ const UserModel = require('../models/userModel');
 const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const orderModel = require('../models/orderModel')
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const path = require('path');
 const ejs = require('ejs');
 const fs = require('fs');
@@ -74,8 +74,8 @@ const adminWelcome = async (req, res,next) => {
                 $sort: { _id: 1 },//sorting it in asnding order
               },
           
-        ])
-        // console.log("dailyOrderData",dailyOrderData);
+        ])  
+        // console.log("dailyOrderData",dailyOrderData);    
 
         const dailyDetls = dailyOrderData.map((item)=> item._id);
         const dailyOrder = dailyOrderData.map((item)=> item.orderCount);
@@ -379,7 +379,7 @@ const filterSalesReport = async(req,res,next) => {
     } catch (error) {
       next(error);
     }   
-};
+};                                 
 
 const salesPdf = async(req,res,next) => {
     try{
@@ -395,7 +395,7 @@ const salesPdf = async(req,res,next) => {
      const invoiceHtml = ejs.render(fs.readFileSync(salesPdfPath, 'utf8'), data);
 
      //generate pdf invoice
-     const browser = await puppeteer.launch({ headless: 'new'});
+     const browser = await puppeteer.launch({ headless: "new", executablePath: '/snap/bin/chromium'});
      const page = await browser.newPage();
      await page.setContent(invoiceHtml);
      const pdfBuffer = await page.pdf({format: 'A4'});
@@ -429,4 +429,4 @@ module.exports = {
     salesPdf
 
   
-}
+}                           

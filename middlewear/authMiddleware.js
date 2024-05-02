@@ -98,24 +98,24 @@ const checkAdmin = (req,res,next) => {
 if (token) { 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, decodedToken) => {
     if (err) {
-      
       console.log(err.message);
       res.locals.admin = null;  
-      next();
     } else { 
-      
       let admin = await adminModel.findById(decodedToken.adminId)
-      res.locals.admin = admin._id
-      next();
+      if (admin) {
+        res.locals.admin = admin._id
+      } else {
+        console.log("Admin not found");
+        res.locals.admin = null;
+      }
     }
+    next();
   })
 } else {
   res.locals.admin = null;
   next()
 }
 }
-
-
 
 
 
