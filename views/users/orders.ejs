@@ -217,7 +217,7 @@
                           <% } %>
 
                        
-                          <%  if (order.details[0].status === 'Pending' || order.details[0].status === 'Shipped') { %>
+                          <%  if (order.details[0].status === 'Pending' || order.details[0].status === 'Shipped'|| order.details[0].status === 'Placed') { %>
                           <!-- Cancel Button -->
                           <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order.details[0].productId %>">
                             Cancel order
@@ -323,7 +323,8 @@
               
                 Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
                  
-                    window.location.href = '/orders';
+                 
+                    window.location.reload = '/orders';
                 });
             } else {
                 console.error('Failed to cancel order:', response.statusText);

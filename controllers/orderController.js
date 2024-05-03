@@ -335,7 +335,9 @@ const pendingOrder = async(req,res,next) => {
     try{
         const {orderId} = req.params;
         const newStatus = 'Placed';
-        console.log("orderId",orderId);
+        const userId = res.locals.user
+        // console.log("orderId",orderId);
+        // console.log("newStatus",newStatus);
         console.log("newStatus",newStatus);
 
         const order = await orderModel.findById(orderId);
@@ -344,7 +346,8 @@ const pendingOrder = async(req,res,next) => {
             product.status = newStatus
         })
 
-        await order.save()
+        await order.save();
+
         
       
         res.json({updateOrder:order});
