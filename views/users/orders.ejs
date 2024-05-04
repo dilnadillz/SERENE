@@ -159,40 +159,35 @@
               </div>
               <div class="card-footer">
                 <div class="row align-items-center">
-                  <div class="col-12 col-lg-6">
-                    <div class="row gx-5 mb-4 mb-lg-0">
-                      <div class="col-3">
-
-                        <!-- Image -->
-                      <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-5.jpg);"></div> -->
-
+                  <ul class="list-group list-group-flush">
+                    <% order.details.forEach(detail => { %>
+                    <li class="list-group-item">
+                      <div class="row align-items-center">
+                        <div class="col-4 col-md-3 col-xl-2"> 
+                          <!-- Product Image -->
+                          <% if (Array.isArray(detail.productImage) && detail.productImage.length > 0) { %>
+                            <img src="<%= detail.productImage[0] %>" alt="Product Image" class="img-fluid">
+                        <% } else { %>
+                            <p>No image available</p>
+                        <% } %>
+                         
+                        
                       </div>
-                      <div class="col-3">
-
-                        <!-- Image -->
-                        <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-112.jpg);"></div> -->
-
-                      </div>
-                      <div class="col-3">
-
-                        <!-- Image -->
-                        <!-- <div class="ratio ratio-1x1 bg-cover" style="background-image: url(assets/img/products/product-7.jpg);"></div> -->
-
-                      </div>
-                      <!-- <div class="col-3"> -->
-
-                        <!-- Image -->
-                        <!-- <div class="ratio ratio-1x1 bg-light">
-                          <a class="ratio-item ratio-item-text text-reset" href="#!">
-                            <div class="fs-xxs fw-bold">
-                              +2 <br> more
-                            </div>
-                          </a>
+                      
+                      
+                        
+                        <div class="col">
+                          <!-- Product Details -->
+                          <p class="mb-4 fs-sm fw-bold">
+                            <a class="text-body" href="/product/<%= detail.productId.productName %>"><%= detail.productName %></a> <br>
+                            <span class="text-muted">Quantity: <%= detail.quantity %></span> <br>
+                            <span class="text-muted">Price: <%= detail.price %></span>
+                          </p>
                         </div>
-
-                      </div> -->
-                    </div>
-                  </div>
+                      </div>
+                    </li>
+                    <% }); %>
+                  </ul>
                   <div class="col-12 col-lg-6">
                     <div class="row gx-5">
                     

@@ -20,20 +20,27 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
 
-const loadProductList = async(req,res,next)=>{
-    try{
-        const offerId = await offerModel.find();
-        const productsData = await productModel.find().populate('category').populate('offer');
-        console.log(productsData);
-        // console.log("hey offer",offerId);
+  const loadProductList = async (req, res, next) => {
+    try {
+        const page = req.query.page || 1; 
+        const limit = 10;
       
-        res.render('products', { productsData: productsData,offerId});
+        const offset = (page - 1) * limit;
 
-    }catch(error){
-        next(error);    
+        const productsData = await productModel.find().populate('category').populate('offer').skip(offset).limit(limit);
+        const totalProducts = await productModel.countDocuments();
+
+        // Calculate total number of pages
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const offerId = await offerModel.find();
+
+        res.render('products', { productsData, offerId, totalPages, currentPage: page });
+
+    } catch (error) {
+        next(error);
     }
-}       
-
+}
 
 const loadProductAdd = async(req,res,next)=>{
     try{

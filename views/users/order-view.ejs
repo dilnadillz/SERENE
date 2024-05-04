@@ -132,18 +132,18 @@
 
                <!-- List group -->
               <ul class="list-group list-group-lg list-group-flush-y list-group-flush-x">
-                <% order.productDetls.forEach(product => { %>
+                <% order.details.forEach(detail => { %>
                   <li class="list-group-item">
                     <div class="row align-items-center">
                       <div class="col-4 col-md-3 col-xl-2"> 
                         <!-- Image -->
-                        <a href="/product/<%= product._id %>"><img src="<%= product.productImage[0] %>" alt="..." class="img-fluid"></a> 
+                        <a href="/product/<%= detail.productId._id %>"><img src="<%= detail.productId.productImage[0] %>" alt="..." class="img-fluid"></a> 
                       </div>
                       <div class="col">
                         <!-- Title -->
                         <p class="mb-4 fs-sm fw-bold">
-                          <a class="text-body" href="/product/<%= product._id %>"><%= product.productName %></a> <br>
-                          <span class="text-muted"><%= product.price %></span>
+                          <a class="text-body" href="/product/<%= detail.productId._id %>"><%= detail.productId.productName %></a> <br>
+                          <span class="text-muted"><%= detail.price %></span>
                         </p>
                         <!-- Text -->
                         <!-- <div class="fs-sm text-muted">
@@ -154,6 +154,7 @@
                     </div>
                   </li>
                 <% }); %>
+                
               </ul>
 
 

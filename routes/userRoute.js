@@ -25,13 +25,21 @@ user_route.post('/register',usercontroller.signUp);
 
 user_route.post('/resend',usercontroller.resendOtp);
 
-user_route.post('/verify',usercontroller.verifyOtp);
+user_route.post('/verify',requireAuth,usercontroller.verifyOtp);
 
 user_route.get('/login',isUser,usercontroller.loadLogin)
 
 user_route.post('/login',usercontroller.verifyLogin);
 
 user_route.get('/logout',requireAuth,usercontroller.logout);
+
+user_route.get('/forgotPassword',requireAuth,usercontroller.loadForgotPassword);
+
+user_route.post('/forgotPasswordOtp',requireAuth,usercontroller.forgotPasswordOtp);
+
+user_route.post("/setNewPassword",requireAuth,usercontroller.verifyForgotPassword);
+
+user_route.post("/newPassword",requireAuth,usercontroller.newPassword);
 
 user_route.get('/productlist',checkBlockUser,usercontroller.loadProductlist);
 
@@ -73,15 +81,9 @@ user_route.post('/applyCoupon',usercontroller.applyCoupon);
 
 user_route.post('/removeCoupon',usercontroller.removeCoupon);
 
-user_route.get('/userReferral',usercontroller.loadUserReferral);
+user_route.get('/userReferral',requireAuth,usercontroller.loadUserReferral);
 
-user_route.get('/forgotPassword',usercontroller.loadForgotPassword);
 
-user_route.post('/forgotPasswordOtp',usercontroller.forgotPasswordOtp);
-
-user_route.post("/setNewPassword",usercontroller.verifyForgotPassword);
-
-user_route.post("/newPassword",usercontroller.newPassword);
 
 
 

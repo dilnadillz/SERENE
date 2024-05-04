@@ -73,7 +73,7 @@ const orderPlace = async(req,res,next) => {
 }
 
 
-
+    
 const loadOrder = async (req, res,next) => {
     try {
         const userId = res.locals.user;
@@ -88,7 +88,8 @@ const loadOrder = async (req, res,next) => {
             .skip((page - 1) * pageSize)
             .limit(pageSize);
 
-        // console.log(orderData);
+        // console.log(orderData);  
+        
 
         const razorpayKey = process.env.key_id
 
@@ -147,42 +148,27 @@ const viewOrder = async(req,res,next) => {
     try{
         const userId = res.locals.user; 
         const{ orderId,productId} = req.query;
+        console.log("orderId",orderId)
        
-        // console.log("ordeer",orderId)
-        // console.log("product",productId)
-
-        const orderDetails = await orderModel.findOne({_id:orderId})
-        const order = await orderModel.aggregate([
-            {
-              $match: { _id: new mongoose.Types.ObjectId(orderId) }
-            },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "details.productId",
-                    foreignField: "_id",
-                    as: "productDetls"
-                }
-            }
-            
-          ]);
-
-        // Save productDetls in a separate variable
-        const productDetls = order[0].productDetls;
-
-        const addressId =  orderDetails.delivery_address
-        // console.log("ID", addressId)
-
-        const userAddress = await addressModel.findOne({
-            userId: userId,
-            'address._id': addressId
+    
+        const order = await orderModel.findOne({ _id: orderId }).populate('details.productId');
+        if(!order){
+            return res.status(404).json({message:"order not found"})
+        }
+        // Calculate the total amount based on the stored price and quantity
+        let totalAmount = 0;
+        order.details.forEach(detail => {
+            totalAmount += detail.price * detail.quantity;
         });
 
+        const addressId = order.delivery_address;
+
+        const userAddress = await addressModel.findOne({userId: userId});
+
         console.log("order", order);
-        console.log("address", userAddress);  
-        
-        res.render('order-view',{order:order[0],address:userAddress,productDetls: productDetls});
-    }catch(error){
+        console.log("address", userAddress);
+
+        res.render('order-view', { order: order, address: userAddress }); }catch(error){
         next(error);
     }
 }               
@@ -200,6 +186,7 @@ const razorpayPayment = async(req,res,next) => {
         cart.products.forEach(product => {
             totalAmount += product.productId.price * product.quantity;
         });
+        
             
       console.log("mm",cart)
       console.log("kk",totalAmount)
@@ -220,7 +207,7 @@ const razorpayPayment = async(req,res,next) => {
     }catch(error){  
         next(error);
     }
-}   
+}       
 
 const orderReturn = async(req,res,next) => {
     try{
@@ -303,7 +290,7 @@ const orderInvoiceGenerate = async(req,res,next) => {
         next(error);
     }   
 }           
-
+//--------razorpayment in order page
 const pendingRazorpayment = async (req, res, next) => {
     try {
         const {orderId} = req.params;

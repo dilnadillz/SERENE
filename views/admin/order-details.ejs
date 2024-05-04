@@ -54,6 +54,7 @@
                                 <th>Price</th>
                                 <th>Quantity </th>
                                 <th>Status </th>
+                                <th>Date</th>
                                 <th>Action </th>
                                 <th>Return </th>
                             </tr>
@@ -62,9 +63,10 @@
                             
                             <tr>
                                 <td><%= order.productDetls.productName%></td>
-                                <td><%= order. total_amount%></td></td>
+                                <td><%= order.total_amount%></td>
                                 <td><%= order.details.quantity%></td>
                                 <td><%= order.details.status%></td>
+                                <td><%= order.date.toLocaleDateString()%></td>
                                 
                                 <td>
                                     <div class="">

@@ -11,6 +11,8 @@ const path = require('path');
 const ejs = require('ejs');
 const fs = require('fs');
 const moment = require('moment');
+const productModel = require('../models/productModel');
+const categoryModel = require('../models/categoryModel');
 
 
 const adminlogin = async (req, res) => {
@@ -60,6 +62,35 @@ const verifyLogin = async (req, res,next) => {
 
 const adminWelcome = async (req, res,next) => {
     try {
+        const productCount = await productModel.aggregate([
+            {
+                $count : "totalProducts"
+            }
+        ])
+
+        // console.log("productCount",productCount)
+
+        const orderCount = await orderModel.aggregate([
+            {
+                $count : "totalOrders"
+            }
+        ])
+        // console.log("orderCount",orderCount);
+
+        const userCount = await UserModel.aggregate([
+            {
+                $count : "totalUsers"
+            }
+        ])
+        // console.log("userCount",userCount);
+        
+        const categoryCount = await categoryModel.aggregate([
+            {
+                $count : "totalCategory"
+            }
+        ])
+        console.log("categoryCount",categoryCount);
+
         //data fetchig in chart
         const dailyOrderData = await orderModel.aggregate([
             {
@@ -120,10 +151,10 @@ const adminWelcome = async (req, res,next) => {
                 $unwind:"$products"
             },
             {
-                $project: {_id:1,productName:"$products.productName"}
+                $project: {_id:1, productId: "$products._id",productName:"$products.productName"}
             },
             {
-                $group:{_id:"$productName"}
+                $group:{_id: "$productId", productName: { $first: "$productName" }}
             }
             
         ]);
@@ -161,10 +192,10 @@ const adminWelcome = async (req, res,next) => {
                 $unwind:"$category"
             },
             {
-                $project: {_id:1,categoryName:"$category.categoryName"}
+                $project: {_id:1, categoryId: "$category._id",categoryName:"$category.categoryName"}
             },
             {
-                $group:{_id:"$categoryName", totalSales :{ $sum:"$details.quantity"}}
+                $group:{_id:"$categoryName",  categoryId: { $first: "$categoryId" }, totalSales :{ $sum:"$details.quantity"}}
             },
             {
                 $sort:{totalSalesQuantity: -1 } 
@@ -176,22 +207,32 @@ const adminWelcome = async (req, res,next) => {
         
         console.log("bestSellingCategory",bestSellingCategory);
 
-        res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder,bestSellingProducts,bestSellingCategory});
+        res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder,bestSellingProducts,bestSellingCategory,productCount,orderCount,userCount,categoryCount});
     } catch (error) {
         next(error);
     }
 }
 
-const loadCustomers = async (req, res,next) => {
+const loadCustomers = async (req, res, next) => {
     try {
+        const page = req.query.page || 1; 
+        const limit = 10; 
 
-        const userData = await UserModel.find();
-        console.log(userData);
-        res.render('customers', { users: userData });
+     
+        const offset = (page - 1) * limit;
+
+        const userData = await UserModel.find().skip(offset).limit(limit);
+        const totalUsers = await UserModel.countDocuments();
+
+     
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        res.render('customers', { users: userData, totalPages, currentPage: page });
     } catch (error) {
         next(error);
     }   
 }
+
 
 const blockUser = async (req, res,next) => {
   try {
@@ -237,6 +278,12 @@ const adminLogout = async (req, res,next) => {
 
 const loadUserOrder = async(req,res,next) => {
     try{
+
+        
+        const page = req.query.page || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+
         orderData = await orderModel.aggregate([
             {
                 $lookup: {
@@ -246,18 +293,24 @@ const loadUserOrder = async(req,res,next) => {
                     as: "userz"
                 }
             },
-            {
+            {   
                 $unwind: "$userz"
             },
             {
                 $sort:{date: -1}
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
             }
         ])
-       
-        // console.log("order coming",orderData)
+        const totalCount = await orderModel.countDocuments();
+        console.log("order coming",orderData)
         
         
-        res.render('order',{orderData:orderData});
+        res.render('order',{orderData:orderData, currentPage: page, totalPages: Math.ceil(totalCount / limit) });
     }catch(error){
         next(error);
     }
@@ -356,10 +409,16 @@ const orderApproveOrReject =async(req,res,next) => {
 
 const loadSalesReport = async(req,res,next) => {
     try{
-        const salesData = await orderModel.find({"details.status":"Delivered"}).populate("details.productId").sort({date:-1})
-        .exec();
+        const page = req.query.page || 1;
+        const limit = 10; 
+        const skip = (page - 1) * limit;
+
+        const salesData = await orderModel.find({"details.status":"Delivered"}).populate("details.productId").sort({date:-1}).skip(skip).limit(limit).exec();
         console.log("sales",salesData)
-        res.render('salesReport',{salesData});
+       
+        const totalCount = await orderModel.countDocuments({ "details.status": "Delivered" });
+       
+        res.render('salesReport',{salesData: salesData, currentPage: page, totalPages: Math.ceil(totalCount / limit)});
     }catch(error){
         next(error);
     }

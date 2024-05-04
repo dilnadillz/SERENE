@@ -347,6 +347,78 @@ const logout = async (req, res,next) => {
     }
 };
 
+
+const loadForgotPassword = async(req,res,next) => {
+    try{
+        res.render("forgotPassword");
+    }catch(error){
+        next(error);
+    }
+}
+
+const forgotPasswordOtp = async (req,res,next) => {
+    try{
+        globalEmail =req.body.email;
+        console.log("globalEmail",globalEmail)
+        const userData = await UserModel.findOne({email:globalEmail});
+        console.log("userdata",userData);
+        if(userData){
+            otp = otpGenerator();
+            console.log(otp) 
+            sendOtp(globalEmail, otp);
+
+            res.render("forgotPasswordOtp")
+        }else{
+            res.render("forgotPassword",{message: "no user found"});
+        }
+    }catch(error){
+        next(error);
+    }
+}
+
+const verifyForgotPassword = async(req,res,next) => {
+    try{
+        const {otp} = req.body;
+        console.log(otp)
+        if(otp === String(otp)){
+            res.render("setNewPassword")
+        }else {
+            res.render("forgotPasswordOtp",{message:"wrong otp"});
+        }
+    }catch(error){
+        next(error);
+    }
+}
+
+const newPassword = async(req,res,next) => {
+    try{
+        const {newPassword} = req.body;
+        const {confirmPassword} = req.body;
+        console.log("newPassword",newPassword);
+        console.log("conformPassword",confirmPassword);
+
+        //hash the new password before storing
+        const passwordHash = await bcrypt.hash(newPassword, 10);
+        console.log("passwordHash",passwordHash);
+        
+        //comparing plaintext newpasssword with hashedconfrm pswd
+        const matchingPassword = await bcrypt.compare(newPassword,passwordHash);
+        console.log("matchingPassword",matchingPassword);
+
+        if(matchingPassword){
+            await UserModel.findOneAndUpdate({email: globalEmail},{$set:{password:passwordHash}})
+            res.redirect("/login")
+        }else{
+            res.render("newPassword",{message:"password not matching"});
+        }
+
+       
+    }catch(error){
+        next(error);
+    }
+}
+
+
       
 
 const loadUserProduct = async (req, res,next) => {
@@ -747,9 +819,11 @@ const applyCoupon = async(req,res,next) => {
         const totalDiscount = Math.min(coupon.discount, totalBeforeDiscount);
         const totalAfterDiscount = totalBeforeDiscount - totalDiscount;
         console.log("finaltotal",totalAfterDiscount)
+        console.log("totalDiscount",totalDiscount)
 
         cart.couponApplied = couponCode;
-        await cart.save();
+        cart.discount = totalDiscount;  
+        await cart.save();      
 
         res.status(200).json({success: true, message: "coupon applied", totals:totalAfterDiscount, discount:coupon.discount});
 
@@ -804,76 +878,6 @@ const loadUserReferral = async(req,res,next) => {
     }
 }
 
-const loadForgotPassword = async(req,res,next) => {
-    try{
-        res.render("forgotPassword");
-    }catch(error){
-        next(error);
-    }
-}
-
-const forgotPasswordOtp = async (req,res,next) => {
-    try{
-        globalEmail =req.body.email;
-        console.log("globalEmail",globalEmail)
-        const userData = await UserModel.findOne({email:globalEmail});
-        console.log("userdata",userData);
-        if(userData){
-            otp = otpGenerator();
-            console.log(otp) 
-            sendOtp(globalEmail, otp);
-
-            res.render("forgotPasswordOtp")
-        }else{
-            res.render("forgotPassword",{message: "no user found"});
-        }
-    }catch(error){
-        next(error);
-    }
-}
-
-const verifyForgotPassword = async(req,res,next) => {
-    try{
-        const {otp} = req.body;
-        console.log(otp)
-        if(otp === String(otp)){
-            res.render("setNewPassword")
-        }else {
-            res.render("forgotPasswordOtp",{message:"wrong otp"});
-        }
-    }catch(error){
-        next(error);
-    }
-}
-
-const newPassword = async(req,res,next) => {
-    try{
-        const {newPassword} = req.body;
-        const {confirmPassword} = req.body;
-        console.log("newPassword",newPassword);
-        console.log("conformPassword",confirmPassword);
-
-        //hash the new password before storing
-        const passwordHash = await bcrypt.hash(newPassword, 10);
-        console.log("passwordHash",passwordHash);
-        
-        //comparing plaintext newpasssword with hashedconfrm pswd
-        const matchingPassword = await bcrypt.compare(newPassword,passwordHash);
-        console.log("matchingPassword",matchingPassword);
-
-        if(matchingPassword){
-            await UserModel.findOneAndUpdate({email: globalEmail},{$set:{password:passwordHash}})
-            res.redirect("/login")
-        }else{
-            res.render("newPassword",{message:"password not matching"});
-        }
-
-       
-    }catch(error){
-        next(error);
-    }
-}
-
 module.exports = {
     welcome,
     loadRegister,
@@ -883,6 +887,10 @@ module.exports = {
     loadLogin,
     verifyLogin,
     logout,
+    loadForgotPassword,
+    forgotPasswordOtp,
+    verifyForgotPassword,
+    newPassword,
     loadUserProduct,
     LoadPersonalInfo,
     editPersonalInfo,
@@ -903,10 +911,7 @@ module.exports = {
     applyCoupon,
     removeCoupon,
     loadUserReferral,
-    loadForgotPassword,
-    forgotPasswordOtp,
-    verifyForgotPassword,
-    newPassword
+  
 
 
 }
