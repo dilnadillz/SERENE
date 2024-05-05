@@ -13,6 +13,7 @@ const fs = require('fs');
 const moment = require('moment');
 const productModel = require('../models/productModel');
 const categoryModel = require('../models/categoryModel');
+const addressModel = require('../models/addressModel');
 
 
 const adminlogin = async (req, res) => {
@@ -323,6 +324,14 @@ const loadUserOrderDetails = async(req,res,next) => {
       
         const orderData = await orderModel.findById({_id:orderId});
 
+        const {userId = userId , delivery_address : addressId} = await orderModel.findOne({_id   :orderId})
+
+        const address = await addressModel.findOne({userId:userId});
+         const deliveryAddress = address.address.filter((add)=>add._id ==  addressId)
+
+         console.log("address",address);
+         console.log("deliveryAddress",deliveryAddress);
+
         const adminOrder = await orderModel.aggregate([
             {
                 $match: { _id: new mongoose.Types.ObjectId(orderId) }
@@ -351,7 +360,7 @@ const loadUserOrderDetails = async(req,res,next) => {
                   }
               },
               {
-                  $unwind: "$productDetls"
+                  $unwind: "$productDetls" 
               }
          
         ])
@@ -359,7 +368,7 @@ const loadUserOrderDetails = async(req,res,next) => {
         
         // console.log("us",orderData)
         // console.log("ad",adminOrder)
-        res.render('order-details',{order:adminOrder[0]});
+        res.render('order-details',{order:adminOrder[0],address:deliveryAddress[0]});
     }catch(error){
         next(error);
     }
@@ -409,16 +418,10 @@ const orderApproveOrReject =async(req,res,next) => {
 
 const loadSalesReport = async(req,res,next) => {
     try{
-        const page = req.query.page || 1;
-        const limit = 10; 
-        const skip = (page - 1) * limit;
+        const salesData = await orderModel.find({"details.status": "Delivered"}).populate("details.productId").sort({date: -1}).exec();
+        console.log("sales", salesData);
 
-        const salesData = await orderModel.find({"details.status":"Delivered"}).populate("details.productId").sort({date:-1}).skip(skip).limit(limit).exec();
-        console.log("sales",salesData)
-       
-        const totalCount = await orderModel.countDocuments({ "details.status": "Delivered" });
-       
-        res.render('salesReport',{salesData: salesData, currentPage: page, totalPages: Math.ceil(totalCount / limit)});
+        res.render('salesReport', {salesData: salesData});
     }catch(error){
         next(error);
     }

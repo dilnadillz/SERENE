@@ -135,6 +135,19 @@
                 </div>
 
               </div>
+
+
+              <div class="list-group-item">
+                <!-- Radio button for selecting COD -->
+                <div class="form-check custom-radio">
+                  <input class="form-check-input" id="checkoutPaymentWallet" name="paymentMethod" type="radio"
+                    value="wallet" required>
+                  <label class="form-check-label fs-sm text-body text-nowrap" for="checkoutPaymentWallet">
+                    Wallet
+                  </label>
+                </div>
+              </div>
+              
               <!-- <div class="list-group-item collapse py-0" id="checkoutPaymentCardCollapse"> -->
 
               <!-- Form -->
@@ -791,6 +804,56 @@
   </script>
 
 
+
+<script>
+  const walletPayment = document.getElementById('place-order-btn');
+
+    walletPayment.addEventListener('click', async () => {
+      try {
+        const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked').value;
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        console.log(selectedAddress);
+        console.log(paymentMethod);
+
+        if (paymentMethod === 'wallet') {
+
+          // Make the fetch request to place the COD order
+          const response = await fetch('/place-order', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ selectedAddress, paymentMethod }),
+          });
+
+          if (response.ok) {
+            Swal.fire({
+              title: 'Order Placed!',
+              text: 'Your order has been placed successfully.',
+              icon: 'success',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              window.location.href = '/order-sucess';
+            });
+          } else {
+            const errorMessage = await response.json();
+            Swal.fire({
+              title: 'Error!',
+              text: errorMessage.message || 'Failed to place order',
+              icon: 'error',
+              confirmButtonText: 'OK',
+            });
+          }
+        }
+
+      } catch (error) {
+        console.error(error);
+
+
+      }
+    });
+ 
+</script>
 
 
   <%- include('../layouts/footer.ejs') %>

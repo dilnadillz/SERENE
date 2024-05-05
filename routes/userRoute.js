@@ -25,7 +25,7 @@ user_route.post('/register',usercontroller.signUp);
 
 user_route.post('/resend',usercontroller.resendOtp);
 
-user_route.post('/verify',requireAuth,usercontroller.verifyOtp);
+user_route.post('/verify',usercontroller.verifyOtp);
 
 user_route.get('/login',isUser,usercontroller.loadLogin)
 

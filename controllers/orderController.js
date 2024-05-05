@@ -66,6 +66,27 @@ const orderPlace = async(req,res,next) => {
 
         await cartModel.findOneAndDelete({userId:userId});
 
+        //wallet
+        const wallet = await walletModel.findOne({ userId: userId });
+        console.log("walettttt",wallet)
+            if (paymentMethod === 'wallet') {
+                console.log("Payment method:", paymentMethod);
+
+                wallet.balance -= totalAmount; 
+
+                console.log("dsfgdfg",wallet.balance)
+                
+                //update wallet with refund amount
+                wallet.walletHistory.push({
+                    date: new Date(),
+                    amount: totalAmount,
+                    status: 'Debited (Wallet Payment)'
+                })
+            }
+            await wallet.save();
+
+
+
         res.status(200).json({ order, message: 'order updated successfully.' });
     }catch(error){
         next(error);
@@ -135,7 +156,16 @@ const orderCancel = async(req,res,next) => {
 
       await wallet.save();
     }
-      console.log("wallw",wallet)
+    //   console.log("wallw",wallet)
+
+    //to restore the stock after cancelling order 
+    const product = await productModel.findById(productId);
+    const previousStock = product.stock;
+    product.stock += quantity;
+    await product.save();
+
+    console.log(`Product ID: ${productId}, Previous Stock: ${previousStock}, New Stock: ${product.stock}`);
+
 
 
         return res.status(200).json({ message: 'Product cancelled successfully' });
