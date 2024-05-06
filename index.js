@@ -62,6 +62,10 @@ app.use('/',order_route);
 const wishlist_route = require('./routes/wishlistRoute');
 app.use('/',wishlist_route);
 
+app.all('*',(req,res,next) => {
+  res.render('404');
+})
+
 const PORT = process.env.PORT||3000 
 app.listen(PORT,function(){
     console.log(`server is running http://localhost:${PORT}/`);

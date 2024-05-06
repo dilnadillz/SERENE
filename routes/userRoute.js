@@ -67,7 +67,7 @@ user_route.get('/order-sucess',requireAuth,checkBlockUser,usercontroller.loadOrd
 
 
 
-user_route.get('/404',checkBlockUser,usercontroller.load404);
+// user_route.get('/404',checkBlockUser,usercontroller.load404);
 
 user_route.get('/wallet',requireAuth,checkBlockUser,usercontroller.walletLoad);
 
@@ -83,7 +83,7 @@ user_route.post('/removeCoupon',usercontroller.removeCoupon);
 
 user_route.get('/userReferral',requireAuth,usercontroller.loadUserReferral);
 
-
+        
 
 
 

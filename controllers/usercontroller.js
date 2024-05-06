@@ -691,13 +691,7 @@ const loadOrderThankyou = async(req,res,next) =>{
 }
 
 
-const load404 = async(req,res,next) => {
-    try{
-        res.render('404')
-    }catch(error){
-        next(error);
-    }
-}
+
 
 const walletLoad = async(req,res,next) => {
     try{
@@ -903,7 +897,6 @@ module.exports = {
     loadCheckout,
     loadProductlist,
     loadOrderThankyou,
-    load404,
     walletLoad,
     addAmountWallet,
     addAmount,

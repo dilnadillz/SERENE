@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
-    userId : {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'user', //reference to the user model
-      required: true,
-    },
-    products: [
-      {
-      productId:{
-        type: mongoose.Schema.Types.ObjectId, 
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user', //reference to the user model
+    required: true,
+  },
+  products: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true,
       },
@@ -18,9 +18,9 @@ const cartSchema = new mongoose.Schema({
         default: 1
       }
     },
-    
+
   ],
-  couponApplied :{
+  couponApplied: {
     type: String
   }
 

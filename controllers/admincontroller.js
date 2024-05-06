@@ -211,7 +211,7 @@ const adminWelcome = async (req, res,next) => {
         res.render('dashboard',{dailyDetls,dailyOrder,monthlyDetls,monthlyOrder,bestSellingProducts,bestSellingCategory,productCount,orderCount,userCount,categoryCount});
     } catch (error) {
         next(error);
-    }
+    }   
 }
 
 const loadCustomers = async (req, res, next) => {
