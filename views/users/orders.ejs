@@ -63,160 +63,90 @@
             </nav>
 
           </div>
-          
-          <divid="refreshDiv" class="col-12 col-md-9 col-lg-8 offset-lg-1">
+          <div id="refreshDiv" class="col-12 col-md-9 col-lg-8 offset-lg-1">
             <% orderData.forEach(order => { %>
             <!-- Order -->
-            <div class="card card-lg mb-5 border">
-              <div class="card-body pb-0">
+            <div class="card card-lg mb-5">
+                <div class="card-body pb-0">
+                    <!-- Info -->
+                    <div class="card card-sm">
+                        <div class="card-body ">
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Image</th>
+                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Price</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-center">Date</th>
+                                                <th class="text-center">Status</th>
+                                                <th class="text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% order.details.forEach(detail => { %>
+                                            <tr>
+                                                <td class="text-center">
+                                                    <!-- Product Image -->
+                                                    <img src="<%= detail.productId.productImage[0] %>" alt="Product Image" class="img-fluid" style="max-width: 50px;">
+                                                </td>
+                                                <td class="text-center"><%= detail.productId.productName %></td>
+                                                <td class="text-center"><%= detail.price %></td>
+                                                <td class="text-center"><%= detail.quantity %></td>
+                                                <td class="text-center"><%= order.date.toLocaleDateString() %></td>
+                                                <td class="text-center">
+                                                    <% if (detail.status === 'Delivered') { %>
+                                                        <!-- Display Delivered status -->
+                                                        <p style="color: green;">Delivered</p>
+                                                    <% } else if (detail.status === 'Placed') { %>
+                                                        <!-- Display Placed status -->
+                                                        <p style="color: blue;">Placed</p>
+                                                    <% } else if (detail.status === 'Failed') { %>
+                                                        <!-- Display Retry Payment Button -->
+                                                        <button class="btn btn-sm w-100 btn-outline-dark" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
+                                                    <% } else if (detail.status === 'Cancelled') { %>
+                                                        <!-- Display Cancelled status -->
+                                                        <p style="color: gray;">Cancelled</p>
+                                                    <% } else if (detail.status === 'Pending') { %>
+                                                        <!-- Display Retry Payment Button -->
+                                                        <p style="color: gray;">Pending</p>
+                                                    <% } %>
+                                                </td>
+                                                <td class="text-center">
+                                                  <% if (detail.status === 'Failed' || detail.status === 'Pending') { %>
+                                                      <!-- Display Retry Payment Button -->
+                                                      <button class="btn btn-sm w-100 btn-outline-dark" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
+                                                  <% } else if (detail.status === 'Delivered') { %>
+                                                      <!-- Return Button -->
+                                                      <a class="btn btn-sm w-100 btn-outline-dark" href="#" onclick="showReturnReasonPrompt('<%= order._id %>', '<%= detail.productId._id %>')">Return</a>
+                                                  <% } else if (detail.status === 'Placed' || detail.status === 'Shipped') { %>
+                                                      <!-- Cancel Button -->
+                                                      <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= detail.productId._id %>">Cancel order</a>
+                                                  <% } %>
+                                              </td>
 
-                <!-- Info -->
-                <div  class="card card-sm">
-                  <div class="card-body bg-light">
-                    
-                    <div  class="row">
-                      <div class="col-6 col-lg-2">
-                          <!-- Heading -->
-                          <h6 class="heading-xxxs text-muted">Order No:</h6>
-                          <!-- Text -->
-                          <p class="mb-lg-0 fs-sm fw-bold">
-                              <%= order._id.toString().slice(-6) %>
-                          </p>
-                      </div>
-                      <div class="col-6 col-lg-2">
-                          <!-- Heading -->
-                          <h6 class="heading-xxxs text-muted">Shipped date:</h6>
-                          <!-- Text -->
-                          <p class="mb-lg-0 fs-sm fw-bold">
-                              <time datetime="<%= order.date %>">
-                                  <%= order.date.toLocaleDateString() %>
-                              </time>
-                          </p>
-                      </div>
-                      <div class="col-6 col-lg-2">
-                          <!-- Heading -->
-                          <h6 class="heading-xxxs text-muted">Order Amount:</h6>
-                          <!-- Text -->
-                          <p class="mb-0 fs-sm fw-bold">
-                              <%= order.total_amount %>
-                          </p>
-                      </div>
-                      <div class="col-6 col-lg-2">
-                          <!-- Heading -->
-                          <h6 class="heading-xxxs text-muted">Quantity:</h6>
-                          <!-- Text -->
-                          
-                          <p class="mb-0 fs-sm fw-bold">
-                            <% let totalQuantity = 0; %>
-                            <% order.details.forEach(detail => { %>
-                              <% totalQuantity += detail.quantity; %>
-                            <% }); %>
-                            <%= totalQuantity %>
-                          </p>
-                      </div>
-                      <div class="col-6 col-lg-2">
-                          <!-- Heading -->
-                          <h6 class="heading-xxxs text-muted">Payment Method:</h6>
-                          <!-- Text -->
-                          <p class="mb-0 fs-sm fw-bold">
-                              <%= order.payment %>
-                          </p>
-                      </div>
-                      <div  class="col-6 col-lg-2">
-                          <!-- Heading -->
-                          <h6 class="heading-xxxs text-muted">Status:</h6>
-                          <!-- Text -->
-                          <p class="mb-0 fs-sm fw-bold" id="cancel" >
-                              <%= order.details[0].status %>
-                          </p>
-
-                      
-
-
-                          <% if (order.details[0].returnStatus === 'return'|| order.details[0].returnStatus === 'Delivered') { %>
-                            <p style="color: rgb(218, 162, 8); ">Return request send</p>
-                        <% } else if (order.details[0].returnStatus === 'accepted' ) { %>
-                            <p style="color: rgb(58, 146, 37);"> Return Accepted</p>
-                        <% } else if (order.details[0].returnStatus === 'rejected' ) { %>
-                            <p style="color: red;">Return Rejected</p>
-                        <% } %> 
-
-
-              
-                      </div>
-                      <div class="col-12 col-lg-12 text-lg-end">
-                        <% if (order.details[0].status === 'Pending') { %>
-                          <!-- Button to retry payment -->
-                          <button onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
-                      <% } %>
-                    </div>
-                   
-                  </div>
-                  
-                  </div>
-                </div>
-
-              </div>
-        <!-- fixx here ------------------------------------------------------------------------------------------------------------------ -->
-              <!-- <div>
-                <%# order.details.forEach(detail=> { %>
-                  <li class="list-group-item">
-                    <div class="row align-items-center">
-                      <div class="col-4 col-md-3 col-xl-2">
-                        <!-- Product Image -->
-                        <!-- <a href="/product/<%#= detail.productId._id %>"><img -->
-                            <!-- src="<%#= detail.productId.productImage[0] %>" alt="..." class="img-fluid"></a> -->
-<!-- 
-                      </div>
-                      <div class="col">
-                        <!-- Product Details -->
-                        <!-- <a class="text-body" href="/product/<%#= detail.productId._id %>"> -->
-                          <%#= detail.productId.productName %>
-                        <!-- </a> <br> -->
-                        <!-- <p>Quantity: <%#= detail.quantity %> -->
-                        <!-- </p> -->
-                        <!-- <p>Price: <%#= detail.price %> -->
-                        <!-- </p>
-                      </div>
-                    </div> 
-                  </li> -->
-                  <%# }); %>
-              <!-- </div> --> 
-              <div class="card-footer">
-                <div class="row align-items-center">
-                  <ul class="list-group list-group-flush">
-                    <% order.details.forEach(detail => { %>
-                    <li class="list-group-item">
-                      <div class="row align-items-center">
-                        <div class="col-4 col-md-3 col-xl-2"> 
-                          <!-- Product Image -->
-                          <% if (Array.isArray(detail.productImage) && detail.productImage.length > 0) { %>
-                            <img src="<%= detail.productImage[0] %>" alt="Product Image" class="img-fluid">
-                        <% } else { %>
-                            <p>No image available</p>
-                        <% } %>
-                         
-                        
-                      </div>
-                      
-                      
-                        
-                        <div class="col">
-                          <!-- Product Details -->
-                          <p class="mb-4 fs-sm fw-bold">
-                            <a class="text-body" href="/product/<%= detail.productId.productName %>"><%= detail.productName %></a> <br>
-                            <span class="text-muted">Quantity: <%= detail.quantity %></span> <br>
-                            <span class="text-muted">Price: <%= detail.price %></span>
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                    <% }); %>
-                  </ul>
-                  <div class="col-12 col-lg-6">
-                    <div class="row gx-5">
-                    
-                
+                                              <% if (detail.returnStatus) { %>
+                                                <td class="text-center">
+                                                    <% if (detail.returnStatus === 'Accepted') { %>
+                                                        <!-- Display return status as accepted -->
+                                                        <p style="color: green;">Return Accepted</p>
+                                                    <% } else if (detail.returnStatus === 'Rejected') { %>
+                                                        <!-- Display return status as rejected -->
+                                                        <p style="color: red;">Return Rejected</p>
+                                                    <% } else if (detail.returnStatus === 'Pending') { %>
+                                                        <!-- Display return status as pending -->
+                                                        <p style="color: orange;">Return Pending</p>
+                                                    <% } %>
+                                                </td>
+                                           
+                                            <% } %>
+                                            </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                    
                       <div class="col-6">
 
                         <!-- Button -->
@@ -225,46 +155,21 @@
                         </a> 
                        
                       </div>
-                      <div class="col-6">
-
-                        <% if (order.details[0].status === 'Delivered') { %>
-                           <!-- Return Button -->
-                           <a class="btn btn-sm w-100 btn-outline-dark"  href="#" onclick="showReturnReasonPrompt('<%= order._id %>', '<%= order.details[0].productId %>')">
-                            Return
-                          </a>
-                                 
-                    
-                          <% } %>
-
-                       
-                          <%  if (order.details[0].status === 'Pending' || order.details[0].status === 'Shipped'|| order.details[0].status === 'Placed') { %>
-                          <!-- Cancel Button -->
-                          <a class="btn btn-sm w-100 btn-outline-dark cancel-order-btn" href="#" data-order-id="<%= order._id %>" data-product-id="<%= order.details[0].productId %>">
-                            Cancel order
-                          </a>
-                        <% } %>
-                        
-                      
-                         <!-- <butto  class="btn btn-sm w-100 btn-outline-dark cancel-order-btn">Cancel order</button> -->
-                        
-
-                      </div>
-
-                      
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                  </div>
                 </div>
-              </div>
             </div>
-
-
-
-           
             <% }); %>
+        </div>
+        
+        
+          ---------------------------------------------------------------------------------------------------------------
+          
 
 
-
+--------------------------------------------------------------------------------------------------------
 
 <nav class="d-flex justify-content-center justify-content-md-end">
   <ul class="pagination pagination-sm text-gray-400">
@@ -336,15 +241,16 @@
                 },
                 body: JSON.stringify({ orderId: orderId, productId: productId })
             });
-
+            console.log("response",response);
             if (response.ok) {
                 const orderElement = document.querySelector(`[data-order-id="${orderId}"]`);
+
 
               
                 Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success').then(() => {
                  
                  
-                    window.location.reload = '/orders';
+                    window.location.reload();
                 });
             } else {
                 console.error('Failed to cancel order:', response.statusText);

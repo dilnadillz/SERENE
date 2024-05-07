@@ -109,10 +109,10 @@ const loadOrder = async (req, res, next) => {
             .sort({ date: -1 })
             .skip((page - 1) * pageSize)
             .limit(pageSize)
-            // .populate({
-            //     path: 'details.productId',
-            //     model: 'Product' 
-            // });
+            .populate({
+                path: 'details.productId',
+                model: 'Product' 
+            });
 
 
         // console.log(orderData);  
@@ -142,20 +142,20 @@ const orderCancel = async (req, res, next) => {
         const productIndex = order.details.findIndex(item => item.productId == productId);
         const { price, quantity } = order.details[productIndex];
         const totalRefund = price * quantity;
-        console.log("Total Refund:", totalRefund);
+        console.log("totalRefund", totalRefund);
 
         // calculating total amount of remaining products in the order after canceling the specified product
-        const remainingProductsTotal = order.details.reduce((total,product) => {
-            if (product.productId != productId && product.status !== "Cancelled") {
-                total += product.price * product.quantity;
-            }
-            return total;
-        }, 0);
-        console.log("remainingProductsTotal",remainingProductsTotal);
+        // const remainingProductsTotal = order.details.reduce((total,product) => {
+        //     if (product.productId != productId && product.status !== "Cancelled") {
+        //         total += product.price * product.quantity;
+        //     }
+        //     return total;
+        // }, 0);  
+        // console.log("remainingProductsTotal",remainingProductsTotal);
 
         // final total refund should be the sum of the canceled product refund and remaining products total
-        const finalTotalRefund = totalRefund + remainingProductsTotal;
-        console.log("finalTotalRefund",finalTotalRefund);
+        // const finalTotalRefund = totalRefund + remainingProductsTotal;
+        // console.log("finalTotalRefund",finalTotalRefund);
 
         if (order.payment !== 'Cash on Delivery') {
             const wallet = await walletModel.findOne({ userId: order.userId });
@@ -164,12 +164,12 @@ const orderCancel = async (req, res, next) => {
                 return res.status(404).json({ message: "wallet not found" });
             }
 
-            wallet.balance += finalTotalRefund;
+            wallet.balance += totalRefund;
 
             //update wallet with refund amount
             wallet.walletHistory.push({
                 date: new Date(),
-                amount: finalTotalRefund,
+                amount: totalRefund,
                 status: 'Credited (cancelled Product)'
             })
 
@@ -183,11 +183,11 @@ const orderCancel = async (req, res, next) => {
         product.stock += quantity;
         await product.save();   
 
-        console.log(`Product ID: ${productId}, Previous Stock: ${previousStock}, New Stock: ${product.stock}`);
+        // console.log(`Product ID: ${productId}, Previous Stock: ${previousStock}, New Stock: ${product.stock}`);
 
 
 
-        return res.status(200).json({ message: 'Product cancelled successfully' });
+        return res.status(200).json({order, message: 'Product cancelled successfully' });
     } catch (error) {
         next(error);
     }
