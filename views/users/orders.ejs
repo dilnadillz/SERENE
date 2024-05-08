@@ -81,6 +81,7 @@
                                                 <th class="text-center">Price</th>
                                                 <th class="text-center">Quantity</th>
                                                 <th class="text-center">Date</th>
+                                                <!-- <th class="text-center">Coupon Amount</th> -->
                                                 <th class="text-center">Status</th>
                                                 <th class="text-center">Actions</th>
                                             </tr>
@@ -96,6 +97,7 @@
                                                 <td class="text-center"><%= detail.price %></td>
                                                 <td class="text-center"><%= detail.quantity %></td>
                                                 <td class="text-center"><%= order.date.toLocaleDateString() %></td>
+                                                <!-- <td class="text-center"><%#= order.coupon_amount %></td> -->
                                                 <td class="text-center">
                                                     <% if (detail.status === 'Delivered') { %>
                                                         <!-- Display Delivered status -->
@@ -114,6 +116,7 @@
                                                         <p style="color: gray;">Pending</p>
                                                     <% } %>
                                                 </td>
+                                               
                                                 <td class="text-center">
                                                   <% if (detail.status === 'Failed' || detail.status === 'Pending') { %>
                                                       <!-- Display Retry Payment Button -->
@@ -231,7 +234,7 @@
             showCancelButton: true,
             confirmButtonText: 'Yes, cancel it!',
             cancelButtonText: 'No, keep it'
-        });
+        }); 
 
         if (confirmation.isConfirmed) {
             const response = await fetch(`/cancel-order`, {

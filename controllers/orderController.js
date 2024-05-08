@@ -36,12 +36,26 @@ const orderPlace = async (req, res, next) => {
             return total += (product.quantity * product.productId.price)
         }, 0)
 
-        // console.log("totalAmount",totalAmount)
+        let couponAmount = 0;
+        if (cart.couponApplied) {
+            const appliedCoupon = await couponModel.findOne({ couponCode: cart.couponApplied });
+            if (appliedCoupon && totalAmount >= appliedCoupon.minimumAmount) {
+                couponAmount = appliedCoupon.discount;
+            }
+        }
+
+        console.log("totalAmount",totalAmount);
+        console.log("couponAmount",couponAmount);
+
+        const finalTotalAmount = totalAmount - couponAmount;
+
+        console.log("finalTotalAmount",finalTotalAmount)
 
         const order = new orderModel({
             userId: userId,
             delivery_address: selectedAddress,
             total_amount: totalAmount,
+            // coupon_amount: couponAmount,
             date: new Date(),
             payment: paymentMethod,
             details: cart.products.map(item => ({
@@ -52,7 +66,7 @@ const orderPlace = async (req, res, next) => {
             }))
 
         })
-        // console.log("order",order)
+        console.log("ordercominggggg",order)
         await order.save();
 
         //reduce stock after sucessfull order placement
@@ -115,7 +129,7 @@ const loadOrder = async (req, res, next) => {
             });
 
 
-        // console.log(orderData);  
+        console.log(orderData);  
 
 
         const razorpayKey = process.env.key_id
