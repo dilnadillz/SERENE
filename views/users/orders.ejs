@@ -77,7 +77,7 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-center">Image</th>
-                                                <th class="text-center">Name</th>
+                                                <!-- <th class="text-center">Name</th> -->
                                                 <th class="text-center">Price</th>
                                                 <th class="text-center">Quantity</th>
                                                 <th class="text-center">Date</th>
@@ -94,7 +94,7 @@
                                                     <!-- Product Image -->
                                                     <img src="<%= detail.productId.productImage[0] %>" alt="Product Image" class="img-fluid" style="max-width: 50px;">
                                                 </td>
-                                                <td class="text-center"><%= detail.productId.productName %></td>
+                                                <!-- <td class="text-center"><%#= detail.productId.productName %></td> -->
                                                 <td class="text-center"><%= detail.price %></td>
                                                 <td class="text-center"><%= detail.quantity %></td>
                                                 <td class="text-center"><%= order.date.toLocaleDateString() %></td>
