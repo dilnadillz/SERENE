@@ -40,16 +40,16 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item"><i class="fas fa-map-marker-alt"></i>
                                         <strong>Address:</strong>
-                                        <%= address.address %>
+                                        <%= order.delivery_address.address %>
                                     </li>
                                     <li class="list-group-item"><i class="fas fa-city"></i> <strong>City:</strong>
-                                        <%= address.city %>
+                                        <%= order.delivery_address.city  %>
                                     </li>
                                     <li class="list-group-item"><i class="fas fa-flag"></i> <strong>Country:</strong>
-                                        <%= address.country %>
+                                        <%= order.delivery_address.country %>
                                     </li>
                                     <li class="list-group-item"><i class="fas fa-barcode"></i> <strong>Pincode:</strong>
-                                        <%= address.pincode %>
+                                        <%= order.delivery_address.pincode  %>
                                     </li>
                                 </ul>
                             </div>
