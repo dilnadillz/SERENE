@@ -25,6 +25,7 @@ const orderPlace = async (req, res, next) => {
         const userId = res.locals.user;
         const { productId } = req.body;
         const { selectedAddress, paymentMethod, status } = req.body;
+        console.log("selectedAddress", selectedAddress);
         // console.log("owwowowowoww",selectedAddress,paymentMethod)
         // retrving the list of products that the user has added to their shopping cart
         const cart = await cartModel.findOne({ userId: userId, productId: productId }).populate('products.productId');
@@ -44,16 +45,31 @@ const orderPlace = async (req, res, next) => {
             }
         }
 
-        console.log("totalAmount",totalAmount);
-        console.log("couponAmount",couponAmount);
+        console.log("totalAmount", totalAmount);
+        console.log("couponAmount", couponAmount);
 
         const finalTotalAmount = totalAmount - couponAmount;
 
-        console.log("finalTotalAmount",finalTotalAmount)
+        console.log("finalTotalAmount", finalTotalAmount)
+        //selectaddress comes as  string first,the changed it in to object
+        const objectId = new mongoose.Types.ObjectId(selectedAddress);
+        console.log("objectId", objectId);
+        //then object poassed into adress._id..then displaying address details
+        const address = await addressModel.findOne({ "address._id": objectId });
+        console.log("adddress", address);
 
         const order = new orderModel({
             userId: userId,
-            delivery_address: selectedAddress,
+            delivery_address: {
+                name: address.address[0].userName,
+                mobileNumber: address.address[0].mobileNumber,
+                country: address.address[0].country,
+                state: address.address[0].state,
+                address: address.address[0].address,
+                city: address.address[0].city,
+                pincode: address.address[0].pincode
+
+            },
             total_amount: totalAmount,
             // coupon_amount: couponAmount,
             date: new Date(),
@@ -66,7 +82,7 @@ const orderPlace = async (req, res, next) => {
             }))
 
         })
-        console.log("ordercominggggg",order)
+        console.log("ordercominggggg", order)
         await order.save();
 
         //reduce stock after sucessfull order placement
@@ -125,11 +141,11 @@ const loadOrder = async (req, res, next) => {
             .limit(pageSize)
             .populate({
                 path: 'details.productId',
-                model: 'Product' 
+                model: 'Product'
             });
 
 
-        console.log(orderData);  
+        console.log(orderData);
 
 
         const razorpayKey = process.env.key_id
@@ -193,15 +209,15 @@ const orderCancel = async (req, res, next) => {
 
         //to restore the stock after cancelling order 
         const product = await productModel.findById(productId);
-        const previousStock = product.stock;    
+        const previousStock = product.stock;
         product.stock += quantity;
-        await product.save();   
+        await product.save();
 
         // console.log(`Product ID: ${productId}, Previous Stock: ${previousStock}, New Stock: ${product.stock}`);
 
 
 
-        return res.status(200).json({order, message: 'Product cancelled successfully' });
+        return res.status(200).json({ order, message: 'Product cancelled successfully' });
     } catch (error) {
         next(error);
     }
@@ -218,7 +234,7 @@ const viewOrder = async (req, res, next) => {
         if (!order) {
             return res.status(404).json({ message: "order not found" })
         }
-        // Calculate the total amount based on the stored price and quantity
+        // calculate the total amount based on the stored price and quantity
         let totalAmount = 0;
         order.details.forEach(detail => {
             totalAmount += detail.price * detail.quantity;
@@ -251,23 +267,23 @@ const razorpayPayment = async (req, res, next) => {
         //     totalAmount += product.productId.price * product.quantity;
         // });
 
-         // Calculated total amount by iterating over the products and summing up their prices
-    
-         let totalAmount = 0;
-         cart.products.forEach(product => {
-             const productTotal = product.productId.price * product.quantity;
-             totalAmount += productTotal;
-         });
- 
-         // Check if a coupon is applied to the cart
-         if (cart.couponApplied) {
-             const appliedCoupon = await couponModel.findOne({ couponCode: cart.couponApplied });
-             if (appliedCoupon && totalAmount >= appliedCoupon.minimumAmount) {
-                 // Adjust the total amount according to the coupon
-                 totalAmount -= appliedCoupon.discount;
-             }
-         }
- 
+        // Calculated total amount by iterating over the products and summing up their prices
+
+        let totalAmount = 0;
+        cart.products.forEach(product => {
+            const productTotal = product.productId.price * product.quantity;
+            totalAmount += productTotal;
+        });
+
+        // Check if a coupon is applied to the cart
+        if (cart.couponApplied) {
+            const appliedCoupon = await couponModel.findOne({ couponCode: cart.couponApplied });
+            if (appliedCoupon && totalAmount >= appliedCoupon.minimumAmount) {
+                // Adjust the total amount according to the coupon
+                totalAmount -= appliedCoupon.discount;
+            }
+        }
+
 
 
         console.log("mm", cart)

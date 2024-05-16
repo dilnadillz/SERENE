@@ -151,6 +151,11 @@
                                             <% }); %>
                                         </tbody>
                                     </table>
+                                    <div>
+                                        order total: <%= order.details.reduce((total, detail) => total + (detail.price * detail.quantity), 0) %>
+                                    </div>
+                                    <br>
+                                    
                                     
                       <div class="col-6">
 
