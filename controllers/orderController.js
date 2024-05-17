@@ -351,13 +351,9 @@ const orderInvoiceGenerate = async (req, res, next) => {
         ])
         console.log("order", order);
 
-        const addressId = order[0].delivery_address
+        const addressId = order.delivery_address;
 
-
-        const userAddress = await addressModel.findOne({
-            userId: userId,
-            'address._id': addressId
-        });
+        const userAddress = await addressModel.findOne({ userId: userId });
 
         console.log("userAddress", userAddress)
 

@@ -771,6 +771,7 @@ const loadWalletHistory = async(req,res,next) => {
         const userId = res.locals.user;
         const wallet = await walletModel.findOne({userId:userId})
         wallet.walletHistory.sort((a, b) => b.date - a.date);
+        console.log("orderid coming in walet",wallet)
         res.render('walletHistory',{wallet});
     }catch(error){
         next(error);

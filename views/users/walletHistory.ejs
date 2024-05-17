@@ -72,6 +72,7 @@
                 <table class="table">
                   <thead>
                     <tr>
+                      <th>Order Id</th>
                       <th>Date</th>
                       <th>Amount</th>
                       <th>Status</th>
@@ -80,6 +81,7 @@
                   <tbody>
                     <% wallet.walletHistory.forEach(transaction => { %>
                       <tr>
+                        <td><%= transaction.orderId %></td>
                         <td><%= transaction.date.toLocaleDateString() %></td>
                         <td>₹ <%= transaction.amount %></td>
                         <td><%= transaction.status %></td>

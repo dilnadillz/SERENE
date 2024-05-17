@@ -76,6 +76,7 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
+                                                <th class="text-center">Id</th>
                                                 <th class="text-center">Image</th>
                                                 <!-- <th class="text-center">Name</th> -->
                                                 <th class="text-center">Price</th>
@@ -90,6 +91,7 @@
                                         <tbody>
                                             <% order.details.forEach(detail => { %>
                                             <tr>
+                                                <td class="text-center"> <%= order._id.toString().slice(-6) %></td>
                                                 <td class="text-center">
                                                     <!-- Product Image -->
                                                     <img src="<%= detail.productId.productImage[0] %>" alt="Product Image" class="img-fluid" style="max-width: 50px;">
