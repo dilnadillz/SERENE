@@ -200,12 +200,13 @@ const orderCancel = async (req, res, next) => {
             wallet.walletHistory.push({
                 date: new Date(),
                 amount: totalRefund,
-                status: 'Credited (cancelled Product)'
+                status: 'Credited (cancelled Product)',
+                orderId: orderId
             })
 
             await wallet.save();
         }
-        //   console.log("wallw",wallet)
+          console.log("wallw",wallet)
 
         //to restore the stock after cancelling order 
         const product = await productModel.findById(productId);

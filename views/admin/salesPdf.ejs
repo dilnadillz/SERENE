@@ -26,6 +26,7 @@
         <th>Order Id</th>
         <th>Product Name</th>
         <th>Date</th>
+        <th>Price</th>
         <th>Payment</th>
         <!-- Add more columns if needed -->
       </tr>
@@ -36,6 +37,7 @@
           <td><%= sales._id.toString().slice(-6) %></td>
           <td><%= sales.details[0].productId.productName %></td>
           <td><%= sales.date.toLocaleDateString() %></td>
+          <td><%= sales.total_amount %></td>
           <td><%= sales.payment %></td>
           <!-- Add more columns if needed -->
         </tr>

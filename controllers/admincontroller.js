@@ -421,8 +421,10 @@ const loadSalesReport = async(req,res,next) => {
         const salesData = await orderModel.find({"details.status": "Delivered"}).populate("details.productId").sort({date: -1}).exec();
         console.log("sales", salesData);
 
-        res.render('salesReport', {salesData: salesData});
-    }catch(error){
+        const totalRevenue = salesData.reduce((total, sales) => total + sales.total_amount, 0);
+        const totalSales = totalRevenue;
+        res.render('salesReport', {salesData: salesData,totalSales:totalSales,totalRevenue:totalRevenue});
+    }catch(error){  
         next(error);
     }
 }

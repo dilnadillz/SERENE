@@ -19,6 +19,24 @@
       <div class="card">
           <div class="card-body">
               <h4 class="card-title">Sales</h4>
+              <div class="row text-center">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title">Total Revenue</h2>
+                            <p class="card-text display-5"><%= totalRevenue %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title">Total Sales</h2>
+                            <p class="card-text display-5"><%= totalSales %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
               <form id="salesReportForm" method="GET" action="/admin/salesReportFilter" onsubmit="return validateDates()">
                 <div class="form-row align-items-center">
                     <div class="col-md-3">
@@ -33,6 +51,8 @@
                         <button type="submit" id="submitBtn" class="action-btn block-btn btn-lg btn-gradient-primary mt-4">Submit</button>
                     </div>
                 </div>
+
+                
             </form><br><br>
               <div class="table-responsive">
                 <table class="table">
@@ -42,8 +62,9 @@
                         <th>Product Name</th>
                         <th>Date</th>
                         <!-- <th>Quantity</th> -->
-                        <!-- <th>Price</th> -->
+                        <th>Price</th>
                         <th>Payment</th>
+                     
                        
                       </tr>
                   </thead>
@@ -55,8 +76,9 @@
                               <td><%= sales.details[0].productId.productName %></td>
                               <td><%= sales.date.toLocaleDateString() %></td>
                               <!-- <td><%#= sales.quantity %></td> -->
-                              <!-- <td><%#= sales.price %></td> -->
+                              <td><%= sales.total_amount %></td>
                               <td><%= sales.payment %></td>
+                             
                             
                           
                           </tr>

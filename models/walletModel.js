@@ -21,6 +21,10 @@ const walletSchema = new mongoose.Schema({
             },
             status: {
                 type: String
+            },
+            orderId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Order'
             }
             
         }

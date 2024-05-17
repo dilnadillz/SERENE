@@ -72,19 +72,19 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Order Id</th>
                       <th>Date</th>
                       <th>Amount</th>
                       <th>Status</th>
+                      <th>Order Id</th>
                     </tr>
                   </thead>
                   <tbody>
                     <% wallet.walletHistory.forEach(transaction => { %>
-                      <tr>
-                        <td><%= transaction.orderId %></td>
+                      <tr>                    
                         <td><%= transaction.date.toLocaleDateString() %></td>
                         <td>₹ <%= transaction.amount %></td>
                         <td><%= transaction.status %></td>
+                        <td><%= transaction._id.toString().slice(-6) %></td>
                       </tr>
                     <% }); %>
                   </tbody>
